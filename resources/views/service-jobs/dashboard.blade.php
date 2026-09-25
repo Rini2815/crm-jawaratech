@@ -145,55 +145,47 @@
         </div>
     </div>
 
-    <!-- 3. SECTION KALENDER GRID BULANAN & INFORMASI LAYANAN -->
+    <!-- 3. SECTION NOTIFIKASI PENGINGAT JADWAL SERVIS & INFORMASI LAYANAN -->
     <div class="row">
-        <!-- Widget Kalender Grid Bulanan -->
+        <!-- Widget Notifikasi Pengingat Jadwal Servis & WhatsApp Follow-up (Warna Biru Putih Soft & Bentuk Lonjong) -->
         <div class="col-xl-4 mb-4">
             <div class="card rounded-4 h-100 text-dark shadow-sm overflow-hidden" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(36, 59, 85, 0.12) !important;">
-                <!-- Header Kalender -->
+                <!-- Header Widget -->
                 <div class="p-3 pb-2 d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25">
-                    <span class="fw-bold text-dark" style="font-size: 13px;"><i class="fas fa-calendar-alt text-primary me-1"></i> {{ date('l, d M') }}</span>
-                    <span class="text-secondary fw-semibold small" style="font-size: 12px;">{{ date('F Y') }}</span>
+                    <span class="fw-bold text-dark" style="font-size: 14px;"><i class="fas fa-bell text-dark me-1"></i> Pengingat Servis Berkala</span>
+                    <span class="badge bg-primary rounded-pill shadow-sm px-3 py-1.5" style="font-size: 11px;">3 Unit Perlu Perawatan</span>
                 </div>
-                <!-- Body Kalender Grid -->
-                <div class="card-body p-3">
-                    @php
-                        $daysOfWeek = ['SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB', 'MIN'];
-                        $firstDayOfMonth = \Carbon\Carbon::now()->startOfMonth();$daysInMonth = \Carbon\Carbon::now()->daysInMonth;
-                        $startingDay = ($firstDayOfMonth->dayOfWeekIso - 1);$currentDay = date('j');
-                    @endphp
-
-                    <!-- Baris Nama Hari -->
-                    <div class="row text-center fw-bold text-secondary mb-2" style="font-size: 10px;">
-                        <?php foreach($daysOfWeek as$day): ?>
-                            <div class="col p-0"><?= $day; ?></div>
-                        <?php endforeach; ?>
+                <!-- Body List Notifikasi -->
+                <div class="card-body p-3 d-flex flex-column gap-2.5">
+                    <!-- Item 1 -->
+                    <div class="p-3 rounded-pill border d-flex justify-content-between align-items-center shadow-sm px-4" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); border-color: rgba(248, 91, 56, 0.4) !important;">
+                        <div>
+                            <div class="fw-bold text-dark" style="font-size: 14px;">Siti Aminah</div>
+                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-info me-1" style="font-size: 5px;"></i> AC Split • Cuci 3 Bulan</div>
+                        </div>
+                        <a href="https://wa.me/628123456789?text=Halo%20Kak%20Siti%20Aminah,%20mengingatkan%20jadwal%20perawatan%20berkala%20AC%20di%20Jawaratech%20sudah%20waktunya.%20Yuk%20jadwalkan%20servisnya!" target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;" title="Follow-up via WhatsApp">
+                            <i class="fab fa-whatsapp"></i> Chat
+                        </a>
                     </div>
-
-                    <!-- Grid Angka Tanggal -->
-                    <div class="row text-center g-1" style="font-size: 12px;">
-                        @php $dayCounter = 1; $totalCells = 35; @endphp
-                        @for ($i = 0; $i < $totalCells; $i++)
-                            @if ($i >=$startingDay && $dayCounter <=$daysInMonth)
-                                <div class="col p-1">
-                                    @if ($dayCounter ==$currentDay)
-                                        <div class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center mx-auto shadow-sm" style="width: 27px; height: 27px; font-size: 11px;">
-                                            {{ $dayCounter }}
-                                        </div>
-                                    @else
-                                        <div class="text-dark fw-semibold d-flex align-items-center justify-content-center mx-auto" style="width: 27px; height: 27px;">
-                                            {{ $dayCounter }}
-                                        </div>
-                                    @endif
-                                </div>
-                                @php $dayCounter++; @endphp
-                            @else
-                                <div class="col p-1">
-                                    <div class="text-muted opacity-25 d-flex align-items-center justify-content-center mx-auto" style="width: 27px; height: 27px; font-size: 11px;">
-                                    </div>
-                                </div>
-                            @endif
-                        @endfor
+                    <!-- Item 2 -->
+                    <div class="p-3 rounded-pill border d-flex justify-content-between align-items-center shadow-sm px-4" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); border-color: rgba(141, 8, 8, 0.4) !important;">
+                        <div>
+                            <div class="fw-bold text-dark" style="font-size: 14px;">Budi Santoso</div>
+                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-primary me-1" style="font-size: 5px;"></i> Dispenser • Servis 6 Bulan</div>
+                        </div>
+                        <a href="https://wa.me/628987654321?text=Halo%20Bapak%20Budi%20Santoso,%20mengingatkan%20jadwal%20perawatan%20berkala%20dispenser%20di%20Jawaratech.%20Silakan%20hubungi%20kami%20untuk%20penjadwalan." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;" title="Follow-up via WhatsApp">
+                            <i class="fab fa-whatsapp"></i> Chat
+                        </a>
+                    </div>
+                    <!-- Item 3 -->
+                    <div class="p-3 rounded-pill border d-flex justify-content-between align-items-center shadow-sm px-4" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); border-color: rgba(56, 189, 248, 0.4) !important;">
+                        <div>
+                            <div class="fw-bold text-dark" style="font-size: 14px;">Ahmad Fauzi</div>
+                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-warning me-1" style="font-size: 5px;"></i> Mesin Cuci • Servis 1 Tahun</div>
+                        </div>
+                        <a href="https://wa.me/628567890123?text=Halo%20Bapak%20Ahmad%20Fauzi,%20mengingatkan%20jadwal%20perawatan%20tahunan%20mesin%20cuci%20di%20Jawaratech." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;" title="Follow-up via WhatsApp">
+                            <i class="fab fa-whatsapp"></i> Chat
+                        </a>
                     </div>
                 </div>
             </div>
@@ -261,7 +253,7 @@
                         </tr>
                     </thead>
                     <tbody class="border-top-0">
-                        <!-- Baris 1: Laptop (Tepi & Warna Biru) -->
+                        <!-- Baris 1 -->
                         <tr class="border-bottom border-secondary border-opacity-10">
                             <td class="py-3 fw-semibold text-dark">1</td>
                             <td class="py-3 text-dark">Budi Santoso</td>
@@ -272,7 +264,7 @@
                             </td>
                             <td class="py-3"><span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill shadow-sm">Dalam Pengecekan</span></td>
                         </tr>
-                        <!-- Baris 2: AC Split (Tepi & Warna Cyan/Hijau Toska) -->
+                        <!-- Baris 2 -->
                         <tr class="border-bottom border-secondary border-opacity-10">
                             <td class="py-3 fw-semibold text-dark">2</td>
                             <td class="py-3 text-dark">Siti Aminah</td>
@@ -283,7 +275,7 @@
                             </td>
                             <td class="py-3"><span class="badge bg-success text-white fw-bold px-3 py-2 rounded-pill shadow-sm">Selesai / Closing</span></td>
                         </tr>
-                        <!-- Baris 3: Mesin Cuci (Tepi & Warna Oranye) -->
+                        <!-- Baris 3 -->
                         <tr>
                             <td class="py-3 fw-semibold text-dark">3</td>
                             <td class="py-3 text-dark">Ahmad Fauzi</td>

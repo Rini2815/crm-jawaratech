@@ -1,4 +1,4 @@
-<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion" style="width: 260px !important; min-width: 260px !important; background: linear-gradient(135deg, #1b263b 0%, #0d1b2a 40%, #450a10 100%); border-right: 3px solid #a8011d;">
+<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion" style="width: 260px !important; min-width: 260px !important; background: linear-gradient(135deg, #29364d 0%, #0d1b2a 40%, #42050b 100%); border-right: 3px solid #5b1924;">
     <div class="sb-sidenav-menu" style="width: 260px !important;">
         <div class="nav px-2">
             

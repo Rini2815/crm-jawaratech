@@ -1,4 +1,4 @@
-<nav class="sb-topnav navbar navbar-expand navbar-dark" style="background: linear-gradient(135deg, #12161f 0%, #0d1b2a 40%, #450a10 100%) !important; border-bottom: 4px solid #8c2233 !important; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);">
+<nav class="sb-topnav navbar navbar-expand navbar-dark" style="background: linear-gradient(135deg, #12161f 0%, #0d1b2a 40%, #450a10 100%) !important; border-bottom: 4px solid #33040c !important; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);">
     <!-- Logo & Brand di Pojok Kiri Atas -->
     <a class="navbar-brand ps-3 fw-bold d-flex align-items-center" href="{{ route('service-jobs.index') }}">
         <img src="{{ asset('image/logo.png') }}" alt="Logo" style="width: 32px; height: 32px; object-fit: contain; background: #fff; border-radius: 4px; padding: 2px; margin-right: 10px;">

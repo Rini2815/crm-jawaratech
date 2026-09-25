@@ -2,11 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>CRM Jawaratech</title>
     <!-- FontAwesome Icon -->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <!-- SB Admin CSS via CDN -->
+    <!-- SB Admin CSS via CDN Resmi -->
     <link href="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin@7.0.7/dist/css/styles.css" rel="stylesheet" />
 </head>
 <body class="sb-nav-fixed">

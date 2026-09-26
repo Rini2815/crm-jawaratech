@@ -15,10 +15,12 @@
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-white fw-semibold" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user-circle fa-fw me-1"></i> Admin
+                <i class="fas fa-user-circle fa-fw me-1"></i> Superadmin
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdown" style="background: #0d1b2a;">
-                <li><a class="dropdown-item text-white py-2" href="#" style="transition: 0.2s;"><i class="fas fa-sign-out-alt me-2 text-info"></i> Logout</a></li>
+                <li><a class="dropdown-item text-white py-2" href="#" style="transition: 0.2s;"><i class="fas fa-user me-2 text-info"></i> Profil Saya</a></li>
+                <li><hr class="dropdown-divider my-1" style="border-color: rgba(255, 255, 255, 0.15);" /></li>
+                <li><a class="dropdown-item text-white py-2" href="#" style="transition: 0.2s;"><i class="fas fa-sign-out-alt me-2 text-danger"></i> Keluar</a></li>
             </ul>
         </li>
     </ul>

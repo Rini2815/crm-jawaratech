@@ -3,62 +3,62 @@
 @section('content')
 <!-- Import Font 'Inter' & Custom CSS Jawaratech -->
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
-    body, html {
-        background-color: #060910 !important;
-    }
-    .crm-wrapper {
-        font-family: 'Inter', sans-serif;
-        color: #0f172a;
-    }
-    /* Card Terang & Bersih */
-    .crm-card-light {
-        border: 1px solid #cbd5e1;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        border-radius: 12px;
-        background: #ffffff !important;
-    }
-    .crm-table-header {
-        background-color: #1e293b; /* Warna Navy/Slate tegas */
-        color: #ffffff;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    }
-    .super-thick-table th, 
-    .super-thick-table td {
-        border-width: 2px !important;
-        border-color: #cbd5e1 !important;
-    }
-    .stat-card-light {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1;
-        border-radius: 12px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .stat-card-light:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Animasi lembut untuk ikon */
-    @keyframes pulse-soft {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.08); }
-        100% { transform: scale(1); }
-    }
-    .animated-icon {
-        animation: pulse-soft 2s infinite ease-in-out;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body, html {
+    background-color: #060910 !important;
+}
+.crm-wrapper {
+    font-family: 'Inter', sans-serif;
+    color: #0f172a;
+}
+/* Card Terang & Bersih */
+.crm-card-light {
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    background: #ffffff !important;
+}
+.crm-table-header {
+    background-color: #1e293b; /* Warna Navy/Slate tegas */
+    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.super-thick-table th, 
+.super-thick-table td {
+    border-width: 2px !important;
+    border-color: #cbd5e1 !important;
+}
+.stat-card-light {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card-light:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Animasi lembut untuk ikon */
+@keyframes pulse-soft {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+.animated-icon {
+    animation: pulse-soft 2s infinite ease-in-out;
+}
 </style>
 
-<div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg,#eef1f3 0%, #eef1f3 100%100%); min-height: 100vh;">
+<div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3 100%); min-height: 100vh;">
     <!-- Header Halaman (Dibungkus Card Gelap Elegan Khusus Header Saja) -->
     <div class="card rounded-4 mb-4 text-white shadow-lg overflow-hidden" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.35) !important;">
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h1 class="h3 mb-1 text-white" style="font-weight: 700;"><i class="fas fa-users text-primary me-2"></i> Data Konsumen</h1>
-                <p class="text-light opacity-75 mb-0" style="font-weight: 500;"> kontak dan master informasi pelanggan sistem CRM Jawaratech</p>
+                <p class="text-light opacity-75 mb-0" style="font-weight: 500;">Buku kontak dan master informasi pelanggan sistem CRM Jawaratech</p>
             </div>
             
             <!-- Tombol Tambah Konsumen -->
@@ -115,37 +115,35 @@
     </div>
 
     <!-- Tabel Data Konsumen -->
-    <div class="card crm-card-light overflow-hidden mb-4">
-        <!-- Card Header dengan Judul & Kolom Pencarian -->
-        <div class="card-header bg-white py-3 px-4 border-bottom d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-            <div class="d-flex align-items-center gap-2 mb-2 mb-md-0">
-                <div class="p-2 rounded-circle bg-primary bg-opacity-15 text-primary">
-                    <i class="fas fa-users fa-lg"></i>
-                </div>
-                <div>
-                    <h5 class="m-0 text-dark fw-bold">Daftar Konsumen Jawaratech</h5>
-                    <small class="text-muted">Kelola informasi kontak dan total unit terdaftar</small>
-                </div>
-            </div>
-            
-            <!-- Kolom Pencarian -->
-            <div class="position-relative" style="min-width: 280px;">
-                <input type="text" id="searchInput" class="form-control form-control-sm ps-5 pe-3 py-2 bg-light text-dark" placeholder="Cari nama, WA, alamat..." style="border-radius: 20px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
-                <i class="fas fa-search position-absolute text-secondary" style="left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
-            </div>
-        </div>
-
+    <div class="card crm-card-light overflow-hidden mb-4 bg-white">
         <div class="card-body p-4 bg-white">
+            
+            <!-- Baris Atas Tabel: Judul & Subtitle Clean (Sesuai Referensi Gambar) + Search Box -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                <!-- Judul Utama + Subtitle Keterangan -->
+                <div>
+                    <h5 class="fw-bold text-dark mb-1" style="font-size: 1.2rem; letter-spacing: -0.3px;">Daftar Konsumen Jawaratech</h5>
+                    <p class="text-secondary mb-0" style="font-size: 0.875rem; font-weight: 400;">Kelola dan pantau seluruh kontak serta informasi pelanggan</p>
+                </div>
+
+                <!-- Input Pencarian (Kanan) -->
+                <div class="position-relative" style="min-width: 280px;">
+                    <input type="text" id="searchInput" class="form-control form-control-sm ps-5 pe-3 py-2 bg-white text-dark" placeholder="Cari nama, WA, alamat..." style="border-radius: 20px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+                    <i class="fas fa-search position-absolute text-secondary" style="left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
+                </div>
+            </div>
+
+            <!-- Tabel Data -->
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle mb-0 super-thick-table" id="tableKonsumen">
                     <thead class="crm-table-header text-uppercase text-center fs-7">
                         <tr>
-                            <th class="py-3 text-white" style="width: 60px;">NO</th>
-                            <th class="py-3 text-white text-start">NAMA KONSUMEN</th>
-                            <th class="py-3 text-white text-start">NOMOR WHATSAPP</th>
-                            <th class="py-3 text-white text-start">ALAMAT DOMISILI</th>
-                            <th class="text-center py-3 text-white" style="width: 140px;">JUMLAH UNIT</th>
-                            <th class="text-center py-3 text-white" style="width: 130px;">AKSI</th>
+                            <th class="py-3 text-white text-center" style="width: 60px;">NO</th>
+                            <th class="py-3 text-white text-center">NAMA KONSUMEN</th>
+                            <th class="py-3 text-white text-center">NOMOR WHATSAPP</th>
+                            <th class="py-3 text-white text-center">ALAMAT DOMISILI</th>
+                            <th class="py-3 text-white text-center" style="width: 140px;">JUMLAH UNIT</th>
+                            <th class="py-3 text-white text-center" style="width: 130px;">AKSI</th>
                         </tr>
                     </thead>
                     <tbody style="font-weight: 500;">
@@ -218,13 +216,13 @@
 
 <!-- Script Filter Pencarian Realtime -->
 <script>
-    $(document).ready(function(){
-        $("#searchInput").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#tableKonsumen tbody tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
+$(document).ready(function(){
+    $("#searchInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#tableKonsumen tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
         });
     });
+});
 </script>
 @endsection

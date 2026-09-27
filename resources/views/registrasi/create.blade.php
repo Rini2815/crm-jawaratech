@@ -37,6 +37,11 @@
         padding-bottom: 0.5rem;
         border-bottom: 2px solid #e2e8f0;
     }
+    /* Tambahan agar teks checkbox selalu berwarna gelap */
+    .crm-wrapper .form-check-label {
+        color: #1e293b !important;
+        cursor: pointer;
+    }
 </style>
 
 <div class="modal fade crm-wrapper" id="modalTambahRegistrasi" tabindex="-1" role="dialog" aria-hidden="true">
@@ -98,19 +103,19 @@
                             <div class="d-flex flex-wrap gap-3 p-3 bg-white border rounded">
                                 <div class="form-check mr-3 me-3">
                                     <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Unit Utama" id="chk_unit" checked>
-                                    <label class="form-check-label font-weight-normal" for="chk_unit">Unit Utama</label>
+                                    <label class="form-check-label font-weight-normal text-dark" for="chk_unit">Unit Utama</label>
                                 </div>
                                 <div class="form-check mr-3 me-3">
                                     <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Remote AC/TV" id="chk_remote">
-                                    <label class="form-check-label font-weight-normal" for="chk_remote">Remote AC/TV</label>
+                                    <label class="form-check-label font-weight-normal text-dark" for="chk_remote">Remote AC/TV</label>
                                 </div>
                                 <div class="form-check mr-3 me-3">
                                     <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Kabel Power" id="chk_kabel">
-                                    <label class="form-check-label font-weight-normal" for="chk_kabel">Kabel Power</label>
+                                    <label class="form-check-label font-weight-normal text-dark" for="chk_kabel">Kabel Power</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Adaptor" id="chk_adaptor">
-                                    <label class="form-check-label font-weight-normal" for="chk_adaptor">Adaptor</label>
+                                    <label class="form-check-label font-weight-normal text-dark" for="chk_adaptor">Adaptor</label>
                                 </div>
                             </div>
                         </div>

@@ -3,72 +3,76 @@
 @section('content')
 <!-- Import Font 'Inter' & Custom CSS Jawaratech CRM -->
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
-    body, html {
-        background-color: #060910 !important;
-    }
-    .crm-wrapper {
-        font-family: 'Inter', sans-serif;
-        color: #f8fafc;
-    }
-    .crm-card {
-        border: 1px solid rgba(36, 59, 85, 0.35);
-        box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
-        background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%) !important;
-    }
-    .crm-table-header {
-        background-color: #1e293b; /* Slate/Navy khas Jawaratech */
-        color: #ffffff;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    }
-    .crm-badge {
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        border-radius: 4px;
-        padding: 0.35em 0.65em;
-        font-size: 0.75rem;
-    }
-    
-    /* Custom Badge Status Follow-Up */
-    .badge-followup-pending { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
-    .badge-followup-done { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-    .badge-followup-rescheduled { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-    .badge-followup-noresponse { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-    
-    /* Custom Badge Kategori */
-    .badge-kategori-happycall { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
-    .badge-kategori-rutin { background-color: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    /* Custom Lebar Modal Spesifik (800px) */
-    .modal-custom-size {
-        max-width: 800px !important;
-        width: 90%;
-    }
-    
-    .stat-card {
-        transition: transform 0.2s ease;
-    }
-    .stat-card:hover {
-        transform: translateY(-2px);
-    }
-    .super-thick-table th, 
-    .super-thick-table td {
-        border-width: 2px !important;
-        border-color: #334155 !important;
-    }
+body, html {
+    background-color: #060910 !important;
+}
+.crm-wrapper {
+    font-family: 'Inter', sans-serif;
+    color: #f8fafc;
+}
+.crm-card {
+    border: 1px solid rgba(36, 59, 85, 0.35);
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%) !important;
+}
+.crm-table-header {
+    background-color: #1e293b; /* Slate/Navy khas Jawaratech */
+    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.crm-badge {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 4px;
+    padding: 0.35em 0.65em;
+    font-size: 0.75rem;
+}
+
+/* Custom Badge Status Follow-Up */
+.badge-followup-pending { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+.badge-followup-done { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.badge-followup-rescheduled { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+.badge-followup-noresponse { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+/* Custom Badge Kategori */
+.badge-kategori-happycall { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+.badge-kategori-rutin { background-color: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+
+/* Custom Lebar Modal Spesifik (800px) */
+.modal-custom-size {
+    max-width: 800px !important;
+    width: 90%;
+}
+
+.stat-card {
+    transition: transform 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+.super-thick-table th, 
+.super-thick-table td {
+    border-width: 2px !important;
+    border-color: #cbd5e1 !important;
+}
 </style>
 
 <div class="container-fluid px-4 pt-3 pb-4" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3 100%); min-height: 100vh; color: #f8fafc;">
-    
-    <!-- Header Halaman (Dibungkus Card Gelap Elegan) -->
+
+    <!-- 1. BANNER HEADER UTAMA -->
     <div class="card rounded-4 mb-4 text-white shadow-lg overflow-hidden" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.35) !important;">
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h2 class="text-white fw-bold mb-1" style="font-weight: 700;"><i class="fas fa-comments text-primary me-2"></i> Follow-up Konsumen</h2>
-                <p class="text-light opacity-75 small mb-0" style="font-weight: 500;">Modul integrasi pesan untuk Happy Call, konfirmasi purna servis, dan pengingat servis berkala via WhatsApp</p>
+                <h2 class="text-white fw-bold mb-1" style="font-weight: 700;">
+                    <i class="fas fa-comments text-primary me-2"></i> Follow-up Konsumen
+                </h2>
+                <p class="text-light opacity-75 small mb-0" style="font-weight: 500;">
+                    Modul integrasi pesan untuk Happy Call, konfirmasi purna servis, dan pengingat servis berkala via WhatsApp
+                </p>
             </div>
             
             <!-- Tombol Tambah Agenda Follow-up -->
@@ -78,10 +82,10 @@
         </div>
     </div>
 
-    <!-- Metric Cards / Ringkasan Status -->
+    <!-- 2. RINGKASAN KARTU STATISTIK -->
     <div class="row g-3 mb-4">
         <div class="col-xl-3 col-md-6">
-            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #2563eb !important;">
+            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #2563eb !important; background: #ffffff !important;">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Total Agenda</div>
@@ -94,7 +98,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #d97706 !important;">
+            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #d97706 !important; background: #ffffff !important;">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Belum Dihubungi</div>
@@ -107,7 +111,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #16a34a !important;">
+            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #16a34a !important; background: #ffffff !important;">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Selesai Dihubungi</div>
@@ -120,7 +124,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #0284c7 !important;">
+            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #0284c7 !important; background: #ffffff !important;">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Jadwal Ulang</div>
@@ -134,17 +138,14 @@
         </div>
     </div>
 
-    <!-- Tabel Main Data Follow-up -->
-    <div class="card crm-card overflow-hidden mb-4">
-        <div class="card-header text-white border-0 pt-3 px-4 pb-3 d-flex justify-content-between align-items-center flex-wrap gap-2 shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 2px solid rgba(56, 189, 248, 0.4) !important;">
-            <div class="d-flex align-items-center gap-2">
-                <div class="p-2 rounded-circle bg-primary bg-opacity-25 text-info">
-                    <i class="fas fa-comments fa-lg"></i>
-                </div>
-                <div>
-                    <h5 class="m-0 text-white fw-bold">Daftar Antrean Follow-up Konsumen</h5>
-                    <small class="text-light opacity-75">Kelola komunikasi dan pemantauan kepuasan pelanggan secara berkala</small>
-                </div>
+    <!-- 3. CARD UTAMA TABEL DATA FOLLOW-UP -->
+    <div class="card crm-card overflow-hidden mb-4" style="background: #ffffff !important;">
+        
+        <!-- HEADER CARD KE-2 (BACKGROUND PUTIH & TANPA ICON) -->
+        <div class="card-header bg-white border-bottom pt-4 px-4 pb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h5 class="m-0 text-dark fw-bold">Daftar Antrean Follow-up Konsumen</h5>
+                <small class="text-muted">Kelola komunikasi dan pemantauan kepuasan pelanggan secara berkala</small>
             </div>
 
             <!-- Search Bar Real-time (Frontend JS) -->
@@ -153,18 +154,20 @@
                 <i class="fas fa-search position-absolute text-secondary" style="left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
             </div>
         </div>
+
         <div class="card-body px-4 pb-4 bg-white">
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle mb-0 super-thick-table">
+                    <!-- HEADER TABEL RATA TENGAH SEMUA -->
                     <thead class="crm-table-header text-uppercase text-center fs-7">
                         <tr>
-                            <th class="py-3 text-white" style="width: 5%;">NO</th>
-                            <th class="py-3 text-white text-start" style="width: 20%;">KONSUMEN & WA</th>
-                            <th class="py-3 text-white text-start" style="width: 20%;">UNIT & LAYANAN</th>
-                            <th class="py-3 text-white text-start" style="width: 18%;">KATEGORI & TANGGAL</th>
+                            <th class="py-3 text-white text-center" style="width: 5%;">NO</th>
+                            <th class="py-3 text-white text-center" style="width: 20%;">KONSUMEN & WA</th>
+                            <th class="py-3 text-white text-center" style="width: 20%;">UNIT & LAYANAN</th>
+                            <th class="py-3 text-white text-center" style="width: 18%;">KATEGORI & TANGGAL</th>
                             <th class="py-3 text-white text-center" style="width: 12%;">STATUS</th>
-                            <th class="py-3 text-white text-start" style="width: 15%;">CATATAN HASIL</th>
-                            <th class="text-center py-3 text-white" style="width: 10%;">AKSI</th>
+                            <th class="py-3 text-white text-center" style="width: 15%;">CATATAN HASIL</th>
+                            <th class="py-3 text-white text-center" style="width: 10%;">AKSI</th>
                         </tr>
                     </thead>
                     <tbody id="followupTableBody" style="font-weight: 500;">
@@ -257,13 +260,14 @@
                             </td>
                         </tr>
 
-                        <!-- Modal Update Hasil Follow-up (800px) -->
+                        <!-- Modal Update Hasil Follow-up (EDIT) -->
                         <div class="modal fade crm-wrapper" id="modalUpdateFollowup{{ $f['id'] }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-custom-size modal-dialog-centered">
-                                <div class="modal-content rounded-4 shadow-lg text-dark" style="background: #f8fafc; border: 2px solid #334155;">
-                                    <div class="modal-header bg-dark text-white">
+                                <div class="modal-content rounded-4 shadow-lg text-dark overflow-hidden" style="background: #f8fafc; border: 1px solid #cbd5e1;">
+                                    <!-- HEADER MODAL EDIT DENGAN NIKMAT GRADIENT BIRU/NAVY -->
+                                    <div class="modal-header text-white px-4 py-3" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 2px solid rgba(56, 189, 248, 0.4);">
                                         <h5 class="modal-title fw-bold" style="font-size: 1.15rem;">
-                                            <i class="fas fa-user-check text-info me-2"></i>Update Respon & Status Follow-up
+                                            <i class="fas fa-user-check text-primary me-2"></i>Update Respon & Status Follow-up
                                         </h5>
                                         <button type="button" class="btn-close btn-close-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
@@ -325,13 +329,14 @@
     </div>
 </div>
 
-<!-- Modal Agendakan Follow-up Baru (800px) -->
+<!-- Modal Agendakan Follow-up Baru (CREATE) -->
 <div class="modal fade crm-wrapper" id="modalTambahFollowup" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-custom-size modal-dialog-centered">
-        <div class="modal-content rounded-4 shadow-lg text-dark" style="background: #f8fafc; border: 2px solid #334155;">
-            <div class="modal-header bg-dark text-white">
+        <div class="modal-content rounded-4 shadow-lg text-dark overflow-hidden" style="background: #f8fafc; border: 1px solid #cbd5e1;">
+            <!-- HEADER MODAL CREATE DENGAN GRADIENT BIRU/NAVY -->
+            <div class="modal-header text-white px-4 py-3" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 2px solid rgba(56, 189, 248, 0.4);">
                 <h5 class="modal-title fw-bold" style="font-size: 1.15rem;">
-                    <i class="fas fa-calendar-plus text-info me-2"></i>Buat Agenda Follow-up Baru
+                    <i class="fas fa-calendar-plus text-primary me-2"></i>Buat Agenda Follow-up Baru
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -384,16 +389,15 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <!-- Filter Live Search (Client-Side) -->
 <script>
-    $(document).ready(function(){
-        $("#searchInput").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#followupTableBody tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-            });
+$(document).ready(function(){
+    $("#searchInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#followupTableBody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
         });
     });
+});
 </script>
 @endsection

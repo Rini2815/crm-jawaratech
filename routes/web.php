@@ -7,6 +7,7 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SchedulesController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserGroupController; // Import UserGroupController
 
 // 1. Halaman utama (URL root '/') diarahkan langsung ke DASHBOARD
 Route::get('/', function () {
@@ -42,7 +43,7 @@ Route::middleware('auth')->group(function () {
         return view('service-jobs.dashboard');
     })->name('dashboard');
 
-        // --- Rute Kelola Akun Tim (UI Only, belum ada logic backend) ---
+    // --- Rute Kelola Akun Tim (UI Only, belum ada logic backend) ---
     Route::get('/kelola-akun-tim', [ProfileController::class, 'manageUsers'])->name('team.manage');
 
     // --- Rute Manajemen Pengguna ---
@@ -57,6 +58,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/hak-akses/tambah', function () {
         return redirect()->route('hak-akses');
     })->name('simpan-pengguna');
+
+    // --- Rute User Group / Kelola Role ---
+    Route::get('/user-group', [UserGroupController::class, 'index'])->name('user-group.index');
+    Route::post('/user-group/update', [UserGroupController::class, 'update'])->name('user-group.update');
+    Route::post('/user-group/store', [UserGroupController::class, 'store'])->name('user-group.store'); // <-- RUTE TAMBAH ROLE BARU
 
     // --- Rute Data Konsumen ---
     Route::get('/data-konsumen', function () {

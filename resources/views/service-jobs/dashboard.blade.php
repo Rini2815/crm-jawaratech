@@ -2,22 +2,24 @@
 
 @section('content')
 <!-- Wrapper Utama dengan background gelap malam -->
-<div class="container-fluid px-4 pt-3 pb-4" style="background: linear-gradient(135deg, #0b131d 0%, #060910 100%); min-height: 100vh; color: #f8fafc;">
+<div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3); min-height: 100vh; color: #f8fafc;">
     
     <!-- Header Title & Realtime Clock -->
-    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary border-opacity-25">
-        <div>
-            <h2 class="text-white fw-bold mb-1">Dashboard CRM Jawaratech</h2>
-            <p class="text-light opacity-75 small mb-0">Sistem Administrasi Layanan Servis & Manajemen Data Konsumen</p>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-            <!-- Badge Tanggal (Diperbesar) -->
-            <div class="badge text-white px-3.5 py-2.5 rounded-pill shadow-sm fs-6" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.3);">
-                <i class="fas fa-calendar-alt me-2 text-info"></i> {{ date('d M Y') }}
+    <div class="card rounded-4 mb-4 text-white shadow-lg overflow-hidden" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.35) !important;">
+        <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h2 class="text-white fw-bold mb-1">Dashboard CRM Jawaratech</h2>
+                <p class="text-light opacity-75 small mb-0">Sistem Administrasi Layanan Servis & Manajemen Data Konsumen</p>
             </div>
-            <!-- Badge Waktu Realtime Berjalan (Diperbesar) -->
-            <div class="badge text-info px-3.5 py-2.5 rounded-pill shadow-sm fw-bold fs-6" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.3);">
-                <i class="fas fa-clock me-2 text-info"></i> <span id="realtime-clock">00:00:00</span> WIB
+            <div class="d-flex align-items-center gap-3">
+                <!-- Badge Tanggal -->
+                <div class="badge text-white px-3 py-2 rounded-pill shadow-sm fs-6" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <i class="fas fa-calendar-alt me-2 text-info"></i> {{ date('d M Y') }}
+                </div>
+                <!-- Badge Waktu Realtime Berjalan -->
+                <div class="badge text-info px-3 py-2 rounded-pill shadow-sm fw-bold fs-6" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <i class="fas fa-clock me-2 text-info"></i> <span id="realtime-clock">00:00:00</span> WIB
+                </div>
             </div>
         </div>
     </div>
@@ -26,7 +28,7 @@
     <div class="row">
         <!-- Total Konsumen -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card rounded-4 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border-left: 4px solid #0d1b2a !important; border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(36, 59, 85, 0.15) !important;">
+            <div class="card rounded-4 text-dark h-100" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border-left: 4px solid #0d1b2a !important; border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -48,7 +50,7 @@
 
         <!-- Antrean Servis Masuk -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card rounded-4 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border-left: 4px solid #b45309 !important; border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(36, 59, 85, 0.15) !important;">
+            <div class="card rounded-4 text-dark h-100" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border-left: 4px solid #b45309 !important; border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -70,7 +72,7 @@
 
         <!-- Servis Selesai / Closing -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card rounded-4 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border-left: 4px solid #10b981 !important; border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(36, 59, 85, 0.15) !important;">
+            <div class="card rounded-4 text-dark h-100" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border-left: 4px solid #10b981 !important; border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -92,7 +94,7 @@
 
         <!-- Jadwal Perawatan -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card rounded-4 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border-left: 4px solid #d90429 !important; border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(36, 59, 85, 0.15) !important;">
+            <div class="card rounded-4 text-dark h-100" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border-left: 4px solid #d90429 !important; border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -117,7 +119,7 @@
     <div class="row">
         <!-- Grafik Kategori Keluhan Servis (Bar Chart) -->
         <div class="col-xl-8 mb-4">
-            <div class="card rounded-4 h-100 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(36, 59, 85, 0.12) !important;">
+            <div class="card rounded-4 h-100 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                 <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold text-dark m-0"><i class="fas fa-chart-bar text-primary me-2"></i> Statistik Kategori Keluhan Servis</h5>
                     <span class="text-muted small">Bulan Ini</span>
@@ -130,40 +132,85 @@
             </div>
         </div>
 
-        <!-- Diagram Lingkaran Status Servis (Doughnut Chart) -->
-        <div class="col-xl-4 mb-4">
-            <div class="card rounded-4 h-100 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(36, 59, 85, 0.12) !important;">
-                <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold text-dark m-0"><i class="fas fa-chart-pie text-primary me-2"></i> Proporsi Status</h5>
-                </div>
-                <div class="card-body px-4 d-flex align-items-center justify-content-center">
-                    <div style="height: 230px; width: 100%; position: relative;">
-                        <canvas id="statusPieChart"></canvas>
+      <!-- Diagram Lingkaran Status Servis (Doughnut Chart) -->
+<div class="col-xl-4 mb-4">
+    <div class="card rounded-4 h-100 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
+        
+        <!-- Header Card -->
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-dark m-0">
+                <i class="fas fa-chart-pie text-primary me-2"></i> Proporsi Status
+            </h5>
+            <span class="badge bg-dark text-white rounded-pill px-3 py-1 extra-small">
+                Total: 100%
+            </span>
+        </div>
+
+        <!-- Body Card: Chart & Ringkasan Angka -->
+        <div class="card-body px-4 d-flex flex-column align-items-center justify-content-center">
+            
+            <!-- Canvas Chart -->
+            <div style="height: 180px; width: 100%; position: relative;">
+                <canvas id="statusPieChart"></canvas>
+            </div>
+
+            <!-- Legenda Custom & Keterangan Status Warna -->
+            <div class="w-100 mt-3 pt-2 border-top border-secondary border-opacity-25">
+                <div class="row g-2 text-center" style="font-size: 0.8rem;">
+                    
+                    <!-- Item Selesai -->
+                    <div class="col-4">
+                        <div class="p-2 rounded-3 bg-white bg-opacity-50 border border-success border-opacity-25 shadow-sm">
+                            <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background-color: #1b4d3e;"></span>
+                            <strong class="d-block text-dark fw-bold">Selesai</strong>
+                            <small class="text-success fw-bold" id="txtSelesai">75%</small>
+                        </div>
                     </div>
+
+                    <!-- Item Pengecekan -->
+                    <div class="col-4">
+                        <div class="p-2 rounded-3 bg-white bg-opacity-50 border border-warning border-opacity-25 shadow-sm">
+                            <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background-color: #8c9e2b;"></span>
+                            <strong class="d-block text-dark fw-bold">Pengecekan</strong>
+                            <small class="text-warning fw-bold" style="color: #8c9e2b !important;" id="txtPengecekan">18%</small>
+                        </div>
+                    </div>
+
+                    <!-- Item Menunggu -->
+                    <div class="col-4">
+                        <div class="p-2 rounded-3 bg-white bg-opacity-50 border border-info border-opacity-25 shadow-sm">
+                            <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background-color: #50c878;"></span>
+                            <strong class="d-block text-dark fw-bold">Menunggu</strong>
+                            <small class="text-info fw-bold" style="color: #2e8b57 !important;" id="txtMenunggu">7%</small>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+
         </div>
     </div>
+</div>
+
+
 
     <!-- 3. SECTION NOTIFIKASI PENGINGAT JADWAL SERVIS & INFORMASI LAYANAN -->
     <div class="row">
-        <!-- Widget Notifikasi Pengingat Jadwal Servis & WhatsApp Follow-up (Warna Biru Putih Soft & Bentuk Lonjong) -->
+        <!-- Widget Notifikasi Pengingat Jadwal Servis -->
         <div class="col-xl-4 mb-4">
-            <div class="card rounded-4 h-100 text-dark shadow-sm overflow-hidden" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(36, 59, 85, 0.12) !important;">
-                <!-- Header Widget -->
+            <div class="card rounded-4 h-100 text-dark shadow-sm overflow-hidden" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                 <div class="p-3 pb-2 d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25">
                     <span class="fw-bold text-dark" style="font-size: 14px;"><i class="fas fa-bell text-dark me-1"></i> Pengingat Servis Berkala</span>
                     <span class="badge bg-primary rounded-pill shadow-sm px-3 py-1.5" style="font-size: 11px;">3 Unit Perlu Perawatan</span>
                 </div>
-                <!-- Body List Notifikasi -->
-                <div class="card-body p-3 d-flex flex-column gap-2.5">
+                <div class="card-body p-3 d-flex flex-column gap-2">
                     <!-- Item 1 -->
                     <div class="p-3 rounded-pill border d-flex justify-content-between align-items-center shadow-sm px-4" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); border-color: rgba(248, 91, 56, 0.4) !important;">
                         <div>
                             <div class="fw-bold text-dark" style="font-size: 14px;">Siti Aminah</div>
-                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-info me-1" style="font-size: 5px;"></i> AC Split • Cuci 3 Bulan</div>
+                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-info me-1" style="font-size: 5px;"></i> AC Split Cuci 3 Bulan</div>
                         </div>
-                        <a href="https://wa.me/628123456789?text=Halo%20Kak%20Siti%20Aminah,%20mengingatkan%20jadwal%20perawatan%20berkala%20AC%20di%20Jawaratech%20sudah%20waktunya.%20Yuk%20jadwalkan%20servisnya!" target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;" title="Follow-up via WhatsApp">
+                        <a href="https://wa.me/628123456789?text=Halo%20Kak%20Siti%20Aminah,%20mengingatkan%20jadwal%20perawatan%20berkala%20AC%20di%20Jawaratech%20sudah%20waktunya." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;">
                             <i class="fab fa-whatsapp"></i> Chat
                         </a>
                     </div>
@@ -171,9 +218,9 @@
                     <div class="p-3 rounded-pill border d-flex justify-content-between align-items-center shadow-sm px-4" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); border-color: rgba(141, 8, 8, 0.4) !important;">
                         <div>
                             <div class="fw-bold text-dark" style="font-size: 14px;">Budi Santoso</div>
-                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-primary me-1" style="font-size: 5px;"></i> Dispenser • Servis 6 Bulan</div>
+                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-primary me-1" style="font-size: 5px;"></i> Dispenser Servis 6 Bulan</div>
                         </div>
-                        <a href="https://wa.me/628987654321?text=Halo%20Bapak%20Budi%20Santoso,%20mengingatkan%20jadwal%20perawatan%20berkala%20dispenser%20di%20Jawaratech.%20Silakan%20hubungi%20kami%20untuk%20penjadwalan." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;" title="Follow-up via WhatsApp">
+                        <a href="https://wa.me/628987654321?text=Halo%20Bapak%20Budi%20Santoso,%20mengingatkan%20jadwal%20perawatan%20berkala%20dispenser%20di%20Jawaratech." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;">
                             <i class="fab fa-whatsapp"></i> Chat
                         </a>
                     </div>
@@ -181,9 +228,9 @@
                     <div class="p-3 rounded-pill border d-flex justify-content-between align-items-center shadow-sm px-4" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); border-color: rgba(56, 189, 248, 0.4) !important;">
                         <div>
                             <div class="fw-bold text-dark" style="font-size: 14px;">Ahmad Fauzi</div>
-                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-warning me-1" style="font-size: 5px;"></i> Mesin Cuci • Servis 1 Tahun</div>
+                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-warning me-1" style="font-size: 5px;"></i> Mesin Cuci Servis 1 Tahun</div>
                         </div>
-                        <a href="https://wa.me/628567890123?text=Halo%20Bapak%20Ahmad%20Fauzi,%20mengingatkan%20jadwal%20perawatan%20tahunan%20mesin%20cuci%20di%20Jawaratech." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;" title="Follow-up via WhatsApp">
+                        <a href="https://wa.me/628567890123?text=Halo%20Bapak%20Ahmad%20Fauzi,%20mengingatkan%20jadwal%20perawatan%20tahunan%20mesin%20cuci%20di%20Jawaratech." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;">
                             <i class="fab fa-whatsapp"></i> Chat
                         </a>
                     </div>
@@ -193,12 +240,13 @@
 
         <!-- Informasi Layanan -->
         <div class="col-xl-8 mb-4">
-            <div class="card rounded-4 h-100 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(36, 59, 85, 0.12) !important;">
+            <div class="card rounded-4 h-100 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                 <div class="card-body p-4 d-flex flex-column justify-content-between">
                     <div>
                         <h5 class="fw-bold text-dark mb-3"><i class="fas fa-info-circle text-primary me-2"></i> Informasi Layanan</h5>
                         <p class="text-muted small">Ringkasan cepat performa administrasi dan layanan servis perangkat di Jawaratech.</p>
                         <hr class="text-muted opacity-25">
+                        
                         <div class="mb-3">
                             <div class="d-flex justify-content-between small fw-bold mb-1 text-dark">
                                 <span>Perangkat Elektronik / Laptop</span>
@@ -208,6 +256,7 @@
                                 <div class="progress-bar bg-primary" role="progressbar" style="width: 45%;"></div>
                             </div>
                         </div>
+
                         <div class="mb-3">
                             <div class="d-flex justify-content-between small fw-bold mb-1 text-dark">
                                 <span>AC & Pendingin Ruangan</span>
@@ -217,6 +266,7 @@
                                 <div class="progress-bar bg-success" role="progressbar" style="width: 30%;"></div>
                             </div>
                         </div>
+
                         <div class="mb-3">
                             <div class="d-flex justify-content-between small fw-bold mb-1 text-dark">
                                 <span>Mesin Cuci & Rumah Tangga</span>
@@ -227,6 +277,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="alert border-0 text-dark small mb-0 mt-3" style="background: #cbd5e1; border-left: 4px solid #0d1b2a !important;">
                         <i class="fas fa-lightbulb text-primary me-1"></i> Data grafik otomatis tersinkronisasi dari database servis masuk.
                     </div>
@@ -236,7 +287,7 @@
     </div>
 
     <!-- 4. TABEL ANTREAN SERVIS TERBARU -->
-    <div class="card rounded-4 mb-4 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(36, 59, 85, 0.12) !important;">
+    <div class="card rounded-4 mb-4 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
         <div class="card-header bg-transparent border-0 pt-4 px-4 pb-3 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold text-dark m-0"><i class="fas fa-table text-primary me-2"></i> Daftar Antrean Servis Terbaru</h5>
             <a href="{{ route('service-jobs.index') }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill">Lihat Semua</a>
@@ -295,90 +346,90 @@
 
 <!-- Tambahan CSS Global agar Background Body Ikut Gelap -->
 <style>
-    body, html {
-        background-color: #060910 !important;
-    }
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 0, 0, 0.04) !important;
-    }
+body, html {
+    background-color: #060910 !important;
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
 </style>
 
 <!-- Library Chart.js & Script Realtime Jam + Grafik -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Script Jam Realtime
-    function updateClock() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('realtime-clock').textContent = `${hours}:${minutes}:${seconds}`;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+// Script Jam Realtime
+function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('realtime-clock').textContent = `${hours}:${minutes}:${seconds}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-    // Script Chart.js
-    document.addEventListener("DOMContentLoaded", function() {
-        // 1. Bar Chart Keluhan
-        const ctxBar = document.getElementById('keluhanChart').getContext('2d');
-        new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: ['Laptop / PC', 'AC Rumah', 'Mesin Cuci', 'Kulkas', 'Printer / Lainnya'],
-                datasets: [{
-                    label: 'Jumlah Unit Masuk',
-                    data: [18, 12, 9, 6, 4],
-                    backgroundColor: [
-                        'rgba(13, 27, 42, 0.9)',    // Biru Tua Navy
-                        'rgba(34, 197, 94, 0.85)',  // Hijau
-                        'rgba(234, 179, 8, 0.85)',  // Kuning
-                        'rgba(196, 59, 0, 0.8)',    // Orange
-                        'rgba(34, 67, 197, 0.75)'   // Biru
-                    ],
-                    borderColor: ['#0d1b2a', '#16a34a', '#ca8a04', '#0d1b2a', '#1639a3'],
-                    borderWidth: 1,
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' }, ticks: { color: '#475569', font: { weight: 'bold' } } },
-                    x: { grid: { display: false }, ticks: { color: '#475569', font: { weight: 'bold' } } }
-                }
+// Script Chart.js
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Bar Chart Keluhan
+    const ctxBar = document.getElementById('keluhanChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: ['Laptop / PC', 'AC Rumah', 'Mesin Cuci', 'Kulkas', 'Printer / Lainnya'],
+            datasets: [{
+                label: 'Jumlah Unit Masuk',
+                data: [18, 12, 9, 6, 4],
+                backgroundColor: [
+                    'rgba(13, 27, 42, 0.9)',
+                    'rgba(34, 197, 94, 0.85)',
+                    'rgba(234, 179, 8, 0.85)',
+                    'rgba(196, 59, 0, 0.8)',
+                    'rgba(34, 67, 197, 0.75)'
+                ],
+                borderColor: ['#0d1b2a', '#16a34a', '#ca8a04', '#0d1b2a', '#1639a3'],
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' }, ticks: { color: '#475569', font: { weight: 'bold' } } },
+                x: { grid: { display: false }, ticks: { color: '#475569', font: { weight: 'bold' } } }
             }
-        });
-
-        // 2. Pie / Doughnut Chart Status Servis
-        const ctxPie = document.getElementById('statusPieChart').getContext('2d');
-        new Chart(ctxPie, {
-            type: 'doughnut',
-            data: {
-                labels: ['Selesai', 'Pengecekan', 'Menunggu'],
-                datasets: [{
-                    data: [85, 15, 5],
-                    backgroundColor: [
-                        'rgba(23, 68, 40, 0.91)',  // Hijau
-                        'rgba(124, 150, 8, 0.85)',   // Kuning
-                        'rgba(67, 192, 106, 0.85)'   // Biru
-                    ],
-                    borderColor: ['#16a34a', '#ca8a04', '#0284c7'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { boxWidth: 12, color: '#1e293b', font: { weight: 'bold', size: 10 } }
-                    }
-                }
-            }
-        });
+        }
     });
+
+    // 2. Pie / Doughnut Chart Status Servis
+    const ctxPie = document.getElementById('statusPieChart').getContext('2d');
+    new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: ['Selesai', 'Pengecekan', 'Menunggu'],
+            datasets: [{
+                data: [85, 15, 5],
+                backgroundColor: [
+                    'rgba(23, 68, 40, 0.91)',
+                    'rgba(124, 150, 8, 0.85)',
+                    'rgba(67, 192, 106, 0.85)'
+                ],
+                borderColor: ['#16a34a', '#ca8a04', '#0284c7'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 12, color: '#1e293b', font: { weight: 'bold', size: 10 } }
+                }
+            }
+        }
+    });
+});
 </script>
 @endsection

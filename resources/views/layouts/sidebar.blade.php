@@ -1,26 +1,30 @@
-<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion" style="width: 260px !important; min-width: 260px !important; background: linear-gradient(135deg, #29364d 0%, #0d1b2a 40%, #42050b 100%); border-right: 3px solid #5b1924;">
+<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion" style="width: 260px !important; min-width: 260px !important; background: linear-gradient(135deg, #455169 0%, #091a2d 40%, #42050b 100%); border-right: 3px solid #25252c;">
     <div class="sb-sidenav-menu" style="width: 260px !important;">
         <div class="nav px-2">
             <div class="pt-2"></div>
+<!-- 1. DASHBOARD -->
+<div class="sb-sidenav-menu-heading text-white-50 fw-normal" style="font-size: 11px;">UTAMA</div>
 
-            <!-- 1. DASHBOARD -->
-            <div class="sb-sidenav-menu-heading text-white-50 fw-normal" style="font-size: 11px;">UTAMA</div>
-            <div class="menu-box d-flex align-items-center justify-content-between px-3 py-2" style="background: #4682cb3f; margin: 5px 8px; border-radius: 8px; border: 1.5px solid rgba(216, 231, 238, 0.3);">
-                <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none text-white flex-grow-1">
-                    <div class="sb-nav-link-icon text-white me-2"><i class="fas fa-home"></i></div>
-                    <span class="nav-text fw-normal">Dashboard</span>
-                </a>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#collapseDashboard" aria-expanded="false" class="text-white-50 text-decoration-none px-2">
-                    <i class="fas fa-angle-down"></i>
-                </a>
-            </div>
-            <div class="collapse" id="collapseDashboard" data-bs-parent="#sidenavAccordion">
-                <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="{{ route('service-jobs.index') }}">
-                        <i class="fas fa-clock me-2 text-white"></i> Jadwal Perawatan
-                    </a>
-                </nav>
-            </div>
+<!-- Box Utama Dashboard -->
+<div class="menu-box d-flex align-items-center justify-content-between px-3 py-2" style="background: #4682cb3f; margin: 5px 8px; border-radius: 8px; border: 1.5px solid rgba(216, 231, 238, 0.3);">
+    <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none text-white flex-grow-1">
+        <div class="sb-nav-link-icon text-white me-2"><i class="fas fa-home"></i></div>
+        <span class="nav-text fw-normal">Dashboard</span>
+    </a>
+    <a href="#" data-bs-toggle="collapse" data-bs-target="#collapseDashboard" aria-expanded="false" class="text-white-50 text-decoration-none px-2">
+        <i class="fas fa-angle-down"></i>
+    </a>
+</div>
+
+<!-- Dropdown Sub-Menu Dashboard -->
+<div class="collapse" id="collapseDashboard" data-bs-parent="#sidenavAccordion">
+    <nav class="sb-sidenav-menu-nested nav">
+        <!-- LINK SUDAH DIPERBAIKI KE schedules.index -->
+        <a class="nav-link text-white-50" href="{{ route('schedules.index') }}">
+            <i class="fas fa-clock me-2 text-white"></i> Jadwal Perawatan
+        </a>
+    </nav>
+</div>
 
             <!-- 2. DATA MASTER -->
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">MANAJEMEN CRM</div>
@@ -74,24 +78,25 @@
                 </nav>
             </div>
 
-            <!-- 5. RIWAYAT LAPORAN -->
+        <!-- 5. RIWAYAT LAPORAN -->
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">LAPORAN & SISTEM</div>
             <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLaporan" aria-expanded="false" style="background: #4682cb3f; border-radius: 8px; border: 1.5px solid rgba(216, 231, 238, 0.3);">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-file-pdf"></i></div>
-                <span class="nav-text text-white fw-normal">Riwayat Laporan</span>
+                <span class="nav-text text-white fw-normal">Laporan</span>
                 <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
             </a>
             <div class="collapse" id="collapseLaporan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link sub-item-divider" href="#">
+                    <!-- Diubah agar mengarah ke route kronologis yang sudah dibuat -->
+                    <a class="nav-link sub-item-divider {{ request()->routeIs('report.kronologis') ? 'text-info fw-bold' : '' }}" href="{{ route('report.kronologis') }}">
                         <i class="fas fa-history me-2 text-white"></i> Log Kronologis
                     </a>
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-print me-2 text-white"></i> Cetak PDF
+                    <a class="nav-link {{ request()->routeIs('report.index') ? 'text-info fw-bold' : '' }}" href="{{ route('report.index') }}">
+                        <i class="fas fa-print me-2 text-white"></i> Riwayat Laporan
                     </a>
                 </nav>
             </div>
-
+</div>
             <!-- 6. PENGATURAN SISTEM -->
             <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePengaturan" aria-expanded="false" style="background: #4682cb3f; border-radius: 8px; border: 1.5px solid rgba(216, 231, 238, 0.3);">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-user-shield"></i></div>
@@ -101,7 +106,7 @@
             <div class="collapse" id="collapsePengaturan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link sub-item-divider" href="#">
-                        <i class="fas fa-user-circle me-2 text-white"></i> Profil Akun
+                        <i class="fas fa-user-circle me-2 text-white"></i> Manajemen Profil 
                     </a>
                     <a class="nav-link" href="#">
                         <i class="fas fa-key me-2 text-white"></i> Ubah Password

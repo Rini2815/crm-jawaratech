@@ -5,14 +5,18 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
+    body, html {
+        background-color: #060910 !important;
+    }
     .crm-wrapper {
         font-family: 'Inter', sans-serif;
-        color: #334155;
+        color: #f8fafc;
     }
     .crm-card {
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        border-radius: 8px;
+        border: 1px solid rgba(36, 59, 85, 0.35);
+        box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%) !important;
     }
     .crm-table-header {
         background-color: #1e293b; /* Navy/Slate khas Jawaratech */
@@ -37,6 +41,19 @@
     .badge-garansi-aktif { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
     .badge-garansi-habis { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
 
+    .super-thick-table th, 
+    .super-thick-table td {
+        border-width: 2px !important;
+        border-color: #334155 !important;
+    }
+
+    .stat-card {
+        transition: transform 0.2s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
     /* Custom Lebar Modal Spesifik */
     .modal-custom-size {
         max-width: 800px !important;
@@ -44,45 +61,98 @@
     }
 </style>
 
-<div class="container-fluid py-4 crm-wrapper">
-    <!-- Header Halaman -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-            <h1 class="h3 mb-1 text-dark" style="font-weight: 700; color: #0f172a !important;">Data Unit Servis</h1>
-            <p class="text-secondary mb-0" style="font-weight: 500;">Kelola spesifikasi teknis unit pelanggan, tanggal pembelian, dan status garansi</p>
+<div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3); min-height: 100vh;">
+    
+    <!-- Header Halaman (Dibungkus Card Gelap Elegan) -->
+    <div class="card rounded-4 mb-4 text-white shadow-lg overflow-hidden" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.35) !important;">
+        <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1 class="h3 mb-1 text-white" style="font-weight: 700;"><i class="fas fa-boxes text-primary me-2"></i> Data Unit Servis</h1>
+                <p class="text-light opacity-75 mb-0" style="font-weight: 500;">Kelola spesifikasi teknis unit pelanggan, tanggal masuk servis, dan status garansi</p>
+            </div>
+            
+            <!-- Tombol Tambah Unit -->
+            <button type="button" class="btn btn-primary shadow-sm px-4 py-2 fw-bold d-flex align-items-center gap-2 rounded-pill" style="font-size: 0.875rem; background-color: #2563eb; border-color: #2563eb;" data-toggle="modal" data-bs-toggle="modal" data-target="#modalTambahUnit" data-bs-target="#modalTambahUnit">
+                <i class="fas fa-plus-circle"></i> Tambah Unit Servis
+            </button>
         </div>
-        
-        <!-- Tombol Tambah Unit -->
-        <button type="button" class="btn btn-primary shadow-sm px-4 py-2" style="font-weight: 600; border-radius: 6px; background-color: #2563eb; border-color: #2563eb;" data-toggle="modal" data-bs-toggle="modal" data-target="#modalTambahUnit" data-bs-target="#modalTambahUnit">
-            <i class="fas fa-plus fa-sm mr-2 me-1"></i> Tambah Unit Servis
-        </button>
+    </div>
+
+    <!-- 3 Card Statistik Ringkasan di Atas -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-4 col-md-6">
+            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #2563eb !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Total Unit Terdaftar</div>
+                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">2 <span class="fs-6 fw-normal text-muted">Perangkat</span></div>
+                    </div>
+                    <div class="p-3 rounded-circle" style="background-color: rgba(37, 99, 235, 0.15); color: #2563eb;">
+                        <i class="fas fa-boxes fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #0369a1 !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Unit AC Servis</div>
+                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">1 <span class="fs-6 fw-normal text-muted">Unit</span></div>
+                    </div>
+                    <div class="p-3 rounded-circle" style="background-color: rgba(3, 105, 161, 0.15); color: #0369a1;">
+                        <i class="fas fa-wind fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card crm-card stat-card p-3 h-100" style="border-left: 5px solid #7e22ce !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Unit Mesin Cuci Servis</div>
+                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">1 <span class="fs-6 fw-normal text-muted">Unit</span></div>
+                    </div>
+                    <div class="p-3 rounded-circle" style="background-color: rgba(126, 34, 206, 0.15); color: #7e22ce;">
+                        <i class="fas fa-tshirt fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Tabel Data Unit Servis -->
-    <div class="card crm-card bg-white">
-        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h6 class="m-0 text-dark" style="font-weight: 700;">
-                <i class="fas fa-boxes text-primary mr-2 me-2"></i>Daftar Master Unit Pelanggan
-            </h6>
+    <div class="card crm-card overflow-hidden mb-4">
+        <div class="card-header text-white border-0 pt-3 px-4 pb-3 d-flex justify-content-between align-items-center flex-wrap gap-2 shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 2px solid rgba(56, 189, 248, 0.4) !important;">
+            <div class="d-flex align-items-center gap-2">
+                <div class="p-2 rounded-circle bg-primary bg-opacity-25 text-info">
+                    <i class="fas fa-boxes fa-lg"></i>
+                </div>
+                <div>
+                    <h5 class="m-0 text-white fw-bold">Daftar Master Unit Pelanggan</h5>
+                    <small class="text-light opacity-75">Kelola seluruh data unit perangkat yang masuk untuk diservis</small>
+                </div>
+            </div>
 
             <!-- Kolom Pencarian / Search Bar -->
-            <div class="position-relative" style="min-width: 260px;">
-                <input type="text" id="searchInput" class="form-control form-control-sm pl-4 pr-3 ps-5 pe-3 py-2" placeholder="Cari pemilik, merek, tipe..." style="border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
-                <i class="fas fa-search position-absolute text-secondary" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
+            <div class="position-relative" style="min-width: 280px;">
+                <input type="text" id="searchInput" class="form-control form-control-sm ps-5 pe-3 py-2 bg-white text-dark" placeholder="Cari pemilik, merek, tipe..." style="border-radius: 20px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+                <i class="fas fa-search position-absolute text-secondary" style="left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
             </div>
         </div>
-        <div class="card-body p-0">
+
+        <div class="card-body p-4 bg-white">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="crm-table-header">
+                <table class="table table-hover table-bordered align-middle mb-0 super-thick-table">
+                    <thead class="crm-table-header text-uppercase text-center fs-7">
                         <tr>
-                            <th class="px-4 py-3 border-0">NO</th>
-                            <th class="py-3 border-0">PEMILIK UNIT</th>
-                            <th class="py-3 border-0">JENIS & MEREK UNIT</th>
-                            <th class="py-3 border-0">MODEL / TIPE</th>
-                            <th class="py-3 border-0">TANGGAL PEMBELIAN</th>
-                            <th class="py-3 border-0">STATUS GARANSI</th>
-                            <th class="text-center py-3 border-0">AKSI</th>
+                            <th class="py-3 text-white" style="width: 5%;">NO</th>
+                            <th class="py-3 text-white text-start" style="width: 20%;">PEMILIK UNIT</th>
+                            <th class="py-3 text-white text-start" style="width: 20%;">JENIS & MEREK UNIT</th>
+                            <th class="py-3 text-white text-start" style="width: 20%;">MODEL / TIPE</th>
+                            <th class="py-3 text-white text-start" style="width: 13%;">TANGGAL MASUK</th>
+                            <th class="py-3 text-white text-center" style="width: 12%;">STATUS GARANSI</th>
+                            <th class="text-center py-3 text-white" style="width: 10%;">AKSI</th>
                         </tr>
                     </thead>
                     <tbody id="unitTableBody" style="font-weight: 500;">
@@ -91,22 +161,22 @@
                                 [
                                     'id' => 1, 'pemilik' => 'Budi Santoso', 'wa' => '081234567890',
                                     'jenis' => 'AC', 'merek' => 'Daikin', 'tipe' => 'Inverter 1 PK (FTKC25)',
-                                    'tgl_pembelian' => '12 Mei 2024', 'garansi' => 'Aktif (Ada Kartu)', 'badge_unit' => 'badge-unit-ac', 'badge_garansi' => 'badge-garansi-aktif'
+                                    'tgl_masuk' => '25 Sep 2026', 'garansi' => 'Aktif (Ada Kartu)', 'badge_unit' => 'badge-unit-ac', 'badge_garansi' => 'badge-garansi-aktif'
                                 ],
                                 [
                                     'id' => 2, 'pemilik' => 'Siti Aminah', 'wa' => '085712345678',
                                     'jenis' => 'Mesin Cuci', 'merek' => 'LG', 'tipe' => '2 Tabung 8 Kg (P800N)',
-                                    'tgl_pembelian' => '20 Jan 2023', 'garansi' => 'Tidak Bergaransi', 'badge_unit' => 'badge-unit-mc', 'badge_garansi' => 'badge-garansi-habis'
+                                    'tgl_masuk' => '26 Sep 2026', 'garansi' => 'Tidak Bergaransi', 'badge_unit' => 'badge-unit-mc', 'badge_garansi' => 'badge-garansi-habis'
                                 ]
                             ];
                         @endphp
 
                         @foreach($units as $index => $u)
-                        <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td class="px-4 py-3 text-secondary">{{ $index + 1 }}</td>
+                        <tr>
+                            <td class="px-3 py-3 text-secondary text-center">{{ $index + 1 }}</td>
                             <td class="py-3">
-                                <div class="text-dark" style="font-weight: 600;">{{ $u['pemilik'] }}</div>
-                                <div class="text-secondary" style="font-size: 0.85rem;"><i class="fab fa-whatsapp text-success mr-1 me-1"></i> {{ $u['wa'] }}</div>
+                                <div class="text-dark fw-bold" style="font-weight: 600;">{{ $u['pemilik'] }}</div>
+                                <div class="text-secondary small"><i class="fab fa-whatsapp text-success me-1"></i> {{ $u['wa'] }}</div>
                             </td>
                             <td class="py-3">
                                 <span class="badge crm-badge {{ $u['badge_unit'] }} mb-1">{{ $u['jenis'] }}</span>
@@ -115,21 +185,28 @@
                             <td class="py-3 text-secondary" style="font-size: 0.9rem;">
                                 {{ $u['tipe'] }}
                             </td>
-                            <td class="py-3 text-secondary" style="font-size: 0.9rem;">{{ $u['tgl_pembelian'] }}</td>
-                            <td class="py-3">
+                            <td class="py-3 text-secondary" style="font-size: 0.9rem;">{{ $u['tgl_masuk'] }}</td>
+                            <td class="py-3 text-center">
                                 <span class="badge crm-badge {{ $u['badge_garansi'] }}">
                                     {{ $u['garansi'] }}
                                 </span>
                             </td>
                             <td class="py-3 text-center">
-                                <!-- Tombol Edit -->
-                                <button class="btn btn-sm btn-outline-primary shadow-sm mr-1 me-1" title="Edit Data Unit" style="border-radius: 4px;" data-toggle="modal" data-bs-toggle="modal" data-target="#modalEditUnit{{ $u['id'] }}" data-bs-target="#modalEditUnit{{ $u['id'] }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <!-- Tombol Hapus -->
-                                <button class="btn btn-sm btn-outline-danger shadow-sm" title="Hapus Unit" style="border-radius: 4px;">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <!-- Tombol Aksi Sejajar Menyamping Tanpa Turun -->
+                                <div class="d-flex justify-content-center align-items-center gap-1 flex-nowrap">
+                                    <!-- Tombol Edit -->
+                                    <button class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Edit Data Unit" style="border-radius: 4px;" data-toggle="modal" data-bs-toggle="modal" data-target="#modalEditUnit{{ $u['id'] }}" data-bs-target="#modalEditUnit{{ $u['id'] }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <!-- Tombol Cetak / Struk -->
+                                    <a href="#" class="btn btn-sm btn-outline-success shadow-sm px-2 py-1" title="Cetak Kartu Unit" style="border-radius: 4px;">
+                                        <i class="fas fa-print"></i>
+                                    </a>
+                                    <!-- Tombol Hapus -->
+                                    <button class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Hapus Unit" style="border-radius: 4px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
 
@@ -148,12 +225,11 @@
                                     <form action="#" method="POST">
                                         @csrf
                                         @method('PUT')
-                                        <div class="modal-body p-4">
+                                        <div class="modal-body p-4 bg-white text-dark">
                                             <div class="mb-3">
                                                 <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Pemilik Unit</label>
                                                 <input type="text" class="form-control py-2" value="{{ $u['pemilik'] }}" readonly style="border-radius: 6px; background-color: #f1f5f9; cursor: not-allowed;">
                                             </div>
-
                                             <div class="row mb-3">
                                                 <div class="col-md-6 mb-3 mb-md-0">
                                                     <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Jenis Unit</label>
@@ -169,16 +245,14 @@
                                                     <input type="text" name="merek" class="form-control py-2" value="{{ $u['merek'] }}" required style="border-radius: 6px;">
                                                 </div>
                                             </div>
-
                                             <div class="mb-3">
                                                 <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Model / Tipe Rinci</label>
                                                 <input type="text" name="tipe" class="form-control py-2" value="{{ $u['tipe'] }}" required style="border-radius: 6px;">
                                             </div>
-
                                             <div class="row mb-2">
                                                 <div class="col-md-6 mb-3 mb-md-0">
-                                                    <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Tanggal Pembelian</label>
-                                                    <input type="date" name="tgl_pembelian" class="form-control py-2" value="2024-05-12" style="border-radius: 6px;">
+                                                    <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Tanggal Masuk Servis</label>
+                                                    <input type="date" name="tgl_masuk" class="form-control py-2" value="2026-09-25" style="border-radius: 6px;">
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Status Garansi</label>
@@ -199,7 +273,6 @@
                                 </div>
                             </div>
                         </div>
-
                         @endforeach
                     </tbody>
                 </table>
@@ -222,7 +295,7 @@
             </div>
             <form action="#" method="POST">
                 @csrf
-                <div class="modal-body p-4">
+                <div class="modal-body p-4 bg-white text-dark">
                     <div class="mb-3">
                         <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Pilih Konsumen Pemilik</label>
                         <select name="konsumen_id" class="form-control py-2" required style="border-radius: 6px;">
@@ -231,7 +304,6 @@
                             <option value="2">Siti Aminah - 085712345678</option>
                         </select>
                     </div>
-
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3 mb-md-0">
                             <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Jenis Unit</label>
@@ -248,16 +320,14 @@
                             <input type="text" name="merek" class="form-control py-2" placeholder="Contoh: Daikin, LG, Sharp" required style="border-radius: 6px;">
                         </div>
                     </div>
-
                     <div class="mb-3">
                         <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Model / Tipe Rinci</label>
                         <input type="text" name="tipe" class="form-control py-2" placeholder="Contoh: Inverter 1 PK / 2 Tabung" required style="border-radius: 6px;">
                     </div>
-
                     <div class="row mb-2">
                         <div class="col-md-6 mb-3 mb-md-0">
-                            <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Tanggal Pembelian</label>
-                            <input type="date" name="tgl_pembelian" class="form-control py-2" style="border-radius: 6px;">
+                            <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Tanggal Masuk Servis</label>
+                            <input type="date" name="tgl_masuk" class="form-control py-2" style="border-radius: 6px;">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Status Garansi</label>
@@ -281,7 +351,6 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <!-- Script Filter Pencarian Real-Time -->
 <script>
     $(document).ready(function(){

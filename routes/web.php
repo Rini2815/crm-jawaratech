@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceJobController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ReportController; // <-- Pastikan ini ada di atas
+use App\Http\Controllers\SchedulesController;
 
 // 1. Halaman utama (URL root '/') sekarang diarahkan langsung ke DASHBOARD
 Route::get('/', function () {
@@ -42,28 +44,23 @@ Route::middleware('auth')->group(function () {
         return view('manajemen-pengguna.index');
     })->name('hak-akses');
 
-    // Rute halaman Tambah Pengguna
     Route::get('/hak-akses/tambah', function () {
         return view('manajemen-pengguna.create'); 
     })->name('tambah-pengguna');
 
-    // Rute Simpan Data Pengguna
     Route::post('/hak-akses/tambah', function () {
         return redirect()->route('hak-akses');
     })->name('simpan-pengguna');
 
     // --- Rute Data Konsumen ---
-    // Menampilkan halaman tabel konsumen
     Route::get('/data-konsumen', function () {
         return view('data-konsumen.index');
     })->name('data-konsumen');
 
-    // Menerima submit form dari modal Tambah Konsumen
     Route::post('/data-konsumen/tambah', function () {
         return redirect()->route('data-konsumen');
     })->name('simpan-konsumen');
 
-    // Menerima submit form dari modal Edit Konsumen
     Route::put('/data-konsumen/edit/{id}', function ($id) {
         return redirect()->route('data-konsumen');
     })->name('update-konsumen');
@@ -168,6 +165,16 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('followup.index');
     })->name('followup.destroy');
 
-    // Rute Resource Bawaan (Optional)
+    // Rute Resource Bawaan
     Route::resource('service-jobs', ServiceJobController::class);
+
+    // --- Rute Laporan & Log Kronologis ---
+    Route::get('/report', [ReportController::class, 'index'])->name('report.index');
+    Route::get('/report/kronologis', [ReportController::class, 'kronologis'])->name('report.kronologis');
+    Route::get('/report/export-daily-pdf', [ReportController::class, 'exportDailyPdf'])->name('report.export.pdf');
+    Route::get('/report/export-excel', [ReportController::class, 'exportExcel'])->name('report.export.excel');
+    Route::middleware(['auth'])->group(function () {
+   Route::get('/schedules', [SchedulesController::class, 'index'])->name('schedules.index');
 });
+
+}); // <--- Penutup group middleware('auth') yang benar di baris paling bawah

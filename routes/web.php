@@ -4,16 +4,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceJobController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\ReportController; // <-- Pastikan ini ada di atas
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SchedulesController;
+use App\Http\Controllers\ProfileController;
 
-// 1. Halaman utama (URL root '/') sekarang diarahkan langsung ke DASHBOARD
+// 1. Halaman utama (URL root '/') diarahkan langsung ke DASHBOARD
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
 // 2. KELOMPOK GUEST: Rute yang HANYA bisa diakses jika BELUM login
 Route::middleware('guest')->group(function () {
+
     // Fitur Login Biasa
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -31,13 +33,17 @@ Route::middleware('guest')->group(function () {
 
 // 3. KELOMPOK AUTH: Rute yang DIKUNCI (HANYA BISA DIAKSES JIKA SUDAH LOGIN)
 Route::middleware('auth')->group(function () {
+
     // Fitur Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    
-    // --- RUTE DASHBOARD ---
+
+    // --- Rute Dashboard ---
     Route::get('/dashboard', function () {
-        return view('service-jobs.dashboard'); 
+        return view('service-jobs.dashboard');
     })->name('dashboard');
+
+        // --- Rute Kelola Akun Tim (UI Only, belum ada logic backend) ---
+    Route::get('/kelola-akun-tim', [ProfileController::class, 'manageUsers'])->name('team.manage');
 
     // --- Rute Manajemen Pengguna ---
     Route::get('/hak-akses', function () {
@@ -45,7 +51,7 @@ Route::middleware('auth')->group(function () {
     })->name('hak-akses');
 
     Route::get('/hak-akses/tambah', function () {
-        return view('manajemen-pengguna.create'); 
+        return view('manajemen-pengguna.create');
     })->name('tambah-pengguna');
 
     Route::post('/hak-akses/tambah', function () {
@@ -165,7 +171,17 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('followup.index');
     })->name('followup.destroy');
 
-    // Rute Resource Bawaan
+    // --- Rute Pengaturan Sistem (Profil & Password) ---
+    Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('/ubah-password', [ProfileController::class, 'editPassword'])->name('password.edit');
+    Route::put('/ubah-password', [ProfileController::class, 'updatePassword'])->name('password.update.self');
+
+    // --- Rute Notifikasi ---
+    Route::get('/notifikasi', [ProfileController::class, 'notifications'])->name('notifications.index');
+
+    // --- Rute Resource Bawaan ---
     Route::resource('service-jobs', ServiceJobController::class);
 
     // --- Rute Laporan & Log Kronologis ---
@@ -173,8 +189,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/report/kronologis', [ReportController::class, 'kronologis'])->name('report.kronologis');
     Route::get('/report/export-daily-pdf', [ReportController::class, 'exportDailyPdf'])->name('report.export.pdf');
     Route::get('/report/export-excel', [ReportController::class, 'exportExcel'])->name('report.export.excel');
-    Route::middleware(['auth'])->group(function () {
-   Route::get('/schedules', [SchedulesController::class, 'index'])->name('schedules.index');
-});
 
-}); // <--- Penutup group middleware('auth') yang benar di baris paling bawah
+    // --- Rute Jadwal Perawatan ---
+    Route::get('/schedules', [SchedulesController::class, 'index'])->name('schedules.index');
+
+}); // Penutup group middleware('auth')

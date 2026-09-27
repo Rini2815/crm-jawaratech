@@ -98,7 +98,7 @@
 
                 <!-- Footer Pop-up -->
                 <li style="border-top: 1px solid #334155;">
-                    <a class="dropdown-item text-center fw-bold text-info py-2 small" href="#" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                    <a class="dropdown-item text-center fw-bold text-info py-2 small" href="{{ route('notifications.index') }}" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
                         Lihat Semua Riwayat & Log Perawatan <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </li>
@@ -111,10 +111,44 @@
                 <i class="fas fa-user-circle fa-fw me-1"></i> Superadmin
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdown" style="background: #0d1b2a; border-radius: 8px;">
-                <li><a class="dropdown-item text-white py-2" href="#" style="transition: 0.2s;"><i class="fas fa-user me-2 text-info"></i> Profil Saya</a></li>
+                <li><a class="dropdown-item text-white py-2" href="{{ route('profile.edit') }}" style="transition: 0.2s;"><i class="fas fa-user me-2 text-info"></i> Profil Saya</a></li>
                 <li><hr class="dropdown-divider my-1" style="border-color: rgba(255, 255, 255, 0.15);" /></li>
-                <li><a class="dropdown-item text-white py-2" href="#" style="transition: 0.2s;"><i class="fas fa-sign-out-alt me-2 text-danger"></i> Keluar</a></li>
+                <li>
+                    <a class="dropdown-item text-white py-2" href="#" style="transition: 0.2s;"
+                       data-bs-toggle="modal" data-bs-target="#modalLogoutConfirm">
+                        <i class="fas fa-sign-out-alt me-2 text-danger"></i> Keluar
+                    </a>
+                </li>
             </ul>
         </li>
     </ul>
 </nav>
+
+<!-- Modal Konfirmasi Logout -->
+<div class="modal fade" id="modalLogoutConfirm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden" style="background-color: #0f172a; color: #fff;">
+            <div class="modal-body text-center p-4">
+                <div class="mb-3">
+                    <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 60px; height: 60px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35);">
+                        <i class="fas fa-sign-out-alt fa-lg text-danger"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold mb-2">Yakin ingin keluar?</h5>
+                <p class="text-light opacity-75 small mb-4">
+                    Anda akan keluar dari sesi CRM Jawaratech dan diarahkan kembali ke halaman login.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold"
+                            onclick="document.getElementById('logout-form').submit();">
+                        <i class="fas fa-sign-out-alt me-1"></i> Ya, Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

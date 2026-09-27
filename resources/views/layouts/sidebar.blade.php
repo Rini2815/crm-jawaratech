@@ -52,8 +52,11 @@
             </a>
             <div class="collapse" id="collapseUserMgmt" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="{{ route('hak-akses') }}">
+                    <a class="nav-link sub-item-divider" href="{{ route('hak-akses') }}">
                         <i class="fas fa-id-badge me-2 text-white"></i> Hak Akses Pengguna
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('team.manage') ? 'text-info fw-bold' : '' }}" href="{{ route('team.manage') }}">
+                        <i class="fas fa-user-secret me-2 text-white"></i> Kelola Akun
                     </a>
                 </nav>
             </div>
@@ -105,10 +108,10 @@
             </a>
             <div class="collapse" id="collapsePengaturan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link sub-item-divider" href="#">
+                    <a class="nav-link sub-item-divider {{ request()->routeIs('profile.edit') ? 'text-info fw-bold' : '' }}" href="{{ route('profile.edit') }}">
                         <i class="fas fa-user-circle me-2 text-white"></i> Manajemen Profil 
                     </a>
-                    <a class="nav-link" href="#">
+                    <a class="nav-link {{ request()->routeIs('password.edit') ? 'text-info fw-bold' : '' }}" href="{{ route('password.edit') }}">
                         <i class="fas fa-key me-2 text-white"></i> Ubah Password
                     </a>
                 </nav>

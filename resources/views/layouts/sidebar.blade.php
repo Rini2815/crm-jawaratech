@@ -45,7 +45,7 @@
             </div>
 
             <!-- 3. MANAJEMEN PENGGUNA (Hanya muncul jika punya salah satu hak akses) -->
-            @if(auth()->user()->hasMenu('hak-akses') || auth()->user()->hasMenu('user-group') || auth()->user()->hasMenu('kelola-akun'))
+            @if(auth()->user()->hasMenu('hak-akses') || auth()->user()->hasMenu('user-group'))
                 <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUserMgmt" aria-expanded="false" style="background: #4682cb3f; border-radius: 8px; border: 1.5px solid rgba(216, 231, 238, 0.3);">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-user-cog"></i></div>
                     <span class="nav-text text-white fw-normal">Manajemen Pengguna</span>
@@ -63,15 +63,8 @@
 
                         {{-- Submenu 2: User Group / Kelola Role (SUBMENU BARU) --}}
                         @if(auth()->user()->hasMenu('user-group'))
-                            <a class="nav-link sub-item-divider {{ request()->routeIs('user-group*') ? 'text-info fw-bold' : '' }}" href="{{ route('user-group.index') }}">
+                            <a class="nav-link {{ request()->routeIs('user-group*') ? 'text-info fw-bold' : '' }}" href="{{ route('user-group.index') }}">
                                 <i class="fas fa-users-cog me-2 text-white"></i> User Group / Kelola Role
-                            </a>
-                        @endif
-
-                        {{-- Submenu 3: Kelola Akun --}}
-                        @if(auth()->user()->hasMenu('kelola-akun'))
-                            <a class="nav-link {{ request()->routeIs('team.manage') ? 'text-info fw-bold' : '' }}" href="{{ route('team.manage') }}">
-                                <i class="fas fa-user-secret me-2 text-white"></i> Kelola Akun
                             </a>
                         @endif
 
@@ -127,11 +120,9 @@
             </a>
             <div class="collapse" id="collapsePengaturan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link sub-item-divider {{ request()->routeIs('profile.edit') ? 'text-info fw-bold' : '' }}" href="{{ route('profile.edit') }}">
+                    {{-- Ubah Password & Kelola Akun dibuka lewat halaman Manajemen Profil, jadi sorotan menu ikut aktif di halaman-halaman itu --}}
+                    <a class="nav-link {{ request()->routeIs('profile.edit', 'password.edit', 'team.manage') ? 'text-info fw-bold' : '' }}" href="{{ route('profile.edit') }}">
                         <i class="fas fa-user-circle me-2 text-white"></i> Manajemen Profil 
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('password.edit') ? 'text-info fw-bold' : '' }}" href="{{ route('password.edit') }}">
-                        <i class="fas fa-key me-2 text-white"></i> Ubah Password
                     </a>
                 </nav>
             </div>
@@ -139,14 +130,27 @@
         </div>
     </div>
 
-    <!-- FOOTER SIDEBAR: TOMBOL KELUAR APLIKASI -->
+    <!-- FOOTER SIDEBAR: STATUS AKUN (menggantikan tombol Keluar Aplikasi) -->
+    @php
+        $sbUser = auth()->user();
+        $sbRoleRaw = (string) ($sbUser->role ?? '');
+        $sbIsAdmin = str_contains(strtolower($sbRoleRaw), 'admin');
+    @endphp
     <div class="sb-sidenav-footer p-3" style="width: 260px !important; background: rgba(13, 27, 42, 0.95) !important; border-top: 1px solid rgba(255,255,255,0.15);">
-        <form method="POST" action="{{ route('logout') }}" id="logout-form" class="m-0">
+        <div class="sb-status-label">Status Akun</div>
+        <div class="sb-status-card {{ $sbIsAdmin ? 'is-admin' : 'is-marketing' }}">
+            <div class="sb-status-avatar">{{ strtoupper(substr($sbUser->name, 0, 1)) }}</div>
+            <div class="sb-status-info">
+                <div class="sb-status-name">{{ $sbUser->name }}</div>
+                <span class="sb-status-active">
+                    <span class="sb-status-dot"></span> Aktif
+                </span>
+            </div>
+        </div>
+
+        {{-- Form logout tetap ada (tersembunyi) karena dipakai tombol Keluar di navbar --}}
+        <form method="POST" action="{{ route('logout') }}" id="logout-form" class="d-none">
             @csrf
-            <button type="submit" class="btn-logout">
-                <i class="fas fa-sign-out-alt me-2"></i>
-                <span>Keluar Aplikasi</span>
-            </button>
         </form>
     </div>
 </nav>
@@ -226,26 +230,92 @@
         padding-left: 14px !important;
     }
 
-    /* CSS KUSTOM TOMBOL KELUAR APLIKASI */
-    .btn-logout {
-        width: 100%;
-        background-color: rgba(239, 68, 68, 0.15);
-        color: #f87171;
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 10px;
-        padding: 10px 16px;
-        font-size: 13.5px;
-        font-weight: 600;
+    /* KARTU STATUS AKUN (footer sidebar) */
+    .sb-status-label {
+        font-size: 10px;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.45);
+        margin-bottom: 6px;
+    }
+
+    .sb-status-card {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .sb-status-card.is-admin {
+        border-color: rgba(248, 113, 113, 0.45);
+        box-shadow: 0 0 14px rgba(239, 68, 68, 0.15);
+    }
+
+    .sb-status-card.is-marketing {
+        border-color: rgba(56, 189, 248, 0.45);
+        box-shadow: 0 0 14px rgba(56, 189, 248, 0.15);
+    }
+
+    .sb-status-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease-in-out;
-        cursor: pointer;
+        font-weight: 700;
+        font-size: 15px;
+        color: #fff;
+        flex-shrink: 0;
     }
 
-    .btn-logout:hover {
-        background-color: rgba(239, 68, 68, 0.3);
-        color: #ffffff;
-        border-color: rgba(239, 68, 68, 0.6);
+    .is-admin .sb-status-avatar {
+        background: linear-gradient(135deg, #f87171, #b91c1c);
+    }
+
+    .is-marketing .sb-status-avatar {
+        background: linear-gradient(135deg, #38bdf8, #2563eb);
+    }
+
+    .sb-status-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .sb-status-name {
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sb-status-active {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 2px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #4ade80;
+    }
+
+    .sb-status-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #22c55e;
+        flex-shrink: 0;
+        animation: sbPulse 2s infinite;
+    }
+
+    @keyframes sbPulse {
+        0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+        70%  { box-shadow: 0 0 0 7px rgba(34, 197, 94, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 </style>

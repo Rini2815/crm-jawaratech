@@ -105,10 +105,15 @@
             </ul>
         </li>
 
-        <!-- 2. DROPDOWN USER SUPERADMIN -->
+        <!-- 2. DROPDOWN USER (badge role) -->
+        @php
+            $nbRoleRaw = (string) (auth()->user()->role ?? '');
+            $nbRoleLabel = $nbRoleRaw !== '' ? ucwords(str_replace(['_', '-'], ' ', $nbRoleRaw)) : 'Pengguna';
+            $nbIsAdmin = str_contains(strtolower($nbRoleRaw), 'admin');
+        @endphp
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white fw-semibold" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user-circle fa-fw me-1"></i> Superadmin
+            <a class="nav-link dropdown-toggle nb-role-pill {{ $nbIsAdmin ? 'is-admin' : 'is-marketing' }}" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas {{ $nbIsAdmin ? 'fa-user-shield' : 'fa-bullhorn' }} me-1"></i> {{ $nbRoleLabel }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdown" style="background: #0d1b2a; border-radius: 8px;">
                 <li><a class="dropdown-item text-white py-2" href="{{ route('profile.edit') }}" style="transition: 0.2s;"><i class="fas fa-user me-2 text-info"></i> Profil Saya</a></li>
@@ -152,3 +157,47 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Badge role di pojok kanan atas */
+    .nb-role-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 14px !important;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        transition: all 0.2s ease;
+    }
+
+    .nb-role-pill.is-admin {
+        color: #fecaca !important;
+        background: rgba(239, 68, 68, 0.22);
+        border: 1px solid rgba(248, 113, 113, 0.55);
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
+    }
+
+    .nb-role-pill.is-marketing {
+        color: #bae6fd !important;
+        background: rgba(56, 189, 248, 0.2);
+        border: 1px solid rgba(56, 189, 248, 0.55);
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    }
+
+    .nb-role-pill.is-admin:hover,
+    .nb-role-pill.is-admin:focus,
+    .nb-role-pill.is-admin.show {
+        color: #ffffff !important;
+        background: rgba(239, 68, 68, 0.38);
+        box-shadow: 0 0 16px rgba(239, 68, 68, 0.45);
+    }
+
+    .nb-role-pill.is-marketing:hover,
+    .nb-role-pill.is-marketing:focus,
+    .nb-role-pill.is-marketing.show {
+        color: #ffffff !important;
+        background: rgba(56, 189, 248, 0.35);
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+    }
+</style>

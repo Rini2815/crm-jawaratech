@@ -50,12 +50,20 @@
                             <span class="text-light opacity-50 small"><i class="fas fa-calendar-alt me-2"></i>Bergabung Sejak</span>
                             <span class="text-white small fw-semibold">{{ $user->created_at?->translatedFormat('d M Y') ?? '-' }}</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center py-2">
+                        <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
                             <span class="text-light opacity-50 small"><i class="fas fa-key me-2"></i>Keamanan Akun</span>
                             <a href="{{ route('password.edit') }}" class="text-info small fw-semibold text-decoration-none">
                                 Ubah Password <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         </div>
+                        @if(auth()->user()->hasMenu('kelola-akun'))
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <span class="text-light opacity-50 small"><i class="fas fa-user-secret me-2"></i>Akses Tim</span>
+                            <a href="{{ route('team.manage') }}" class="text-info small fw-semibold text-decoration-none">
+                                Kelola Akun <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                        @endif
                     </div>
 
                 </div>

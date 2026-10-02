@@ -87,8 +87,18 @@ class UserGroupController extends Controller
     {
         $accessData = $request->input('access', []);
 
-        // Simpan matriks perizinan ke file JSON di storage/app/user_permissions.json
-        Storage::put($this->permissionsFilePath, json_encode($accessData, JSON_PRETTY_PRINT));
+        // Kita saring datanya. Hanya simpan ke JSON jika valuenya = 1 (benar-benar dicentang)
+        $filteredAccess = [];
+        foreach ($accessData as $role => $menus) {
+            foreach ($menus as $menuKey => $value) {
+                if ($value == 1) {
+                    $filteredAccess[$role][$menuKey] = 1;
+                }
+            }
+        }
+
+        // Simpan matriks perizinan ke file JSON di storage/app/user_permissions.json pakai data yang sudah disaring
+        Storage::put($this->permissionsFilePath, json_encode($filteredAccess, JSON_PRETTY_PRINT));
 
         return redirect()->back()->with('success', 'Hak akses modul dan menu berhasil diperbarui!');
     }
@@ -123,5 +133,38 @@ class UserGroupController extends Controller
         Storage::put($this->rolesFilePath, json_encode($existingRoles, JSON_PRETTY_PRINT));
 
         return redirect()->back()->with('success', 'Role "' . $request->role_name . '" berhasil ditambahkan!');
+    }
+
+    /**
+     * Hapus Role dari Sistem
+     */
+    public function destroy($roleName)
+    {
+        // 1. Baca data dari user_roles.json
+        $existingRoles = [];
+        if (Storage::exists($this->rolesFilePath)) {
+            $existingRoles = json_decode(Storage::get($this->rolesFilePath), true) ?? [];
+        } else {
+            return back()->with('error', 'Data role tidak ditemukan.');
+        }
+
+        // 2. Filter / buang role yang mau dihapus
+        $updatedRoles = array_filter($existingRoles, function($role) use ($roleName) {
+            return $role['name'] !== $roleName;
+        });
+
+        // 3. Simpan kembali ke file (dengan array_values agar index rapi lagi)
+        Storage::put($this->rolesFilePath, json_encode(array_values($updatedRoles), JSON_PRETTY_PRINT));
+
+        // 4. Hapus juga perizinannya dari user_permissions.json jika ada
+        if (Storage::exists($this->permissionsFilePath)) {
+            $permissionsData = json_decode(Storage::get($this->permissionsFilePath), true) ?? [];
+            if (isset($permissionsData[$roleName])) {
+                unset($permissionsData[$roleName]);
+                Storage::put($this->permissionsFilePath, json_encode($permissionsData, JSON_PRETTY_PRINT));
+            }
+        }
+
+        return redirect()->back()->with('success', "Role '{$roleName}' berhasil dihapus secara permanen.");
     }
 }

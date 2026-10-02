@@ -1,5 +1,4 @@
 <style>
-    /* Styling khusus form modal agar terlihat profesional */
     .crm-modal-header {
         background-color: #1e293b; 
         color: #ffffff;
@@ -52,26 +51,22 @@
                 </button>
             </div>
             
-            <!-- Tambahkan autocomplete="off" pada tag form -->
             <form action="{{ route('simpan-pengguna') }}" method="POST" autocomplete="off">
                 @csrf
                 <div class="modal-body px-4 py-4" style="background-color: #f8fafc;">
                     
-                    <!-- Bagian Informasi Akun -->
                     <div class="crm-section-title">Informasi Akun</div>
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
                             <label for="nama" class="crm-form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="nama" name="nama" placeholder="Masukkan nama resmi pengguna" autocomplete="off" required>
+                            <input type="text" class="form-control crm-form-control" id="nama" name="name" placeholder="Masukkan nama resmi pengguna" autocomplete="off" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="email" class="crm-form-label">Alamat Email <span class="text-danger">*</span></label>
-                            <!-- Tambahkan autocomplete="off" -->
                             <input type="email" class="form-control crm-form-control" id="email" name="email" placeholder="contoh: user@jawaratech.com" autocomplete="off" required>
                         </div>
                     </div>
 
-                    <!-- Bagian Wewenang & Keamanan -->
                     <div class="crm-section-title">Wewenang & Keamanan</div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -80,6 +75,23 @@
                                 <option value="" disabled selected>Pilih Tingkat Akses...</option>
                                 <option value="Super Admin">Super Admin - Akses Penuh Sistem</option>
                                 <option value="Digital Marketing">Digital Marketing - Follow-up & Happy Call</option>
+                                
+                                <!-- MEMBACA ROLE DARI STORAGE JSON SECARA AMAN -->
+                                @php
+                                    $customRoles = [];
+                                    if (\Illuminate\Support\Facades\Storage::exists('user_roles.json')) {
+                                        $customRoles = json_decode(\Illuminate\Support\Facades\Storage::get('user_roles.json'), true) ?? [];
+                                    }
+                                @endphp
+
+                                @foreach($customRoles as $cRole)
+                                    @php
+                                        $roleName = is_array($cRole) ? ($cRole['name'] ?? '') : $cRole;
+                                    @endphp
+                                    @if(!empty($roleName) && !in_array($roleName, ['Super Admin', 'Digital Marketing']))
+                                        <option value="{{ $roleName }}">{{ $roleName }}</option>
+                                    @endif
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -91,12 +103,10 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="password" class="crm-form-label">Kata Sandi Akses <span class="text-danger">*</span></label>
-                            <!-- Tambahkan autocomplete="new-password" -->
                             <input type="password" class="form-control crm-form-control" id="password" name="password" placeholder="Buat kata sandi yang kuat" autocomplete="new-password" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="password_confirmation" class="crm-form-label">Verifikasi Kata Sandi <span class="text-danger">*</span></label>
-                            <!-- Tambahkan autocomplete="new-password" -->
                             <input type="password" class="form-control crm-form-control" id="password_confirmation" name="password_confirmation" placeholder="Ketik ulang kata sandi" autocomplete="new-password" required>
                         </div>
                     </div>

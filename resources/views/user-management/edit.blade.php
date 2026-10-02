@@ -11,32 +11,48 @@
                 </button>
             </div>
             
-            <form action="#" method="POST">
+            <form action="{{ route('update-pengguna', $user->id) }}" method="POST" autocomplete="off">
                 @csrf
-                @method('PUT') <!-- Method PUT wajib untuk proses Update di Laravel -->
+                @method('PUT') 
+                
                 <div class="modal-body px-4 py-4" style="background-color: #f8fafc;">
                     
-                    <!-- Bagian Informasi Akun -->
                     <div class="crm-section-title">Informasi Akun</div>
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
                             <label for="edit_nama_{{ $index }}" class="crm-form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="edit_nama_{{ $index }}" name="nama" value="{{ $user['nama'] }}" required>
+                            <input type="text" class="form-control crm-form-control" id="edit_nama_{{ $index }}" name="name" value="{{ $user->name }}" autocomplete="off" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_email_{{ $index }}" class="crm-form-label">Alamat Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control crm-form-control" id="edit_email_{{ $index }}" name="email" value="{{ $user['email'] }}" required>
+                            <input type="email" class="form-control crm-form-control" id="edit_email_{{ $index }}" name="email" value="{{ $user->email }}" autocomplete="off" required>
                         </div>
                     </div>
 
-                    <!-- Bagian Wewenang & Keamanan -->
                     <div class="crm-section-title">Wewenang & Keamanan</div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="edit_role_{{ $index }}" class="crm-form-label">Tingkat Akses (Role) <span class="text-danger">*</span></label>
                             <select class="form-control crm-form-control" id="edit_role_{{ $index }}" name="role" required>
-                                <option value="Super Admin" {{ $user['role'] == 'Super Admin' ? 'selected' : '' }}>Super Admin - Akses Penuh Sistem</option>
-                                <option value="Digital Marketing" {{ $user['role'] == 'Digital Marketing' ? 'selected' : '' }}>Digital Marketing - Follow-up & Happy Call</option>
+                                <option value="Super Admin" {{ $user->role == 'Super Admin' ? 'selected' : '' }}>Super Admin - Akses Penuh Sistem</option>
+                                <option value="Digital Marketing" {{ $user->role == 'Digital Marketing' ? 'selected' : '' }}>Digital Marketing - Follow-up & Happy Call</option>
+                                
+                                <!-- MEMBACA ROLE DARI STORAGE JSON SECARA AMAN -->
+                                @php
+                                    $customRoles = [];
+                                    if (\Illuminate\Support\Facades\Storage::exists('user_roles.json')) {
+                                        $customRoles = json_decode(\Illuminate\Support\Facades\Storage::get('user_roles.json'), true) ?? [];
+                                    }
+                                @endphp
+
+                                @foreach($customRoles as $cRole)
+                                    @php
+                                        $roleName = is_array($cRole) ? ($cRole['name'] ?? '') : $cRole;
+                                    @endphp
+                                    @if(!empty($roleName) && !in_array($roleName, ['Super Admin', 'Digital Marketing']))
+                                        <option value="{{ $roleName }}" {{ $user->role == $roleName ? 'selected' : '' }}>{{ $roleName }}</option>
+                                    @endif
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -47,18 +63,17 @@
                             </select>
                         </div>
                         
-                        <!-- Catatan: Untuk edit, password tidak wajib diisi kecuali ingin diubah -->
                         <div class="col-12 mt-2 mb-2">
                             <small class="text-muted font-weight-bold"><i class="fas fa-info-circle mr-1"></i> Biarkan kosong jika tidak ingin mengubah kata sandi.</small>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="edit_password_{{ $index }}" class="crm-form-label">Kata Sandi Baru</label>
-                            <input type="password" class="form-control crm-form-control" id="edit_password_{{ $index }}" name="password" placeholder="Ketik kata sandi baru (opsional)">
+                            <input type="password" class="form-control crm-form-control" id="edit_password_{{ $index }}" name="password" placeholder="Ketik kata sandi baru (opsional)" autocomplete="new-password">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_password_confirmation_{{ $index }}" class="crm-form-label">Verifikasi Kata Sandi Baru</label>
-                            <input type="password" class="form-control crm-form-control" id="edit_password_confirmation_{{ $index }}" name="password_confirmation" placeholder="Ketik ulang kata sandi baru">
+                            <input type="password" class="form-control crm-form-control" id="edit_password_confirmation_{{ $index }}" name="password_confirmation" placeholder="Ketik ulang kata sandi baru" autocomplete="new-password">
                         </div>
                     </div>
                 </div>

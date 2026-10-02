@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+#[Fillable(['name', 'email', 'password', 'role', 'status'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -30,23 +30,40 @@ class User extends Authenticatable
      */
     public function hasMenu($menuKey)
     {
-        $userRole = strtolower(trim($this->role ?? $this->level ?? ''));
-        $userName = strtolower(trim($this->name ?? ''));
+        $userRoleStr = strtolower(trim($this->role ?? $this->level ?? ''));
+        $userNameStr = strtolower(trim($this->name ?? ''));
 
-        // Jika role ATAU nama user mengandung kata 'admin' / 'superadmin', OTOMATIS BISA AKSES SEMUA MENU
+        // 1. Super Admin selalu kebal dan punya akses ke seluruh menu
         if (
-            empty($userRole) || 
-            in_array($userRole, ['superadmin', 'super admin', 'super_admin', 'admin']) ||
-            str_contains($userRole, 'admin') ||
-            str_contains($userName, 'superadmin')
+            empty($userRoleStr) || 
+            in_array($userRoleStr, ['superadmin', 'super admin', 'super_admin', 'admin', 'super administrator']) ||
+            str_contains($userRoleStr, 'admin') ||
+            str_contains($userNameStr, 'superadmin')
         ) {
             return true;
         }
 
-        // Cek ke tabel role_menus
-        return DB::table('role_menus')
-            ->whereRaw('LOWER(role) = ?', [$userRole])
-            ->where('menu_key', $menuKey)
-            ->exists();
+        // 2. Baca file izin JSON yang disimpan oleh UserGroupController
+        $permissionsFile = 'user_permissions.json';
+        if (!Storage::exists($permissionsFile)) {
+            return false;
+        }
+
+        $permissions = json_decode(Storage::get($permissionsFile), true) ?? [];
+        $currentRole = trim($this->role ?? '');
+
+        // 3. Cek izin langsung sesuai nama role
+        if (isset($permissions[$currentRole][$menuKey]) && $permissions[$currentRole][$menuKey] == 1) {
+            return true;
+        }
+
+        // 4. Pengecekan fallback (kebal huruf besar/kecil)
+        foreach ($permissions as $roleName => $menus) {
+            if (strcasecmp($roleName, $currentRole) === 0) {
+                return !empty($menus[$menuKey]);
+            }
+        }
+
+        return false;
     }
 }

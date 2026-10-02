@@ -7,7 +7,8 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SchedulesController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserGroupController; // Import UserGroupController
+use App\Http\Controllers\UserGroupController;
+use App\Http\Controllers\UserManagementController; 
 
 // 1. Halaman utama (URL root '/') diarahkan langsung ke DASHBOARD
 Route::get('/', function () {
@@ -46,23 +47,28 @@ Route::middleware('auth')->group(function () {
     // --- Rute Kelola Akun Tim (UI Only, belum ada logic backend) ---
     Route::get('/kelola-akun-tim', [ProfileController::class, 'manageUsers'])->name('team.manage');
 
-    // --- Rute Manajemen Pengguna ---
-    Route::get('/hak-akses', function () {
-        return view('manajemen-pengguna.index');
-    })->name('hak-akses');
+    // --- 2. RUTE MANAJEMEN PENGGUNA ---
+    Route::get('/hak-akses', [UserManagementController::class, 'index'])->name('hak-akses');
 
+    // Rute form tambah (disesuaikan nama foldernya)
     Route::get('/hak-akses/tambah', function () {
-        return view('manajemen-pengguna.create');
+        return view('user-management.create'); 
     })->name('tambah-pengguna');
 
-    Route::post('/hak-akses/tambah', function () {
-        return redirect()->route('hak-akses');
-    })->name('simpan-pengguna');
+    // Rute Tambah / Simpan Data Baru
+    Route::post('/hak-akses/tambah', [UserManagementController::class, 'store'])->name('simpan-pengguna');
+
+    // Rute Edit / Ubah Data (BARU DITAMBAHKAN)
+    Route::put('/hak-akses/{id}', [UserManagementController::class, 'update'])->name('update-pengguna');
+
+    // Rute Hapus
+    Route::delete('/hak-akses/{id}', [UserManagementController::class, 'destroy'])->name('hapus-pengguna');
 
     // --- Rute User Group / Kelola Role ---
     Route::get('/user-group', [UserGroupController::class, 'index'])->name('user-group.index');
     Route::post('/user-group/update', [UserGroupController::class, 'update'])->name('user-group.update');
-    Route::post('/user-group/store', [UserGroupController::class, 'store'])->name('user-group.store'); // <-- RUTE TAMBAH ROLE BARU
+    Route::post('/user-group/store', [UserGroupController::class, 'store'])->name('user-group.store');
+    Route::delete('/user-group/{roleName}', [UserGroupController::class, 'destroy'])->name('user-group.destroy');
 
     // --- Rute Data Konsumen ---
     Route::get('/data-konsumen', function () {
@@ -199,4 +205,4 @@ Route::middleware('auth')->group(function () {
     // --- Rute Jadwal Perawatan ---
     Route::get('/schedules', [SchedulesController::class, 'index'])->name('schedules.index');
 
-}); // Penutup group middleware('auth')
+});

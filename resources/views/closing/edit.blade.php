@@ -11,7 +11,7 @@
                 </button>
             </div>
             
-            <form action="{{ route('closing.update', $index) }}" method="POST">
+            <form action="#" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body px-4 py-4" style="background-color: #f8fafc;">

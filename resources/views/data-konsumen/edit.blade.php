@@ -11,8 +11,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="{{ route('update-konsumen', $index) }}" method="POST">
-                @csrf
+           <form action="#" method="POST">
                 @method('PUT')
                 <div class="modal-body px-4 mt-2">
                     <h6 class="text-primary mb-3" style="font-weight: 600; font-size: 0.9rem;">IDENTITAS PELANGGAN</h6>

@@ -8,7 +8,7 @@
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h3 class="fw-bold text-white mb-1">
-                    <i class="fas fa-user-secret text-primary me-2"></i> Kelola Akun
+                    <i class="fas fa-user-secret text-primary me-2"></i> Otoritas Akses Profil
                 </h3>
                 <p class="text-light opacity-75 small mb-0">
                     Superadmin dapat memantau seluruh akun tim, termasuk masuk ke akun Digital Marketing tanpa kata sandi.
@@ -21,7 +21,7 @@
     <div class="alert rounded-4 d-flex align-items-start gap-3 mb-4" style="background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.35);">
         <i class="fas fa-tools text-warning fa-lg mt-1"></i>
         <div>
-            <strong class="text-dark">Tampilan Pratinjau (UI Only)</strong>
+            <strong class="text-dark">Tampilan Pratinjau </strong>
             <p class="mb-0 small text-muted">
                 Tombol <em>"Login Sebagai"</em> sudah bisa diklik untuk simulasi tampilan, namun belum benar-benar
                 memindahkan sesi login. Fitur ini masih menunggu pengembangan backend (kolom role &amp; sistem impersonasi akun).

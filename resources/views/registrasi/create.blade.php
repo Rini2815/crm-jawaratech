@@ -57,7 +57,7 @@
                 </button>
             </div>
             
-            <form action="{{ route('registrasi.store') }}" method="POST" autocomplete="off">
+           <form action="#" method="POST" autocomplete="off">
                 @csrf
                 <div class="modal-body px-4 py-4" style="background-color: #f8fafc;">
                     

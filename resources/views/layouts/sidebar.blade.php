@@ -28,7 +28,7 @@
             </div>
             @endif
 
-            <!-- 2. DATA MASTER -->
+            <!-- 2. DATA MASTER (Mewadahi FR03) -->
             @if(auth()->user()->hasMenu('data-konsumen'))
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">MANAJEMEN CRM</div>
             <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMaster" aria-expanded="false">
@@ -38,46 +38,35 @@
             </a>
             <div class="collapse" id="collapseMaster" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link sub-item-divider" href="{{ route('data-konsumen') }}">
-                        <i class="fas fa-users me-2 text-white"></i> Data Konsumen
-                    </a>
-                    <a class="nav-link" href="{{ route('service-jobs.index') }}">
-                        <i class="fas fa-tools me-2 text-white"></i> Data Unit Servis
+                    <a class="nav-link" href="{{ route('data-konsumen') }}">
+                        <i class="fas fa-user-plus me-2 text-white"></i> Registrasi Konsumen
                     </a>
                 </nav>
             </div>
             @endif
 
-            <!-- 3. MANAJEMEN PENGGUNA (DROPDOWN DENGAN 1 SUB-MENU) -->
+            <!-- 3. MANAJEMEN PENGGUNA (Mewadahi FR02 & FR09) -->
             @if(auth()->user()->hasMenu('hak-akses') || auth()->user()->hasMenu('user-group'))
-                @if(!auth()->user()->hasMenu('data-konsumen'))
-                    <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">MANAJEMEN CRM</div>
-                @endif
-                
-                <!-- Menu Utamanya -->
-                <a class="nav-link {{ request()->routeIs('hak-akses*', 'user-group*') ? '' : 'collapsed' }} menu-box" 
+                <a class="nav-link {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*') ? '' : 'collapsed' }} menu-box" 
                    href="#" data-bs-toggle="collapse" data-bs-target="#collapseUserMgmt" 
-                   aria-expanded="{{ request()->routeIs('hak-akses*', 'user-group*') ? 'true' : 'false' }}" 
-                   style="border-color: {{ request()->routeIs('hak-akses*', 'user-group*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
+                   aria-expanded="{{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*') ? 'true' : 'false' }}" 
+                   style="border-color: {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-users-cog"></i></div>
-                    <span class="nav-text text-white fw-normal {{ request()->routeIs('hak-akses*', 'user-group*') ? 'fw-bold' : '' }}">Manajemen Pengguna</span>
+                    <span class="nav-text text-white fw-normal">Manajemen Pengguna</span>
                     <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
                 </a>
                 
-                <!-- Isi Sub-menunya (HANYA 1: Kontrol Akses) -->
-                <div class="collapse {{ request()->routeIs('hak-akses*', 'user-group*') ? 'show' : '' }}" id="collapseUserMgmt" data-bs-parent="#sidenavAccordion">
+                <div class="collapse {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*') ? 'show' : '' }}" id="collapseUserMgmt" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        
-                        <!-- Satu pintu masuk untuk mengelola User Group & User Management -->
                         <a class="nav-link sub-item-divider {{ request()->routeIs('hak-akses*', 'user-group*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('hak-akses') }}">
                             <i class="fas fa-shield-alt me-2 text-white"></i> Kontrol Akses
                         </a>
-
+                        
                     </nav>
                 </div>
             @endif
 
-            <!-- 4. LAYANAN SERVIS -->
+            <!-- 4. LAYANAN SERVIS (Mewadahi FR05, FR04, & FR06) -->
             @if(auth()->user()->hasMenu('layanan-servis'))
                 <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseServis" aria-expanded="false">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-wrench"></i></div>
@@ -86,20 +75,20 @@
                 </a>
                 <div class="collapse" id="collapseServis" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link sub-item-divider" href="{{ route('registrasi.index') }}">
-                            <i class="fas fa-user-plus me-2 text-white"></i> Registrasi Unit
+                        <a class="nav-link sub-item-divider" href="{{ route('schedules.index') }}">
+                            <i class="fas fa-bell me-2 text-white"></i> Pengingat Perawatan
                         </a>
                         <a class="nav-link sub-item-divider" href="{{ route('closing.index') }}">
                             <i class="fas fa-check-circle me-2 text-white"></i> Closing Servis
                         </a>
                         <a class="nav-link" href="{{ route('followup.index') }}">
-                            <i class="fas fa-comments me-2 text-white"></i> Follow-up Konsumen
+                            <i class="fab fa-whatsapp me-2 text-white"></i> Follow-up Konsumen
                         </a>
                     </nav>
                 </div>
             @endif
 
-            <!-- 5. RIWAYAT LAPORAN -->
+            <!-- 5. LAPORAN (Mewadahi FR07) -->
             @if(auth()->user()->hasMenu('report'))
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">LAPORAN & SISTEM</div>
             <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLaporan" aria-expanded="false">
@@ -109,17 +98,14 @@
             </a>
             <div class="collapse" id="collapseLaporan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link sub-item-divider {{ request()->routeIs('report.kronologis') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('report.kronologis') }}">
-                        <i class="fas fa-history me-2 text-white"></i> Log Kronologis
-                    </a>
                     <a class="nav-link {{ request()->routeIs('report.index') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('report.index') }}">
-                        <i class="fas fa-print me-2 text-white"></i> Riwayat Laporan
+                        <i class="fas fa-file-invoice me-2 text-white"></i> Laporan Riwayat Service
                     </a>
                 </nav>
             </div>
             @endif
 
-            <!-- 6. PENGATURAN SISTEM -->
+            <!-- 6. PENGATURAN SISTEM (Mewadahi FR08) -->
             <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePengaturan" aria-expanded="false">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-user-shield"></i></div>
                 <span class="nav-text text-white fw-normal">Pengaturan Sistem</span>
@@ -128,8 +114,11 @@
             <div class="collapse" id="collapsePengaturan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link {{ request()->routeIs('profile.edit', 'password.edit', 'team.manage') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('profile.edit') }}">
-                        <i class="fas fa-user-circle me-2 text-white"></i> Manajemen Profil 
+                        <i class="fas fa-user-circle me-2 text-white"></i> Kelola Akun Profil 
                     </a>
+                    <a class="nav-link {{ request()->routeIs('users.profile-auth*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('users.profile-auth') }}">
+                            <i class="fas fa-id-badge me-2 text-white"></i> Otoritas Akses Profil
+                        </a>
                 </nav>
             </div>
 
@@ -161,8 +150,8 @@
 
 <style>
     /* =========================================
-       LAYOUT & CONTAINERS
-       ========================================= */
+        LAYOUT & CONTAINERS
+        ========================================= */
     #layoutSidenav_nav { 
         width: 260px !important; 
         flex: 0 0 260px !important; 
@@ -181,8 +170,8 @@
     }
 
     /* =========================================
-       MENU ITEMS (PARENT BOX)
-       ========================================= */
+        MENU ITEMS (PARENT BOX)
+        ========================================= */
     .menu-box { 
         margin: 4px 6px; 
         padding: 8px 10px !important;
@@ -206,8 +195,8 @@
     }
 
     /* =========================================
-       SUB-MENU (NESTED DROPDOWN)
-       ========================================= */
+        SUB-MENU (NESTED DROPDOWN)
+        ========================================= */
     .sb-sidenav-menu-nested { 
         margin: 4px 6px 6px 6px; 
         padding: 6px 8px; 
@@ -244,8 +233,8 @@
     }
 
     /* =========================================
-       FOOTER STATUS CARD
-       ========================================= */
+        FOOTER STATUS CARD
+        ========================================= */
     .sb-status-label { 
         margin-bottom: 6px;
         font-size: 10px; 

@@ -9,6 +9,11 @@ use App\Http\Controllers\SchedulesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserGroupController;
 use App\Http\Controllers\UserManagementController; 
+use App\Http\Controllers\RegistrasiController;
+
+// Pastikan ada penamaan ->name('registrasi.index') di ujungnya
+Route::get('/registrasi', [RegistrasiController::class, 'index'])->name('registrasi.index');
+
 
 // 1. Halaman utama (URL root '/') diarahkan langsung ke DASHBOARD
 Route::get('/', function () {
@@ -48,9 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/kelola-akun-tim', [ProfileController::class, 'manageUsers'])->name('team.manage');
 
     // --- 2. RUTE MANAJEMEN PENGGUNA ---
+    // Mewadahi FR02: Kelola Akses
     Route::get('/hak-akses', [UserManagementController::class, 'index'])->name('hak-akses');
 
-    // Rute form tambah (disesuaikan nama foldernya)
+    // Rute form tambah
     Route::get('/hak-akses/tambah', function () {
         return view('user-management.create'); 
     })->name('tambah-pengguna');
@@ -58,19 +64,50 @@ Route::middleware('auth')->group(function () {
     // Rute Tambah / Simpan Data Baru
     Route::post('/hak-akses/tambah', [UserManagementController::class, 'store'])->name('simpan-pengguna');
 
-    // Rute Edit / Ubah Data (BARU DITAMBAHKAN)
+    // Rute Edit / Ubah Data
     Route::put('/hak-akses/{id}', [UserManagementController::class, 'update'])->name('update-pengguna');
 
     // Rute Hapus
     Route::delete('/hak-akses/{id}', [UserManagementController::class, 'destroy'])->name('hapus-pengguna');
 
+    // Mewadahi FR09: Otoritas Akses Profil (Masuk ke profil pengguna lain tanpa autentikasi ulang)
+ Route::get('/users/profile-auth', function () {
+    $teamAccounts = collect([
+        (object)[
+            'id' => 1,
+            'name' => 'Admin Jawaratech',
+            'email' => 'admin@jawaratech.com',
+            'role' => 'Superadmin',
+            'role_color' => 'bg-danger', // Tambahkan ini
+            'is_you' => true,
+        ],
+        (object)[
+            'id' => 2,
+            'name' => 'Rina Marketing',
+            'email' => 'rina.dm@jawaratech.com',
+            'role' => 'Digital Marketing',
+            'role_color' => 'bg-primary', // Tambahkan ini
+            'is_you' => false,
+        ],
+        (object)[
+            'id' => 3,
+            'name' => 'Fajar Kurniawan',
+            'email' => 'fajar.dm@jawaratech.com',
+            'role' => 'Digital Marketing',
+            'role_color' => 'bg-primary', // Tambahkan ini
+            'is_you' => false,
+        ],
+    ]);
+
+    return view('profile.manage-users', compact('teamAccounts'));
+})->name('users.profile-auth');
     // --- Rute User Group / Kelola Role ---
     Route::get('/user-group', [UserGroupController::class, 'index'])->name('user-group.index');
     Route::post('/user-group/update', [UserGroupController::class, 'update'])->name('user-group.update');
     Route::post('/user-group/store', [UserGroupController::class, 'store'])->name('user-group.store');
     Route::delete('/user-group/{roleName}', [UserGroupController::class, 'destroy'])->name('user-group.destroy');
 
-    // --- Rute Data Konsumen ---
+    // --- Rute Data Master: Registrasi Konsumen (Mewadahi FR03) ---
     Route::get('/data-konsumen', function () {
         return view('data-konsumen.index');
     })->name('data-konsumen');
@@ -108,32 +145,11 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('service-jobs.index');
     })->name('service-jobs.destroy');
 
-    // --- Rute Registrasi Layanan Servis ---
-    Route::get('/layanan-servis/registrasi', function () {
-        return view('registrasi.index');
-    })->name('registrasi.index');
+    // --- Rute Layanan Servis ---
+    // Mewadahi FR05: Pengingat Perawatan
+    Route::get('/schedules', [SchedulesController::class, 'index'])->name('schedules.index');
 
-    Route::get('/layanan-servis/registrasi/create', function () {
-        return view('registrasi.create');
-    })->name('registrasi.create');
-
-    Route::post('/layanan-servis/registrasi', function () {
-        return redirect()->route('registrasi.index');
-    })->name('registrasi.store');
-
-    Route::get('/layanan-servis/registrasi/{id}/edit', function ($id) {
-        return view('registrasi.edit', ['id' => $id]);
-    })->name('registrasi.edit');
-
-    Route::put('/layanan-servis/registrasi/{id}', function ($id) {
-        return redirect()->route('registrasi.index');
-    })->name('registrasi.update');
-
-    Route::delete('/layanan-servis/registrasi/{id}', function ($id) {
-        return redirect()->route('registrasi.index');
-    })->name('registrasi.destroy');
-
-    // --- Rute Closing Servis & Transaksi ---
+    // Mewadahi FR04: Closing Servis
     Route::get('/layanan-servis/closing', function () {
         return view('closing.index');
     })->name('closing.index');
@@ -146,19 +162,7 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('closing.index');
     })->name('closing.store');
 
-    Route::get('/layanan-servis/closing/{id}/edit', function ($id) {
-        return view('closing.edit', ['id' => $id]);
-    })->name('closing.edit');
-
-    Route::put('/layanan-servis/closing/{id}', function ($id) {
-        return redirect()->route('closing.index');
-    })->name('closing.update');
-
-    Route::delete('/layanan-servis/closing/{id}', function ($id) {
-        return redirect()->route('closing.index');
-    })->name('closing.destroy');
-
-    // --- Rute Follow-up Konsumen ---
+    // Mewadahi FR06: Follow-up Konsumen (WhatsApp)
     Route::get('/layanan-servis/followup', function () {
         return view('followup.index');
     })->name('followup.index');
@@ -171,19 +175,7 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('followup.index');
     })->name('followup.store');
 
-    Route::get('/layanan-servis/followup/{id}/edit', function ($id) {
-        return view('followup.edit', ['id' => $id]);
-    })->name('followup.edit');
-
-    Route::put('/layanan-servis/followup/{id}', function ($id) {
-        return redirect()->route('followup.index');
-    })->name('followup.update');
-
-    Route::delete('/layanan-servis/followup/{id}', function ($id) {
-        return redirect()->route('followup.index');
-    })->name('followup.destroy');
-
-    // --- Rute Pengaturan Sistem (Profil & Password) ---
+    // --- Rute Pengaturan Sistem: Kelola Akun Profil (Mewadahi FR08) ---
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
 
@@ -196,13 +188,10 @@ Route::middleware('auth')->group(function () {
     // --- Rute Resource Bawaan ---
     Route::resource('service-jobs', ServiceJobController::class);
 
-    // --- Rute Laporan & Log Kronologis ---
+    // --- Rute Laporan & Log Kronologis (Mewadahi FR07) ---
     Route::get('/report', [ReportController::class, 'index'])->name('report.index');
     Route::get('/report/kronologis', [ReportController::class, 'kronologis'])->name('report.kronologis');
     Route::get('/report/export-daily-pdf', [ReportController::class, 'exportDailyPdf'])->name('report.export.pdf');
     Route::get('/report/export-excel', [ReportController::class, 'exportExcel'])->name('report.export.excel');
-
-    // --- Rute Jadwal Perawatan ---
-    Route::get('/schedules', [SchedulesController::class, 'index'])->name('schedules.index');
 
 });

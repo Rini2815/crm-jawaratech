@@ -4,7 +4,7 @@
         <div class="nav px-2">
             <div class="pt-2"></div>
 
-            <!-- 1. DASHBOARD -->
+            <!-- 1. DASHBOARD (Mewadahi FR05 & FR06) -->
             @if(auth()->user()->hasMenu('dashboard'))
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal" style="font-size: 11px;">UTAMA</div>
             <div class="menu-box d-flex align-items-center justify-content-between px-3 py-2">
@@ -20,8 +20,11 @@
             <div class="collapse" id="collapseDashboard" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     @if(auth()->user()->hasMenu('schedules'))
-                    <a class="nav-link text-white-50" href="{{ route('schedules.index') }}">
-                        <i class="fas fa-clock me-2 text-white"></i> Jadwal Perawatan
+                    <a class="nav-link sub-item-divider text-white-50" href="{{ route('schedules.index') }}">
+                        <i class="fas fa-bell me-2 text-white"></i> Pengingat Perawatan
+                    </a>
+                    <a class="nav-link" href="{{ route('followup.index') }}">
+                        <i class="fab fa-whatsapp me-2 text-white"></i> Follow-up Konsumen
                     </a>
                     @endif
                 </nav>
@@ -39,7 +42,7 @@
             <div class="collapse" id="collapseMaster" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link" href="{{ route('data-konsumen') }}">
-                        <i class="fas fa-user-plus me-2 text-white"></i> Registrasi Konsumen
+                        <i class="fas fa-user-plus me-2 text-white"></i> Registrasi Konsumen & Unit
                     </a>
                 </nav>
             </div>
@@ -59,14 +62,16 @@
                 <div class="collapse {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*') ? 'show' : '' }}" id="collapseUserMgmt" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
                         <a class="nav-link sub-item-divider {{ request()->routeIs('hak-akses*', 'user-group*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('hak-akses') }}">
-                            <i class="fas fa-shield-alt me-2 text-white"></i> Kontrol Akses
+                            <i class="fas fa-shield-alt me-2 text-white"></i> Data Pengguna & Hak Akses
                         </a>
-                        
+                        <a class="nav-link {{ request()->routeIs('users.profile-auth*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('users.profile-auth') }}">
+                            <i class="fas fa-id-badge me-2 text-white"></i> Switch Profile
+                        </a>
                     </nav>
                 </div>
             @endif
 
-            <!-- 4. LAYANAN SERVIS (Mewadahi FR05, FR04, & FR06) -->
+            <!-- 4. LAYANAN SERVIS (Mewadahi FR04) -->
             @if(auth()->user()->hasMenu('layanan-servis'))
                 <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseServis" aria-expanded="false">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-wrench"></i></div>
@@ -75,14 +80,8 @@
                 </a>
                 <div class="collapse" id="collapseServis" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link sub-item-divider" href="{{ route('schedules.index') }}">
-                            <i class="fas fa-bell me-2 text-white"></i> Pengingat Perawatan
-                        </a>
-                        <a class="nav-link sub-item-divider" href="{{ route('closing.index') }}">
+                        <a class="nav-link" href="{{ route('closing.index') }}">
                             <i class="fas fa-check-circle me-2 text-white"></i> Closing Servis
-                        </a>
-                        <a class="nav-link" href="{{ route('followup.index') }}">
-                            <i class="fab fa-whatsapp me-2 text-white"></i> Follow-up Konsumen
                         </a>
                     </nav>
                 </div>
@@ -99,26 +98,23 @@
             <div class="collapse" id="collapseLaporan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link {{ request()->routeIs('report.index') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('report.index') }}">
-                        <i class="fas fa-file-invoice me-2 text-white"></i> Laporan Riwayat Service
+                        <i class="fas fa-file-invoice me-2 text-white"></i> Riwayat Servis 
                     </a>
                 </nav>
             </div>
             @endif
 
-            <!-- 6. PENGATURAN SISTEM (Mewadahi FR08) -->
+            <!-- 6. PENGATURAN AKUN (Mewadahi FR08) -->
             <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePengaturan" aria-expanded="false">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-user-shield"></i></div>
-                <span class="nav-text text-white fw-normal">Pengaturan Sistem</span>
+                <span class="nav-text text-white fw-normal">Pengaturan Akun</span>
                 <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
             </a>
             <div class="collapse" id="collapsePengaturan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link {{ request()->routeIs('profile.edit', 'password.edit', 'team.manage') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('profile.edit') }}">
-                        <i class="fas fa-user-circle me-2 text-white"></i> Kelola Akun Profil 
+                        <i class="fas fa-user-circle me-2 text-white"></i> Profil Saya
                     </a>
-                    <a class="nav-link {{ request()->routeIs('users.profile-auth*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('users.profile-auth') }}">
-                            <i class="fas fa-id-badge me-2 text-white"></i> Otoritas Akses Profil
-                        </a>
                 </nav>
             </div>
 

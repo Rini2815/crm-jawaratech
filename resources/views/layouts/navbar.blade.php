@@ -35,7 +35,7 @@
 
                 <!-- Item 1: Notifikasi Unit AC (Interval 3 Bulan) -->
                 <li>
-                    <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 border-bottom border-secondary border-opacity-25" href="#" style="color: #f8fafc; white-space: normal;">
+                    <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 border-bottom border-secondary border-opacity-25" href="{{ route('schedules.index') }}" style="color: #f8fafc; white-space: normal;">
                         <div class="bg-primary bg-opacity-25 text-primary p-2 rounded-circle mt-1">
                             <i class="fas fa-snowflake fa-fw"></i>
                         </div>
@@ -47,7 +47,7 @@
                             <p class="mb-1 small text-light opacity-75">Jadwal Cuci AC (3 Bulan) - Sharp 1 PK</p>
                             <div class="d-flex gap-2 mt-1">
                                 <span class="btn btn-sm btn-success py-0 px-2 rounded-pill" style="font-size: 0.75rem;">
-                                    <i class="fab fa-whatsapp me-1"></i> WA Konsumen
+                                    <i class="fab fa-whatsapp me-1"></i> Chat
                                 </span>
                             </div>
                         </div>
@@ -56,7 +56,7 @@
 
                 <!-- Item 2: Notifikasi Unit Mesin Cuci (Interval 1 Tahun) -->
                 <li>
-                    <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 border-bottom border-secondary border-opacity-25" href="#" style="color: #f8fafc; white-space: normal;">
+                    <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 border-bottom border-secondary border-opacity-25" href="{{ route('schedules.index') }}" style="color: #f8fafc; white-space: normal;">
                         <div class="bg-info bg-opacity-25 text-info p-2 rounded-circle mt-1">
                             <i class="fas fa-soap fa-fw"></i>
                         </div>
@@ -68,7 +68,7 @@
                             <p class="mb-1 small text-light opacity-75">Cek Maintenance (1 Tahun) - Mesin Cuci LG</p>
                             <div class="d-flex gap-2 mt-1">
                                 <span class="btn btn-sm btn-success py-0 px-2 rounded-pill" style="font-size: 0.75rem;">
-                                    <i class="fab fa-whatsapp me-1"></i> Follow-Up
+                                    <i class="fab fa-whatsapp me-1"></i> Chat
                                 </span>
                             </div>
                         </div>
@@ -77,7 +77,7 @@
 
                 <!-- Item 3: Notifikasi Unit Dispenser / Water Heater (Interval 6 Bulan) -->
                 <li>
-                    <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3" href="#" style="color: #f8fafc; white-space: normal;">
+                    <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3" href="{{ route('schedules.index') }}" style="color: #f8fafc; white-space: normal;">
                         <div class="bg-warning bg-opacity-25 text-warning p-2 rounded-circle mt-1">
                             <i class="fas fa-faucet fa-fw"></i>
                         </div>
@@ -89,7 +89,7 @@
                             <p class="mb-1 small text-light opacity-75">Pembersihan Elemen (6 Bulan) - Dispenser Miyako</p>
                             <div class="d-flex gap-2 mt-1">
                                 <span class="btn btn-sm btn-success py-0 px-2 rounded-pill" style="font-size: 0.75rem;">
-                                    <i class="fab fa-whatsapp me-1"></i> WA Konsumen
+                                    <i class="fab fa-whatsapp me-1"></i> Chat
                                 </span>
                             </div>
                         </div>
@@ -98,8 +98,8 @@
 
                 <!-- Footer Pop-up -->
                 <li style="border-top: 1px solid #334155;">
-                    <a class="dropdown-item text-center fw-bold text-info py-2 small" href="{{ route('notifications.index') }}" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-                        Lihat Semua Riwayat & Log Perawatan <i class="fas fa-arrow-right ms-1"></i>
+                    <a class="dropdown-item text-center fw-bold text-info py-2 small" href="{{ route('schedules.index') }}" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                        Lihat Semua Pengingat Perawatan <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </li>
             </ul>

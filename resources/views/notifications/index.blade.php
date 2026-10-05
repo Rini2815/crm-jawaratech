@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $notifications = $notifications ?? collect();
+    $totalJatuhTempo = $totalJatuhTempo ?? 0;
+@endphp
 <div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="min-height: 100vh;">
 
     <!-- 1. HEADER HALAMAN -->
@@ -8,7 +12,7 @@
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h3 class="fw-bold text-white mb-1">
-                    <i class="fas fa-bell text-primary me-2"></i> Riwayat & Log Notifikasi Perawatan
+                    <i class="fas fa-bell text-primary me-2"></i> Notifikasi Pengingat Perawatan
                 </h3>
                 <p class="text-light opacity-75 small mb-0">
                     Semua pengingat perawatan berkala yang jatuh tempo, terlewat, atau akan datang.
@@ -37,7 +41,7 @@
                 <div class="card-body d-flex align-items-center justify-content-between py-3">
                     <div>
                         <span class="text-muted small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Total Notifikasi</span>
-                        <h4 class="fw-bold mb-0 text-dark">{{ $notifications->count() }} <span class="fs-6 fw-normal text-muted">Unit</span></h4>
+                        <h4 class="fw-bold mb-0 text-dark">{{ $notifications->count() }} <span class="fs-6 fw-normal text-muted">Notifikasi</span></h4>
                     </div>
                     <div class="bg-warning bg-opacity-25 text-warning p-3 rounded-circle">
                         <i class="fas fa-bell fa-lg"></i>
@@ -54,7 +58,7 @@
                 <i class="fas fa-list text-info me-2"></i> Daftar Notifikasi
             </h5>
             <a href="{{ route('schedules.index') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
-                <i class="fas fa-calendar-alt me-1"></i> Lihat Jadwal Perawatan
+                <i class="fas fa-calendar-alt me-1"></i> Buka Halaman Pengingat Perawatan
             </a>
         </div>
         <div class="card-body p-0">
@@ -93,7 +97,7 @@
                             </td>
                             <td class="text-center pe-4">
                                 <a href="{{ $item->wa_link }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold">
-                                    <i class="fab fa-whatsapp me-1"></i> {{ $item->label_aksi }}
+                                    <i class="fab fa-whatsapp me-1"></i> Chat
                                 </a>
                             </td>
                         </tr>

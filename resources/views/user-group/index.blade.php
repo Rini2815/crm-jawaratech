@@ -133,16 +133,13 @@ body, html {
                     </div>
                 </div>
                 
-                <!-- TOMBOL HAPUS ROLE (Hanya muncul jika bukan Super Admin / Digital Marketing) -->
-                @if($role['name'] !== 'Super Administrator' && $role['name'] !== 'Digital Marketing')
+                <!-- TOMBOL HAPUS ROLE (muncul untuk semua role kecuali Super Administrator) -->
+                <!-- FRONT END SAJA: nanti saat backend siap, ganti button ini dengan form DELETE ke route('user-group.destroy', $role['name']) -->
+                @if($role['name'] !== 'Super Administrator')
                     <div class="mt-auto pt-2 border-top text-end">
-                        <form action="{{ route('user-group.destroy', $role['name']) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus role {{ $role['name'] }}? Pastikan tidak ada staf yang sedang menggunakan role ini.');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2 shadow-sm fw-bold" style="font-size: 0.75rem; border-radius: 6px;">
-                                <i class="fas fa-trash-alt me-1"></i> Hapus Role
-                            </button>
-                        </form>
+                        <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 shadow-sm fw-bold" style="font-size: 0.75rem; border-radius: 6px;" onclick="hapusRoleFrontend(@json($role['name']))">
+                            <i class="fas fa-trash-alt me-1"></i> Hapus Role
+                        </button>
                     </div>
                 @endif
                 
@@ -289,5 +286,12 @@ $(document).ready(function(){
         });
     });
 });
+
+// FRONT END SAJA: konfirmasi hapus role (belum menghapus data)
+function hapusRoleFrontend(namaRole) {
+    if (confirm('Yakin ingin menghapus role ' + namaRole + '? Pastikan tidak ada staf yang sedang menggunakan role ini.')) {
+        alert('Tampilan hapus role sudah berfungsi. Penghapusan data akan aktif setelah backend dibuat.');
+    }
+}
 </script>
 @endsection

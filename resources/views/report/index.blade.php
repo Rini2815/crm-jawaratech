@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Wrapper Utama dengan background gelap malam -->
+<!-- Wrapper Utama -->
 <div class="container-fluid px-4 pt-3 pb-4" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3); min-height: 100vh; color: #f8fafc;">
     
+    <!-- HEADER HALAMAN -->
     <div class="card rounded-4 mb-4 text-white shadow-lg overflow-hidden" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.35) !important;">
         <div class="card-body p-4 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
@@ -23,7 +24,7 @@
         </div>
     </div>
 
-  <!-- ========================================================================= -->
+    <!-- ========================================================================= -->
     <!-- 1. 6 KARTU RINGKASAN STATISTIK (DENGAN EFEK BAYANGAN DALAM / INSET) -->
     <!-- ========================================================================= -->
     <div class="row g-3 mb-4">
@@ -129,8 +130,9 @@
             </div>
         </div>
     </div>
+
     <!-- ========================================================================= -->
-    <!-- 2. CARD FILTER PERIODE & KATEGORI (DENGAN BAYANGAN & BORDER TEGAS PADA INPUT) -->
+    <!-- 2. CARD FILTER PERIODE & KATEGORI -->
     <!-- ========================================================================= -->
     <div class="card rounded-4 mb-4 text-dark shadow-sm" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important;">
         <div class="card-body p-4">
@@ -156,7 +158,7 @@
                         </select>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-dark w-100 rounded-pill fw-semibold shadow py-2">
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill fw-semibold shadow-sm py-2" style="background-color: #2563eb; border-color: #2563eb;">
                             <i class="fas fa-search me-1"></i> Terapkan Filter
                         </button>
                     </div>
@@ -169,31 +171,33 @@
     <!-- 3. TABEL KOMPREHENSIF DENGAN GARIS TEBAL SUPER JELAS -->
     <!-- ========================================================================= -->
     <div class="card rounded-4 mb-4 text-dark shadow-sm overflow-hidden" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important;">
-        <div class="card-header bg-dark text-white border-0 pt-3 px-4 pb-3 d-flex justify-content-between align-items-center">
-            <h5 class="fw-bold m-0"><i class="fas fa-history text-primary me-2"></i> Log Komprehensif: Registrasi, Servis, Garansi & Closing</h5>
-            <span class="badge bg-primary rounded-pill px-3 py-2 text-white">Menampilkan 5 Data Utama Konsumen</span>
+        <!-- Header Tabel Navy Slate -->
+        <div class="card-header text-white border-0 pt-3 px-4 pb-3 d-flex justify-content-between align-items-center" style="background-color: #1e293b;">
+            <h5 class="fw-bold m-0"><i class="fas fa-history text-info me-2"></i> Log Komprehensif: Registrasi, Servis, Garansi & Closing</h5>
+            <span class="badge bg-primary rounded-pill px-3 py-2 text-white border border-info">Menampilkan 5 Data Utama Konsumen</span>
         </div>
+        
         <div class="card-body px-4 pb-4">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped align-middle mb-0 bg-white shadow-sm rounded super-thick-table" width="100%" cellspacing="0">
-                    <!-- HEADER TABEL: Abu Gelap & Teks Putih -->
+                    <!-- HEADER TABEL RATA TENGAH -->
                     <thead class="text-uppercase fs-7 text-white text-center" style="background-color: #1e293b;">
                         <tr>
-                            <th class="py-3 text-white" style="width: 5%;">No</th>
-                            <th class="py-3 text-white text-start" style="width: 23%;">Identitas Konsumen & Kontak</th>
-                            <th class="py-3 text-white text-start" style="width: 20%;">Detail Unit & Garansi</th>
-                            <th class="py-3 text-white text-start" style="width: 24%;">Keluhan & Tanggal Registrasi</th>
-                            <th class="py-3 text-white text-start" style="width: 18%;">Closing & Teknisi</th>
+                            <th class="py-3 text-white text-center" style="width: 5%;">No</th>
+                            <th class="py-3 text-white text-center" style="width: 23%;">Identitas Konsumen & Kontak</th>
+                            <th class="py-3 text-white text-center" style="width: 20%;">Detail Unit & Garansi</th>
+                            <th class="py-3 text-white text-center" style="width: 24%;">Keluhan & Tanggal Registrasi</th>
+                            <th class="py-3 text-white text-center" style="width: 18%;">Closing & Teknisi</th>
                             <th class="py-3 text-white text-center" style="width: 10%;">Aksi & Cetak</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Data 1 (Perempuan) -->
+                        <!-- Data 1 -->
                         <tr>
                             <td class="fw-bold text-center">1</td>
                             <td>
                                 <div class="p-2 rounded bg-light border border-dark border-opacity-75 shadow-sm">
-                                    <div class="fw-bold text-dark"><i class="fas fa-venus text-danger me-1"></i> Siti Aminah</div>
+                                    <div class="fw-bold text-dark">Siti Aminah</div>
                                     <div class="text-secondary small mt-1 border-top border-dark border-opacity-50 pt-1">
                                         <span class="badge bg-white text-success border border-success px-2 py-1"><i class="fab fa-whatsapp me-1"></i> 08123456789</span>
                                     </div>
@@ -239,12 +243,12 @@
                             </td>
                         </tr>
 
-                        <!-- Data 2 (Laki-laki) -->
+                        <!-- Data 2 -->
                         <tr>
                             <td class="fw-bold text-center">2</td>
                             <td>
                                 <div class="p-2 rounded bg-light border border-dark border-opacity-75 shadow-sm">
-                                    <div class="fw-bold text-dark"><i class="fas fa-mars text-primary me-1"></i> Budi Santoso</div>
+                                    <div class="fw-bold text-dark">Budi Santoso</div>
                                     <div class="text-secondary small mt-1 border-top border-dark border-opacity-50 pt-1">
                                         <span class="badge bg-white text-success border border-success px-2 py-1"><i class="fab fa-whatsapp me-1"></i> 08987654321</span>
                                     </div>
@@ -290,12 +294,12 @@
                             </td>
                         </tr>
 
-                        <!-- Data 3 (Perempuan) -->
+                        <!-- Data 3 -->
                         <tr>
                             <td class="fw-bold text-center">3</td>
                             <td>
                                 <div class="p-2 rounded bg-light border border-dark border-opacity-75 shadow-sm">
-                                    <div class="fw-bold text-dark"><i class="fas fa-venus text-danger me-1"></i> Dewi Lestari</div>
+                                    <div class="fw-bold text-dark">Dewi Lestari</div>
                                     <div class="text-secondary small mt-1 border-top border-dark border-opacity-50 pt-1">
                                         <span class="badge bg-white text-success border border-success px-2 py-1"><i class="fab fa-whatsapp me-1"></i> 08567891234</span>
                                     </div>
@@ -341,12 +345,12 @@
                             </td>
                         </tr>
 
-                        <!-- Data 4 (Laki-laki) -->
+                        <!-- Data 4 -->
                         <tr>
                             <td class="fw-bold text-center">4</td>
                             <td>
                                 <div class="p-2 rounded bg-light border border-dark border-opacity-75 shadow-sm">
-                                    <div class="fw-bold text-dark"><i class="fas fa-mars text-primary me-1"></i> Ahmad Fauzi</div>
+                                    <div class="fw-bold text-dark">Ahmad Fauzi</div>
                                     <div class="text-secondary small mt-1 border-top border-dark border-opacity-50 pt-1">
                                         <span class="badge bg-white text-success border border-success px-2 py-1"><i class="fab fa-whatsapp me-1"></i> 08198765432</span>
                                     </div>
@@ -392,12 +396,12 @@
                             </td>
                         </tr>
 
-                        <!-- Data 5 (Perempuan) -->
+                        <!-- Data 5 -->
                         <tr>
                             <td class="fw-bold text-center">5</td>
                             <td>
                                 <div class="p-2 rounded bg-light border border-dark border-opacity-75 shadow-sm">
-                                    <div class="fw-bold text-dark"><i class="fas fa-venus text-danger me-1"></i> Siti Rahmawati</div>
+                                    <div class="fw-bold text-dark">Siti Rahmawati</div>
                                     <div class="text-secondary small mt-1 border-top border-dark border-opacity-50 pt-1">
                                         <span class="badge bg-white text-success border border-success px-2 py-1"><i class="fab fa-whatsapp me-1"></i> 08211223344</span>
                                     </div>

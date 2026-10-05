@@ -71,14 +71,9 @@ body, html {
                     <i class="fas fa-comments text-primary me-2"></i> Follow-up Konsumen
                 </h2>
                 <p class="text-light opacity-75 small mb-0" style="font-weight: 500;">
-                    Modul integrasi pesan untuk Happy Call, konfirmasi purna servis, dan pengingat servis berkala via WhatsApp
+                    Modul pencatatan hasil Happy Call dan konfirmasi purna servis via WhatsApp
                 </p>
             </div>
-            
-            <!-- Tombol Tambah Agenda Follow-up -->
-            <button type="button" class="btn btn-primary shadow-sm px-4 py-2 fw-bold d-flex align-items-center gap-2 rounded-pill" style="font-size: 0.875rem; background-color: #2563eb; border-color: #2563eb;" data-toggle="modal" data-bs-toggle="modal" data-target="#modalTambahFollowup" data-bs-target="#modalTambahFollowup">
-                <i class="fas fa-plus-circle"></i> Agendakan Follow-up
-            </button>
         </div>
     </div>
 
@@ -193,15 +188,15 @@ body, html {
                                     'nama' => 'Siti Aminah',
                                     'wa' => '6285712345678',
                                     'wa_fmt' => '085712345678',
-                                    'unit' => 'Mesin Cuci LG 2 Tabung',
-                                    'layanan' => 'Servis Rutin & Ganti Modul',
-                                    'kategori' => 'Pengingat Servis (3 Bulan)',
-                                    'badge_kat' => 'badge-kategori-rutin',
+                                    'unit' => 'AC Sharp 1 PK',
+                                    'layanan' => 'Cuci AC & Perawatan Rutin',
+                                    'kategori' => 'Happy Call (H+3)',
+                                    'badge_kat' => 'badge-kategori-happycall',
                                     'tgl_jadwal' => '25 Sep 2026',
                                     'status' => 'Sudah Dihubungi',
                                     'badge_status' => 'badge-followup-done',
-                                    'catatan' => 'Konsumen setuju untuk penjadwalan cuci ulang minggu depan.',
-                                    'draft_wa' => 'Halo Ibu Siti Aminah, sudah 3 bulan sejak perawatan Mesin Cuci LG Anda di Jawaratech. Untuk menjaga kinerja unit tetap awet, apakah berkenan kami jadwalkan perawatan berkala minggu ini?'
+                                    'catatan' => 'Konsumen puas dengan hasil servis, AC berfungsi dingin dan tidak ada kendala.',
+                                    'draft_wa' => 'Halo Ibu Siti Aminah, kami dari Jawaratech CRM ingin mengonfirmasi hasil perawatan AC Sharp Anda pada tanggal 22 Sep 2026. Apakah AC sudah berfungsi dingin optimal dan tidak ada kendala?'
                                 ],
                                 [
                                     'id' => 3,
@@ -325,65 +320,6 @@ body, html {
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Agendakan Follow-up Baru (CREATE) -->
-<div class="modal fade crm-wrapper" id="modalTambahFollowup" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-custom-size modal-dialog-centered">
-        <div class="modal-content rounded-4 shadow-lg text-dark overflow-hidden" style="background: #f8fafc; border: 1px solid #cbd5e1;">
-            <!-- HEADER MODAL CREATE DENGAN GRADIENT BIRU/NAVY -->
-            <div class="modal-header text-white px-4 py-3" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 2px solid rgba(56, 189, 248, 0.4);">
-                <h5 class="modal-title fw-bold" style="font-size: 1.15rem;">
-                    <i class="fas fa-calendar-plus text-primary me-2"></i>Buat Agenda Follow-up Baru
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="#" method="POST">
-                @csrf
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-bold">Pilih Servis Pelanggan (Pemicu)</label>
-                        <select name="closing_servis_id" class="form-select py-2 rounded-pill bg-white border-secondary" required>
-                            <option value="" disabled selected>Pilih Data Closing Servis Terakhir...</option>
-                            <option value="1">Budi Santoso - AC Daikin Inverter (Servis Tgl: 24 Sep 2026)</option>
-                            <option value="2">Siti Aminah - Mesin Cuci LG (Servis Tgl: 15 Jun 2026)</option>
-                        </select>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <label class="form-label text-dark small fw-bold">Kategori Follow-up</label>
-                            <select name="kategori" class="form-select py-2 rounded-pill bg-white border-secondary" required>
-                                <option value="Happy Call (H+3)">Happy Call (H+3 Purna Servis)</option>
-                                <option value="Pengingat Servis (3 Bulan)">Pengingat Servis Berkala (3 Bulan)</option>
-                                <option value="Penawaran Promo">Penawaran Promo / Maintenance</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-dark small fw-bold">Tanggal Rencana Kontak</label>
-                            <input type="date" name="tgl_jadwal" class="form-control py-2 rounded-pill bg-white border-secondary" required>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-bold">Template Pesan WhatsApp</label>
-                        <textarea name="draft_wa" class="form-control rounded-4 bg-white border-secondary" rows="3" placeholder="Tuliskan draf template pesan yang akan dikirim via WhatsApp..." style="font-size: 0.875rem;"></textarea>
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="form-label text-dark small fw-bold">Catatan Tambahan Petugas</label>
-                        <input type="text" name="catatan" class="form-control py-2 rounded-pill bg-white border-secondary" placeholder="Contoh: Tanyakan kondisi suhu AC setelah perbaikan outdoor">
-                    </div>
-                </div>
-                <div class="modal-footer bg-light px-4 py-3">
-                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
-                        <i class="fas fa-save me-1"></i> Agendakan
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

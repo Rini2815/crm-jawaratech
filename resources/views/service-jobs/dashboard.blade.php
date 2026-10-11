@@ -132,67 +132,66 @@
             </div>
         </div>
 
-      <!-- Diagram Lingkaran Status Servis (Doughnut Chart) -->
-<div class="col-xl-4 mb-4">
-    <div class="card rounded-4 h-100 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
-        
-        <!-- Header Card -->
-        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
-            <h5 class="fw-bold text-dark m-0">
-                <i class="fas fa-chart-pie text-primary me-2"></i> Proporsi Status
-            </h5>
-            <span class="badge bg-dark text-white rounded-pill px-3 py-1 extra-small">
-                Total: 100%
-            </span>
-        </div>
+        <!-- Diagram Lingkaran Status Servis (Doughnut Chart) -->
+        <div class="col-xl-4 mb-4">
+            <div class="card rounded-4 h-100 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
+                
+                <!-- Header Card -->
+                <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold text-dark m-0">
+                        <i class="fas fa-chart-pie text-primary me-2"></i> Proporsi Status
+                    </h5>
+                    <span class="badge bg-dark text-white rounded-pill px-3 py-1 extra-small">
+                        Total: 100%
+                    </span>
+                </div>
 
-        <!-- Body Card: Chart & Ringkasan Angka -->
-        <div class="card-body px-4 d-flex flex-column align-items-center justify-content-center">
-            
-            <!-- Canvas Chart -->
-            <div style="height: 180px; width: 100%; position: relative;">
-                <canvas id="statusPieChart"></canvas>
-            </div>
-
-            <!-- Legenda Custom & Keterangan Status Warna -->
-            <div class="w-100 mt-3 pt-2 border-top border-secondary border-opacity-25">
-                <div class="row g-2 text-center" style="font-size: 0.8rem;">
+                <!-- Body Card: Chart & Ringkasan Angka -->
+                <div class="card-body px-4 d-flex flex-column align-items-center justify-content-center">
                     
-                    <!-- Item Selesai -->
-                    <div class="col-4">
-                        <div class="p-2 rounded-3 bg-white bg-opacity-50 border border-success border-opacity-25 shadow-sm">
-                            <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background-color: #1b4d3e;"></span>
-                            <strong class="d-block text-dark fw-bold">Selesai</strong>
-                            <small class="text-success fw-bold" id="txtSelesai">75%</small>
-                        </div>
+                    <!-- Canvas Chart -->
+                    <div style="height: 180px; width: 100%; position: relative;">
+                        <canvas id="statusPieChart"></canvas>
                     </div>
 
-                    <!-- Item Pengecekan -->
-                    <div class="col-4">
-                        <div class="p-2 rounded-3 bg-white bg-opacity-50 border border-warning border-opacity-25 shadow-sm">
-                            <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background-color: #8c9e2b;"></span>
-                            <strong class="d-block text-dark fw-bold">Pengecekan</strong>
-                            <small class="text-warning fw-bold" style="color: #8c9e2b !important;" id="txtPengecekan">18%</small>
-                        </div>
-                    </div>
+                    <!-- Legenda Custom & Keterangan Status Warna -->
+                    <div class="w-100 mt-3 pt-2 border-top border-secondary border-opacity-25">
+                        <div class="row g-2 text-center" style="font-size: 0.8rem;">
+                            
+                            <!-- Item Selesai -->
+                            <div class="col-4">
+                                <div class="p-2 rounded-3 bg-white bg-opacity-50 border border-success border-opacity-25 shadow-sm">
+                                    <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background-color: #1b4d3e;"></span>
+                                    <strong class="d-block text-dark fw-bold">Selesai</strong>
+                                    <small class="text-success fw-bold" id="txtSelesai">75%</small>
+                                </div>
+                            </div>
 
-                    <!-- Item Menunggu -->
-                    <div class="col-4">
-                        <div class="p-2 rounded-3 bg-white bg-opacity-50 border border-info border-opacity-25 shadow-sm">
-                            <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background-color: #50c878;"></span>
-                            <strong class="d-block text-dark fw-bold">Menunggu</strong>
-                            <small class="text-info fw-bold" style="color: #2e8b57 !important;" id="txtMenunggu">7%</small>
+                            <!-- Item Pengecekan -->
+                            <div class="col-4">
+                                <div class="p-2 rounded-3 bg-white bg-opacity-50 border border-warning border-opacity-25 shadow-sm">
+                                    <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background-color: #8c9e2b;"></span>
+                                    <strong class="d-block text-dark fw-bold">Pengecekan</strong>
+                                    <small class="text-warning fw-bold" style="color: #8c9e2b !important;" id="txtPengecekan">18%</small>
+                                </div>
+                            </div>
+
+                            <!-- Item Menunggu -->
+                            <div class="col-4">
+                                <div class="p-2 rounded-3 bg-white bg-opacity-50 border border-info border-opacity-25 shadow-sm">
+                                    <span class="d-inline-block rounded-circle me-1" style="width: 10px; height: 10px; background-color: #50c878;"></span>
+                                    <strong class="d-block text-dark fw-bold">Menunggu</strong>
+                                    <small class="text-info fw-bold" style="color: #2e8b57 !important;" id="txtMenunggu">7%</small>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
                 </div>
             </div>
-
         </div>
     </div>
-</div>
-
-
 
     <!-- 3. SECTION NOTIFIKASI PENGINGAT JADWAL SERVIS & INFORMASI LAYANAN -->
     <div class="row">
@@ -204,33 +203,33 @@
                     <span class="badge bg-primary rounded-pill shadow-sm px-3 py-1.5" style="font-size: 11px;">3 Unit Perlu Perawatan</span>
                 </div>
                 <div class="card-body p-3 d-flex flex-column gap-2">
-                    <!-- Item 1 -->
+                    <!-- Item 1 (AC) -->
                     <div class="p-3 rounded-pill border d-flex justify-content-between align-items-center shadow-sm px-4" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); border-color: rgba(248, 91, 56, 0.4) !important;">
                         <div>
                             <div class="fw-bold text-dark" style="font-size: 14px;">Siti Aminah</div>
-                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-info me-1" style="font-size: 5px;"></i> AC Split Cuci 3 Bulan</div>
+                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-info me-1" style="font-size: 5px;"></i> AC - Cuci Berkala</div>
                         </div>
-                        <a href="https://wa.me/628123456789?text=Halo%20Kak%20Siti%20Aminah,%20mengingatkan%20jadwal%20perawatan%20berkala%20AC%20di%20Jawaratech%20sudah%20waktunya." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;">
+                        <a href="https://wa.me/628123456789?text=Halo%20Kak%20Siti%20Aminah,%20mengingatkan%20jadwal%20perawatan%20berkala%20AC%20di%20Jawaratech." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;">
                             <i class="fab fa-whatsapp"></i> Chat
                         </a>
                     </div>
-                    <!-- Item 2 -->
+                    <!-- Item 2 (Dispenser) -->
                     <div class="p-3 rounded-pill border d-flex justify-content-between align-items-center shadow-sm px-4" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); border-color: rgba(141, 8, 8, 0.4) !important;">
                         <div>
                             <div class="fw-bold text-dark" style="font-size: 14px;">Budi Santoso</div>
-                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-primary me-1" style="font-size: 5px;"></i> Dispenser Servis 6 Bulan</div>
+                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-primary me-1" style="font-size: 5px;"></i> Dispenser - Servis 6 Bulan</div>
                         </div>
-                        <a href="https://wa.me/628987654321?text=Halo%20Bapak%20Budi%20Santoso,%20mengingatkan%20jadwal%20perawatan%20berkala%20dispenser%20di%20Jawaratech." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;">
+                        <a href="https://wa.me/628987654321?text=Halo%20Bapak%20Budi%20Santoso,%20mengingatkan%20jadwal%20perawatan%20dispenser%20di%20Jawaratech." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;">
                             <i class="fab fa-whatsapp"></i> Chat
                         </a>
                     </div>
-                    <!-- Item 3 -->
+                    <!-- Item 3 (Water Heater) -->
                     <div class="p-3 rounded-pill border d-flex justify-content-between align-items-center shadow-sm px-4" style="background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%); border-color: rgba(56, 189, 248, 0.4) !important;">
                         <div>
                             <div class="fw-bold text-dark" style="font-size: 14px;">Ahmad Fauzi</div>
-                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-warning me-1" style="font-size: 5px;"></i> Mesin Cuci Servis 1 Tahun</div>
+                            <div class="text-secondary mt-0.5" style="font-size: 11px;"><i class="fas fa-circle text-warning me-1" style="font-size: 5px;"></i> Water Heater - Cek Berkala</div>
                         </div>
-                        <a href="https://wa.me/628567890123?text=Halo%20Bapak%20Ahmad%20Fauzi,%20mengingatkan%20jadwal%20perawatan%20tahunan%20mesin%20cuci%20di%20Jawaratech." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;">
+                        <a href="https://wa.me/628567890123?text=Halo%20Bapak%20Ahmad%20Fauzi,%20mengingatkan%20jadwal%20perawatan%20water%20heater%20di%20Jawaratech." target="_blank" class="btn btn-sm btn-success py-1 px-3 rounded-pill shadow-sm d-flex align-items-center gap-1 fw-semibold" style="font-size: 12px; background-color: #198754; border: none;">
                             <i class="fab fa-whatsapp"></i> Chat
                         </a>
                     </div>
@@ -247,33 +246,47 @@
                         <p class="text-muted small">Ringkasan cepat performa administrasi dan layanan servis perangkat di Jawaratech.</p>
                         <hr class="text-muted opacity-25">
                         
+                        <!-- AC -->
                         <div class="mb-3">
                             <div class="d-flex justify-content-between small fw-bold mb-1 text-dark">
-                                <span>Perangkat Elektronik / Laptop</span>
-                                <span class="text-primary">45%</span>
+                                <span>AC</span>
+                                <span class="text-primary">35%</span>
                             </div>
                             <div class="progress bg-light border" style="height: 8px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 45%;"></div>
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: 35%;"></div>
                             </div>
                         </div>
 
+                        <!-- Mesin Cuci -->
                         <div class="mb-3">
                             <div class="d-flex justify-content-between small fw-bold mb-1 text-dark">
-                                <span>AC & Pendingin Ruangan</span>
-                                <span class="text-success">30%</span>
+                                <span>Mesin Cuci</span>
+                                <span class="text-success">25%</span>
                             </div>
                             <div class="progress bg-light border" style="height: 8px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 30%;"></div>
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 25%;"></div>
                             </div>
                         </div>
 
+                        <!-- Dispenser -->
                         <div class="mb-3">
                             <div class="d-flex justify-content-between small fw-bold mb-1 text-dark">
-                                <span>Mesin Cuci & Rumah Tangga</span>
+                                <span>Dispenser</span>
                                 <span class="text-warning">25%</span>
                             </div>
                             <div class="progress bg-light border" style="height: 8px;">
                                 <div class="progress-bar bg-warning" role="progressbar" style="width: 25%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Water Heater -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small fw-bold mb-1 text-dark">
+                                <span>Water Heater</span>
+                                <span class="text-info">15%</span>
+                            </div>
+                            <div class="progress bg-light border" style="height: 8px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 15%;"></div>
                             </div>
                         </div>
                     </div>
@@ -300,39 +313,39 @@
                             <th class="py-3 text-secondary">No</th>
                             <th class="py-3 text-secondary">Nama Konsumen</th>
                             <th class="py-3 text-secondary">Jenis Unit</th>
-                            <th class="py-3 text-secondary">Status Perbaikan</th>
+                            <th class="py-3 text-secondary">Status Servis</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0">
-                        <!-- Baris 1 -->
+                        <!-- Baris 1 (Dispenser) -->
                         <tr class="border-bottom border-secondary border-opacity-10">
                             <td class="py-3 fw-semibold text-dark">1</td>
                             <td class="py-3 text-dark">Budi Santoso</td>
                             <td class="py-3">
                                 <span class="badge px-3 py-1.5 fw-bold shadow-sm" style="background-color: rgba(13, 110, 253, 0.12); color: #0d6efd; border: 1px solid rgba(13, 110, 253, 0.4);">
-                                    <i class="fas fa-laptop me-1"></i> Laptop
+                                    <i class="fas fa-tint me-1"></i> Dispenser
                                 </span>
                             </td>
-                            <td class="py-3"><span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill shadow-sm">Dalam Pengecekan</span></td>
+                            <td class="py-3"><span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill shadow-sm">Proses Servis</span></td>
                         </tr>
-                        <!-- Baris 2 -->
+                        <!-- Baris 2 (AC) -->
                         <tr class="border-bottom border-secondary border-opacity-10">
                             <td class="py-3 fw-semibold text-dark">2</td>
                             <td class="py-3 text-dark">Siti Aminah</td>
                             <td class="py-3">
                                 <span class="badge px-3 py-1.5 fw-bold shadow-sm" style="background-color: rgba(13, 202, 240, 0.12); color: #087990; border: 1px solid rgba(13, 202, 240, 0.4);">
-                                    <i class="fas fa-snowflake me-1"></i> AC Split
+                                    <i class="fas fa-snowflake me-1"></i> AC
                                 </span>
                             </td>
-                            <td class="py-3"><span class="badge bg-success text-white fw-bold px-3 py-2 rounded-pill shadow-sm">Selesai / Closing</span></td>
+                            <td class="py-3"><span class="badge bg-success text-white fw-bold px-3 py-2 rounded-pill shadow-sm">Selesai</span></td>
                         </tr>
-                        <!-- Baris 3 -->
+                        <!-- Baris 3 (Water Heater) -->
                         <tr>
                             <td class="py-3 fw-semibold text-dark">3</td>
                             <td class="py-3 text-dark">Ahmad Fauzi</td>
                             <td class="py-3">
                                 <span class="badge px-3 py-1.5 fw-bold shadow-sm" style="background-color: rgba(255, 159, 67, 0.15); color: #b45309; border: 1px solid rgba(255, 159, 67, 0.4);">
-                                    <i class="fas fa-tshirt me-1"></i> Mesin Cuci
+                                    <i class="fas fa-fire me-1"></i> Water Heater
                                 </span>
                             </td>
                             <td class="py-3"><span class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill shadow-sm">Menunggu Konfirmasi</span></td>
@@ -370,23 +383,22 @@ updateClock();
 
 // Script Chart.js
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. Bar Chart Keluhan
+    // 1. Bar Chart Keluhan (AC, Mesin Cuci, Dispenser, Water Heater)
     const ctxBar = document.getElementById('keluhanChart').getContext('2d');
     new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: ['Laptop / PC', 'AC Rumah', 'Mesin Cuci', 'Kulkas', 'Printer / Lainnya'],
+            labels: ['AC', 'Mesin Cuci', 'Dispenser', 'Water Heater'],
             datasets: [{
                 label: 'Jumlah Unit Masuk',
-                data: [18, 12, 9, 6, 4],
+                data: [18, 12, 10, 8],
                 backgroundColor: [
                     'rgba(13, 27, 42, 0.9)',
                     'rgba(34, 197, 94, 0.85)',
                     'rgba(234, 179, 8, 0.85)',
-                    'rgba(196, 59, 0, 0.8)',
-                    'rgba(34, 67, 197, 0.75)'
+                    'rgba(196, 59, 0, 0.8)'
                 ],
-                borderColor: ['#0d1b2a', '#16a34a', '#ca8a04', '#0d1b2a', '#1639a3'],
+                borderColor: ['#0d1b2a', '#16a34a', '#ca8a04', '#c43b00'],
                 borderWidth: 1,
                 borderRadius: 6
             }]

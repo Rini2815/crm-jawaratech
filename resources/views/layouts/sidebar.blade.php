@@ -1,10 +1,10 @@
 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion" style="width: 260px !important; min-width: 260px !important; background: linear-gradient(135deg, #455169 0%, #091a2d 40%, #42050b 100%); border-right: 3px solid #25252c;">
-    
+
     <div class="sb-sidenav-menu" style="width: 260px !important;">
         <div class="nav px-2">
             <div class="pt-2"></div>
 
-            <!-- 1. DASHBOARD (Mewadahi FR05 & FR06) -->
+            <!-- 1. DASHBOARD -->
             @if(auth()->user()->hasMenu('dashboard'))
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal" style="font-size: 11px;">UTAMA</div>
             <div class="menu-box d-flex align-items-center justify-content-between px-3 py-2">
@@ -31,38 +31,50 @@
             </div>
             @endif
 
-            <!-- 2. DATA MASTER (Mewadahi FR03) -->
+            <!-- 2. DATA MASTER (Dipecah: Data Konsumen, Data Unit Service, Registrasi Service) -->
             @if(auth()->user()->hasMenu('data-konsumen'))
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">MANAJEMEN CRM</div>
-            <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMaster" aria-expanded="false">
+            <a class="nav-link {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*') ? '' : 'collapsed' }} menu-box" 
+               href="#" data-bs-toggle="collapse" data-bs-target="#collapseMaster" 
+               aria-expanded="{{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*') ? 'true' : 'false' }}" 
+               style="border-color: {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-database"></i></div>
                 <span class="nav-text text-white fw-normal">Data Master</span>
                 <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
             </a>
-            <div class="collapse" id="collapseMaster" data-bs-parent="#sidenavAccordion">
+            <div class="collapse {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*') ? 'show' : '' }}" id="collapseMaster" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="{{ route('data-konsumen') }}">
-                        <i class="fas fa-user-plus me-2 text-white"></i> Registrasi Konsumen & Unit
+                    <a class="nav-link sub-item-divider {{ request()->routeIs('data-konsumen*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-konsumen') }}">
+                        <i class="fas fa-users me-2 text-white"></i> Data Konsumen
+                    </a>
+                    <a class="nav-link sub-item-divider {{ request()->routeIs('data-unit*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-unit.index') }}">
+                        <i class="fas fa-box me-2 text-white"></i> Data Unit Service
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('registrasi-servis*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('registrasi-servis.index') }}">
+                        <i class="fas fa-tools me-2 text-white"></i> Registrasi Service
                     </a>
                 </nav>
             </div>
             @endif
 
-            <!-- 3. MANAJEMEN PENGGUNA (Mewadahi FR02 & FR09) -->
+            <!-- 3. MANAJEMEN PENGGUNA (Dipecah: Data Pengguna, Hak Akses, Switch Profile) -->
             @if(auth()->user()->hasMenu('hak-akses') || auth()->user()->hasMenu('user-group'))
-                <a class="nav-link {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*') ? '' : 'collapsed' }} menu-box" 
+                <a class="nav-link {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? '' : 'collapsed' }} menu-box" 
                    href="#" data-bs-toggle="collapse" data-bs-target="#collapseUserMgmt" 
-                   aria-expanded="{{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*') ? 'true' : 'false' }}" 
-                   style="border-color: {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
+                   aria-expanded="{{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? 'true' : 'false' }}" 
+                   style="border-color: {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-users-cog"></i></div>
                     <span class="nav-text text-white fw-normal">Manajemen Pengguna</span>
                     <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
                 </a>
-                
-                <div class="collapse {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*') ? 'show' : '' }}" id="collapseUserMgmt" data-bs-parent="#sidenavAccordion">
+
+                <div class="collapse {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? 'show' : '' }}" id="collapseUserMgmt" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link sub-item-divider {{ request()->routeIs('hak-akses*', 'user-group*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('hak-akses') }}">
-                            <i class="fas fa-shield-alt me-2 text-white"></i> Data Pengguna & Hak Akses
+                        <a class="nav-link sub-item-divider {{ request()->routeIs('data-pengguna*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-pengguna.index') }}">
+                            <i class="fas fa-user-friends me-2 text-white"></i> Data Pengguna
+                        </a>
+                        <a class="nav-link sub-item-divider {{ request()->routeIs('user-group*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('user-group.index') }}">
+                            <i class="fas fa-shield-alt me-2 text-white"></i> Hak Akses
                         </a>
                         <a class="nav-link {{ request()->routeIs('users.profile-auth*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('users.profile-auth') }}">
                             <i class="fas fa-id-badge me-2 text-white"></i> Switch Profile
@@ -71,7 +83,7 @@
                 </div>
             @endif
 
-            <!-- 4. LAYANAN SERVIS (Mewadahi FR04) -->
+            <!-- 4. LAYANAN SERVIS -->
             @if(auth()->user()->hasMenu('layanan-servis'))
                 <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseServis" aria-expanded="false">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-wrench"></i></div>
@@ -87,7 +99,7 @@
                 </div>
             @endif
 
-            <!-- 5. LAPORAN (Mewadahi FR07) -->
+            <!-- 5. LAPORAN -->
             @if(auth()->user()->hasMenu('report'))
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">LAPORAN & SISTEM</div>
             <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLaporan" aria-expanded="false">
@@ -104,7 +116,7 @@
             </div>
             @endif
 
-            <!-- 6. PENGATURAN AKUN (Mewadahi FR08) -->
+            <!-- 6. PENGATURAN AKUN -->
             <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePengaturan" aria-expanded="false">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-user-shield"></i></div>
                 <span class="nav-text text-white fw-normal">Pengaturan Akun</span>
@@ -144,178 +156,179 @@
     </div>
 </nav>
 
+<!-- CSS Sidebar Terstruktur & Rapi -->
 <style>
     /* =========================================
         LAYOUT & CONTAINERS
-        ========================================= */
-    #layoutSidenav_nav { 
-        width: 260px !important; 
-        flex: 0 0 260px !important; 
+       ========================================= */
+    #layoutSidenav_nav {
+        width: 260px !important;
+        flex: 0 0 260px !important;
     }
-    
-    #layoutSidenav_content { 
-        padding-left: 260px !important; 
-        min-width: 0; 
-        flex-grow: 1; 
+
+    #layoutSidenav_content {
+        padding-left: 260px !important;
+        min-width: 0;
+        flex-grow: 1;
     }
-    
-    @media (max-width: 992px) { 
-        #layoutSidenav_content { 
-            padding-left: 0 !important; 
-        } 
+
+    @media (max-width: 992px) {
+        #layoutSidenav_content {
+            padding-left: 0 !important;
+        }
     }
 
     /* =========================================
         MENU ITEMS (PARENT BOX)
-        ========================================= */
-    .menu-box { 
-        margin: 4px 6px; 
+       ========================================= */
+    .menu-box {
+        margin: 4px 6px;
         padding: 8px 10px !important;
-        border-radius: 8px; 
+        border-radius: 8px;
         background: #4682cb3f;
         border: 1.5px solid rgba(216, 231, 238, 0.3);
-        display: flex; 
-        align-items: center; 
-        transition: all 0.3s ease; 
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
     }
-    
-    .menu-box:hover { 
-        background: #3a6fae85 !important; 
-        border-color: #38bdf8 !important; 
+
+    .menu-box:hover {
+        background: #3a6fae85 !important;
+        border-color: #38bdf8 !important;
     }
-    
-    .menu-box .nav-text { 
-        flex-grow: 1; 
-        white-space: nowrap; 
-        font-size: 13px; 
+
+    .menu-box .nav-text {
+        flex-grow: 1;
+        white-space: nowrap;
+        font-size: 13px;
     }
 
     /* =========================================
         SUB-MENU (NESTED DROPDOWN)
-        ========================================= */
-    .sb-sidenav-menu-nested { 
-        margin: 4px 6px 6px 6px; 
-        padding: 6px 8px; 
-        background: #4682cb6c !important; 
-        border: 1.5px solid rgba(216, 231, 238, 0.3) !important; 
-        border-radius: 8px; 
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important; 
+       ========================================= */
+    .sb-sidenav-menu-nested {
+        margin: 4px 6px 6px 6px;
+        padding: 6px 8px;
+        background: #4682cb6c !important;
+        border: 1.5px solid rgba(216, 231, 238, 0.3) !important;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
     }
-    
-    .sb-sidenav-menu-nested .nav-link { 
+
+    .sb-sidenav-menu-nested .nav-link {
         margin: 2px 0;
-        padding: 6px 10px !important; 
-        font-size: 12.5px !important; 
-        font-weight: 400 !important; 
-        color: #ffffff !important; 
-        border-radius: 6px !important; 
-        white-space: nowrap; 
-        transition: all 0.2s ease; 
+        padding: 6px 10px !important;
+        font-size: 12.5px !important;
+        font-weight: 400 !important;
+        color: #ffffff !important;
+        border-radius: 6px !important;
+        white-space: nowrap;
+        transition: all 0.2s ease;
     }
-    
+
     .sb-sidenav-menu-nested .nav-link:hover, 
-    .sb-sidenav-menu-nested .nav-link.active-sub { 
-        background-color: rgba(255, 255, 255, 0.12) !important; 
-        color: #38bdf8 !important; 
-        padding-left: 14px !important; 
+    .sb-sidenav-menu-nested .nav-link.active-sub {
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #38bdf8 !important;
+        padding-left: 14px !important;
     }
-    
-    .sub-item-divider { 
-        margin-bottom: 3px !important; 
+
+    .sub-item-divider {
+        margin-bottom: 3px !important;
         padding-bottom: 7px !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important; 
-        border-bottom-left-radius: 0 !important; 
-        border-bottom-right-radius: 0 !important; 
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
     }
 
     /* =========================================
         FOOTER STATUS CARD
-        ========================================= */
-    .sb-status-label { 
+       ========================================= */
+    .sb-status-label {
         margin-bottom: 6px;
-        font-size: 10px; 
-        letter-spacing: 0.8px; 
-        text-transform: uppercase; 
-        color: rgba(255, 255, 255, 0.45); 
+        font-size: 10px;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.45);
     }
-    
-    .sb-status-card { 
-        padding: 10px 12px; 
-        display: flex; 
-        align-items: center; 
-        gap: 10px; 
-        background: rgba(255, 255, 255, 0.05); 
+
+    .sb-status-card {
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 12px; 
+        border-radius: 12px;
     }
-    
-    .sb-status-card.is-admin { 
-        border-color: rgba(248, 113, 113, 0.45); 
-        box-shadow: 0 0 14px rgba(239, 68, 68, 0.15); 
+
+    .sb-status-card.is-admin {
+        border-color: rgba(248, 113, 113, 0.45);
+        box-shadow: 0 0 14px rgba(239, 68, 68, 0.15);
     }
-    
-    .sb-status-card.is-marketing { 
-        border-color: rgba(56, 189, 248, 0.45); 
-        box-shadow: 0 0 14px rgba(56, 189, 248, 0.15); 
+
+    .sb-status-card.is-marketing {
+        border-color: rgba(56, 189, 248, 0.45);
+        box-shadow: 0 0 14px rgba(56, 189, 248, 0.15);
     }
-    
-    .sb-status-avatar { 
-        width: 38px; 
-        height: 38px; 
-        display: flex; 
-        align-items: center; 
+
+    .sb-status-avatar {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        border-radius: 50%; 
-        font-weight: 700; 
-        font-size: 15px; 
-        color: #fff; 
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 15px;
+        color: #fff;
     }
-    
-    .is-admin .sb-status-avatar { 
-        background: linear-gradient(135deg, #f87171, #b91c1c); 
+
+    .is-admin .sb-status-avatar {
+        background: linear-gradient(135deg, #f87171, #b91c1c);
     }
-    
-    .is-marketing .sb-status-avatar { 
-        background: linear-gradient(135deg, #38bdf8, #2563eb); 
+
+    .is-marketing .sb-status-avatar {
+        background: linear-gradient(135deg, #38bdf8, #2563eb);
     }
-    
-    .sb-status-info { 
-        min-width: 0; 
-        flex: 1; 
+
+    .sb-status-info {
+        min-width: 0;
+        flex: 1;
     }
-    
-    .sb-status-name { 
-        color: #fff; 
-        font-size: 13px; 
-        font-weight: 600; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
+
+    .sb-status-name {
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
-    
-    .sb-status-active { 
+
+    .sb-status-active {
         margin-top: 2px;
-        display: inline-flex; 
-        align-items: center; 
-        gap: 6px; 
-        font-size: 11.5px; 
-        font-weight: 600; 
-        color: #4ade80; 
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #4ade80;
     }
-    
-    .sb-status-dot { 
-        width: 9px; 
-        height: 9px; 
+
+    .sb-status-dot {
+        width: 9px;
+        height: 9px;
         flex-shrink: 0;
-        background: #22c55e; 
-        border-radius: 50%; 
-        animation: sbPulse 2s infinite; 
+        background: #22c55e;
+        border-radius: 50%;
+        animation: sbPulse 2s infinite;
     }
-    
-    @keyframes sbPulse { 
-        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); } 
-        70% { box-shadow: 0 0 0 7px rgba(34, 197, 94, 0); } 
-        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } 
+
+    @keyframes sbPulse {
+        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+        70% { box-shadow: 0 0 0 7px rgba(34, 197, 94, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 </style>

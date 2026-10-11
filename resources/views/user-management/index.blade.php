@@ -55,8 +55,8 @@ body, html {
     <div class="card rounded-4 mb-4 text-white shadow-lg overflow-hidden" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.35) !important;">
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="h3 mb-1 text-white" style="font-weight: 700;"><i class="fas fa-users-cog text-primary me-2"></i> Manajemen Pengguna & Hak Akses</h1>
-                <p class="text-light opacity-75 mb-0" style="font-weight: 500;">Kelola hak akses operasional, kelompok tim, dan profil staf di sistem CRM Jawaratech</p>
+                <h1 class="h3 mb-1 text-white" style="font-weight: 700;"><i class="fas fa-users-cog text-primary me-2"></i> Data Pengguna</h1>
+                <p class="text-light opacity-75 mb-0" style="font-weight: 500;">Kelola akun, kelompok tim, dan profil staf di sistem CRM Jawaratech</p>
             </div>
             
             <!-- Tombol Tambah Pengguna -->
@@ -64,16 +64,6 @@ body, html {
                 <i class="fas fa-plus-circle"></i> Tambah Pengguna
             </button>
         </div>
-    </div>
-
-    <!-- TAB NAVIGASI: DATA PENGGUNA (AKTIF) -->
-    <div class="d-flex mb-4 p-1 rounded-pill bg-white shadow-sm" style="width: fit-content; border: 1px solid #cbd5e1;">
-        <a href="{{ route('hak-akses') }}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" style="font-size: 0.9rem;">
-            <i class="fas fa-users me-1"></i> Data Pengguna
-        </a>
-        <a href="{{ route('user-group.index') }}" class="btn btn-light rounded-pill px-4 fw-bold text-secondary" style="font-size: 0.9rem; border: none; transition: 0.3s;">
-            <i class="fas fa-shield-alt me-1"></i> Matriks Hak Akses
-        </a>
     </div>
 
     <!-- Alert Notifikasi Sukses / Error -->
@@ -165,7 +155,7 @@ body, html {
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                 <div>
                     <h5 class="fw-bold text-dark mb-1" style="font-size: 1.2rem; letter-spacing: -0.3px;">Daftar Master Pengguna Sistem</h5>
-                    <p class="text-secondary mb-0" style="font-size: 0.875rem; font-weight: 400;">Kelola seluruh akun staf, perizinan hak akses operasional, dan status keaktifan tim</p>
+                    <p class="text-secondary mb-0" style="font-size: 0.875rem; font-weight: 400;">Kelola seluruh akun staf dan status keaktifan tim</p>
                 </div>
 
                 <div class="position-relative" style="min-width: 280px;">

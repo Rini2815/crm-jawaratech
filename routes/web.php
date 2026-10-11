@@ -52,8 +52,11 @@ Route::middleware('auth')->group(function () {
     // --- Rute Kelola Akun Tim (UI Only, belum ada logic backend) ---
     Route::get('/kelola-akun-tim', [ProfileController::class, 'manageUsers'])->name('team.manage');
 
-    // --- 2. RUTE MANAJEMEN PENGGUNA ---
-    // Mewadahi FR02: Kelola Akses
+    // --- MANAJEMEN PENGGUNA ---
+    // 1. Data Pengguna (Route baru untuk submenu Data Pengguna)
+    Route::get('/data-pengguna', [UserManagementController::class, 'index'])->name('data-pengguna.index');
+
+    // 2. Hak Akses (Mewadahi FR02: Kelola Akses)
     Route::get('/hak-akses', [UserManagementController::class, 'index'])->name('hak-akses');
 
     // Rute form tambah
@@ -70,44 +73,46 @@ Route::middleware('auth')->group(function () {
     // Rute Hapus
     Route::delete('/hak-akses/{id}', [UserManagementController::class, 'destroy'])->name('hapus-pengguna');
 
-    // Mewadahi FR09: Otoritas Akses Profil (Masuk ke profil pengguna lain tanpa autentikasi ulang)
- Route::get('/users/profile-auth', function () {
-    $teamAccounts = collect([
-        (object)[
-            'id' => 1,
-            'name' => 'Admin Jawaratech',
-            'email' => 'admin@jawaratech.com',
-            'role' => 'Superadmin',
-            'role_color' => 'bg-danger', // Tambahkan ini
-            'is_you' => true,
-        ],
-        (object)[
-            'id' => 2,
-            'name' => 'Rina Marketing',
-            'email' => 'rina.dm@jawaratech.com',
-            'role' => 'Digital Marketing',
-            'role_color' => 'bg-primary', // Tambahkan ini
-            'is_you' => false,
-        ],
-        (object)[
-            'id' => 3,
-            'name' => 'Fajar Kurniawan',
-            'email' => 'fajar.dm@jawaratech.com',
-            'role' => 'Digital Marketing',
-            'role_color' => 'bg-primary', // Tambahkan ini
-            'is_you' => false,
-        ],
-    ]);
+    // 3. Switch Profile (Mewadahi FR09: Otoritas Akses Profil)
+    Route::get('/users/profile-auth', function () {
+        $teamAccounts = collect([
+            (object)[
+                'id' => 1,
+                'name' => 'Admin Jawaratech',
+                'email' => 'admin@jawaratech.com',
+                'role' => 'Superadmin',
+                'role_color' => 'bg-danger',
+                'is_you' => true,
+            ],
+            (object)[
+                'id' => 2,
+                'name' => 'Rina Marketing',
+                'email' => 'rina.dm@jawaratech.com',
+                'role' => 'Digital Marketing',
+                'role_color' => 'bg-primary',
+                'is_you' => false,
+            ],
+            (object)[
+                'id' => 3,
+                'name' => 'Fajar Kurniawan',
+                'email' => 'fajar.dm@jawaratech.com',
+                'role' => 'Digital Marketing',
+                'role_color' => 'bg-primary',
+                'is_you' => false,
+            ],
+        ]);
 
-    return view('profile.manage-users', compact('teamAccounts'));
-})->name('users.profile-auth');
+        return view('profile.manage-users', compact('teamAccounts'));
+    })->name('users.profile-auth');
+
     // --- Rute User Group / Kelola Role ---
     Route::get('/user-group', [UserGroupController::class, 'index'])->name('user-group.index');
     Route::post('/user-group/update', [UserGroupController::class, 'update'])->name('user-group.update');
     Route::post('/user-group/store', [UserGroupController::class, 'store'])->name('user-group.store');
     Route::delete('/user-group/{roleName}', [UserGroupController::class, 'destroy'])->name('user-group.destroy');
 
-    // --- Rute Data Master: Registrasi Konsumen (Mewadahi FR03) ---
+    // --- RUTE DATA MASTER ---
+    // 1. Data Konsumen (Mewadahi FR03)
     Route::get('/data-konsumen', function () {
         return view('data-konsumen.index');
     })->name('data-konsumen');
@@ -120,7 +125,17 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('data-konsumen');
     })->name('update-konsumen');
 
-    // --- Rute Data Unit Servis ---
+    // 2. Data Unit Service (Route baru untuk submenu Data Unit Service)
+    Route::get('/data-unit', function () {
+        return view('service-jobs.index');
+    })->name('data-unit.index');
+
+    // 3. Registrasi Service / Registrasi Unit
+    Route::get('/registrasi-servis', function () {
+        return view('registrasi.index');
+    })->name('registrasi-servis.index');
+
+    // --- Rute Data Unit Servis (Lama / Service Jobs) ---
     Route::get('/service-jobs', function () {
         return view('service-jobs.index');
     })->name('service-jobs.index');

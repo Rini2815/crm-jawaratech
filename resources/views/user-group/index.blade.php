@@ -72,15 +72,6 @@ body, html {
             </button>
         </div>
     </div>
-    <!-- TAB NAVIGASI: MATRIKS HAK AKSES (AKTIF) -->
-    <div class="d-flex mb-4 p-1 rounded-pill bg-white shadow-sm" style="width: fit-content; border: 1px solid #cbd5e1;">
-        <a href="{{ route('hak-akses') }}" class="btn btn-light rounded-pill px-4 fw-bold text-secondary" style="font-size: 0.9rem; border: none; transition: 0.3s;">
-            <i class="fas fa-users me-1"></i> Data Pengguna
-        </a>
-        <a href="{{ route('user-group.index') }}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" style="font-size: 0.9rem;">
-            <i class="fas fa-shield-alt me-1"></i> Matriks Hak Akses
-        </a>
-    </div>
     <!-- Alert Notifikasi Sukses / Error -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #dcfce7; color: #166534;">

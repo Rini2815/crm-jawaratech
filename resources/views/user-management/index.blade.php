@@ -55,7 +55,7 @@ body, html {
     <div class="card rounded-4 mb-4 text-white shadow-lg overflow-hidden" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.35) !important;">
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="h3 mb-1 text-white" style="font-weight: 700;"><i class="fas fa-users-cog text-primary me-2"></i> Data Pengguna</h1>
+                <h1 class="h3 mb-1 text-white" style="font-weight: 700;"><i class="fas fa-users-cog text-primary me-2"></i> Manajemen Pengguna</h1>
                 <p class="text-light opacity-75 mb-0" style="font-weight: 500;">Kelola akun, kelompok tim, dan profil staf di sistem CRM Jawaratech</p>
             </div>
             
@@ -254,6 +254,11 @@ body, html {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function(){
+    // Notifikasi sukses hilang otomatis setelah 4 detik
+    setTimeout(function() {
+        $(".alert-success").fadeOut(500, function() { $(this).remove(); });
+    }, 4000);
+
     $("#searchInput").on("keyup", function() {
         var value = $(this).val().toLowerCase();
         $("#tablePengguna tbody tr").filter(function() {

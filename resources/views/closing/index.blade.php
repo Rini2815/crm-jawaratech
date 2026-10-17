@@ -64,13 +64,39 @@ body, html {
 }
 .badge-lunas { background-color: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
 .badge-dp { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-.badge-batal { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.badge-belum { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
 .super-thick-table th, 
 .super-thick-table td {
     border-width: 2px !important;
     border-color: #cbd5e1 !important;
 }
+
+/* Tombol silang notifikasi: di ujung kanan, tanpa kotak putih */
+.alert-dismissible {
+    position: relative;
+    padding-right: 3.5rem !important;
+}
+.alert-close {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.8;
+    text-shadow: none;
+}
+.alert-close:hover { opacity: 1; }
+.alert-success .alert-close { color: #16a34a; }
+.alert-danger .alert-close { color: #991b1b; }
 </style>
 
 <div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3 100%); min-height: 100vh;">
@@ -94,6 +120,33 @@ body, html {
         </div>
     </div>
 
+    <!-- Alert Notifikasi -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #dcfce7; color: #166534;">
+            <i class="fas fa-check-circle mr-2 me-2"></i> {{ session('success') }}
+            <button type="button" class="alert-close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-circle mr-2 me-2"></i> {{ session('error') }}
+            <button type="button" class="alert-close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-triangle mr-2 me-2"></i> <strong>Gagal Menyimpan!</strong> Periksa kembali form input Anda:
+            <ul class="mb-0 mt-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="alert-close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
     <!-- 2. RINGKASAN KARTU STATISTIK -->
     <div class="row g-3 mb-4">
         <div class="col-md-4">
@@ -102,7 +155,7 @@ body, html {
                     <div>
                         <span class="text-uppercase text-muted fw-bold small" style="font-size: 0.75rem; letter-spacing: 0.5px;">TOTAL TRANSAKSI</span>
                         <div class="d-flex align-items-baseline gap-2 mt-1">
-                            <span class="fs-2 fw-bold text-dark">2</span>
+                            <span class="fs-2 fw-bold text-dark">{{ $totalTransaksi }}</span>
                             <span class="text-secondary fw-medium">Closing</span>
                         </div>
                     </div>
@@ -119,7 +172,7 @@ body, html {
                     <div>
                         <span class="text-uppercase text-muted fw-bold small" style="font-size: 0.75rem; letter-spacing: 0.5px;">TOTAL OMSET / BIAYA</span>
                         <div class="d-flex align-items-baseline gap-2 mt-1">
-                            <span class="fs-2 fw-bold text-dark">760.000</span>
+                            <span class="fs-2 fw-bold text-dark">{{ number_format($totalOmset, 0, ',', '.') }}</span>
                             <span class="text-secondary fw-medium">Rupiah</span>
                         </div>
                     </div>
@@ -136,7 +189,7 @@ body, html {
                     <div>
                         <span class="text-uppercase text-muted fw-bold small" style="font-size: 0.75rem; letter-spacing: 0.5px;">TRANSAKSI LUNAS</span>
                         <div class="d-flex align-items-baseline gap-2 mt-1">
-                            <span class="fs-2 fw-bold text-dark">1</span>
+                            <span class="fs-2 fw-bold text-dark">{{ $totalLunas }}</span>
                             <span class="text-secondary fw-medium">Invoice</span>
                         </div>
                     </div>
@@ -173,8 +226,8 @@ body, html {
                     <select name="status_pembayaran" class="form-control crm-form-control">
                         <option value="">-- Semua Status Pembayaran --</option>
                         <option value="Lunas" {{ request('status_pembayaran') == 'Lunas' ? 'selected' : '' }}>Lunas</option>
-                        <option value="DP / Belum Lunas" {{ request('status_pembayaran') == 'DP / Belum Lunas' ? 'selected' : '' }}>DP / Belum Lunas</option>
-                        <option value="Dibatalkan" {{ request('status_pembayaran') == 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                        <option value="DP" {{ request('status_pembayaran') == 'DP' ? 'selected' : '' }}>DP</option>
+                        <option value="Belum Lunas" {{ request('status_pembayaran') == 'Belum Lunas' ? 'selected' : '' }}>Belum Lunas</option>
                     </select>
                 </div>
 
@@ -208,96 +261,69 @@ body, html {
                         </tr>
                     </thead>
                     <tbody style="font-weight: 500;">
-                        @php
-                            $closingData = [
-                                [
-                                    'no_invoice' => 'INV-202609-001',
-                                    'no_tiket' => 'SRV-202609-001',
-                                    'pelanggan' => 'Budi Santoso',
-                                    'no_wa' => '081234567890',
-                                    'unit' => 'AC Daikin Inverter 1 PK',
-                                    'teknisi' => 'Mas Anto',
-                                    'tgl_closing' => '2026-09-26',
-                                    'biaya_jasa' => 150000,
-                                    'biaya_sparepart' => 250000,
-                                    'diskon' => 20000,
-                                    'total_bayar' => 380000,
-                                    'metode_pembayaran' => 'QRIS / Transfer',
-                                    'garansi' => '30 Hari',
-                                    'status_pembayaran' => 'Lunas',
-                                    'rincian_pengerjaan' => 'Ganti Kapasitor Outdoor & Cuci AC Clean'
-                                ],
-                                [
-                                    'no_invoice' => 'INV-202609-002',
-                                    'no_tiket' => 'SRV-202609-002',
-                                    'pelanggan' => 'Siti Aminah',
-                                    'no_wa' => '089876543210',
-                                    'unit' => 'Mesin Cuci LG Front Loading',
-                                    'teknisi' => 'Pak Slamet',
-                                    'tgl_closing' => '2026-09-26',
-                                    'biaya_jasa' => 200000,
-                                    'biaya_sparepart' => 180000,
-                                    'diskon' => 0,
-                                    'total_bayar' => 380000,
-                                    'metode_pembayaran' => 'Tunai / Cash',
-                                    'garansi' => '14 Hari',
-                                    'status_pembayaran' => 'DP / Belum Lunas',
-                                    'rincian_pengerjaan' => 'Perbaikan Water Drain Valve & Modul Pcb'
-                                ],
-                            ];
-                        @endphp
-
-                        @foreach($closingData as $index => $item)
+                        @forelse($closing as $s)
                             <tr>
-                                <td class="px-4 py-3 text-secondary text-center fw-bold">{{ $index + 1 }}</td>
+                                <td class="px-4 py-3 text-secondary text-center fw-bold">{{ $loop->iteration }}</td>
                                 <td class="py-3 text-center">
-                                    <div class="text-primary fw-bold" style="font-weight: 700;">{{ $item['no_invoice'] }}</div>
-                                    <small class="text-muted"><i class="fas fa-ticket-alt mr-1 me-1"></i>{{ $item['no_tiket'] }}</small>
+                                    <div class="text-primary fw-bold" style="font-weight: 700;">{{ $s->no_invoice }}</div>
+                                    <small class="text-muted"><i class="fas fa-ticket-alt mr-1 me-1"></i>{{ $s->no_tiket }}</small>
                                 </td>
                                 <td class="py-3">
-                                    <div class="text-dark fw-bold">{{ $item['pelanggan'] }}</div>
-                                    <small class="text-secondary">{{ $item['unit'] }}</small>
+                                    <div class="text-dark fw-bold">{{ $s->unit->konsumen->nama ?? '-' }}</div>
+                                    <small class="text-secondary">{{ $s->label_unit }}</small>
                                 </td>
-                                <td class="py-3 text-center text-dark fw-bold">{{ $item['teknisi'] }}</td>
+                                <td class="py-3 text-center text-dark fw-bold">{{ $s->teknisi->nama_teknisi ?? '-' }}</td>
                                 <td class="py-3">
-                                    <div class="text-dark fw-bold" style="font-weight: 700; color: #0f172a;">Rp {{ number_format($item['total_bayar'], 0, ',', '.') }}</div>
-                                    <small class="text-muted">Jasa: Rp {{ number_format($item['biaya_jasa'], 0, ',', '.') }}</small>
+                                    <div class="text-dark fw-bold" style="font-weight: 700; color: #0f172a;">Rp {{ number_format($s->total_bayar, 0, ',', '.') }}</div>
+                                    <small class="text-muted">Jasa: Rp {{ number_format($s->biaya_jasa, 0, ',', '.') }}</small>
+                                    @if($s->status_pembayaran === 'DP')
+                                        <div><small class="text-danger fw-bold">Sisa: Rp {{ number_format($s->sisa_bayar, 0, ',', '.') }}</small></div>
+                                    @endif
                                 </td>
                                 <td class="py-3">
-                                    <div class="text-dark" style="font-size: 0.88rem;">{{ $item['metode_pembayaran'] }}</div>
-                                    <small class="text-success fw-bold"><i class="fas fa-shield-alt mr-1 me-1"></i>Garansi {{ $item['garansi'] }}</small>
+                                    <div class="text-dark" style="font-size: 0.88rem;">{{ $s->metode_pembayaran ?? '-' }}</div>
+                                    <small class="{{ $s->masa_garansi_hari > 0 ? 'text-success' : 'text-muted' }} fw-bold"><i class="fas fa-shield-alt mr-1 me-1"></i>{{ $s->masa_garansi_hari > 0 ? 'Garansi ' . $s->label_garansi : 'Tanpa Garansi' }}</small>
+                                    @if($s->garansi_berakhir)
+                                        <div><small class="text-muted">s/d {{ $s->garansi_berakhir->translatedFormat('j M Y') }}</small></div>
+                                    @endif
                                 </td>
                                 <td class="py-3 text-center">
-                                    @if($item['status_pembayaran'] == 'Lunas')
+                                    @if($s->status_pembayaran == 'Lunas')
                                         <span class="badge crm-badge badge-lunas"><i class="fas fa-check-circle mr-1 me-1"></i> LUNAS</span>
+                                    @elseif($s->status_pembayaran == 'DP')
+                                        <span class="badge crm-badge badge-dp"><i class="fas fa-clock mr-1 me-1"></i> DP</span>
                                     @else
-                                        <span class="badge crm-badge badge-dp"><i class="fas fa-clock mr-1 me-1"></i> DP / BELUM</span>
+                                        <span class="badge crm-badge badge-belum"><i class="fas fa-exclamation-circle mr-1 me-1"></i> BELUM LUNAS</span>
                                     @endif
                                 </td>
                                 <td class="py-3 text-center">
                                     <div class="d-flex justify-content-center align-items-center gap-1 flex-nowrap">
                                         <!-- Tombol Edit -->
-                                        <button class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Edit Closing / Pelunasan" style="border-radius: 4px;" data-toggle="modal" data-bs-toggle="modal" data-target="#modalEditClosing{{ $index }}" data-bs-target="#modalEditClosing{{ $index }}">
+                                        <button type="button" class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Edit Closing / Pelunasan" style="border-radius: 4px;" data-toggle="modal" data-bs-toggle="modal" data-target="#modalEditClosing{{ $s->id_servis }}" data-bs-target="#modalEditClosing{{ $s->id_servis }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         
                                         <!-- Tombol Cetak -->
-                                        <a href="#" class="btn btn-sm btn-outline-success shadow-sm px-2 py-1" title="Cetak Kwitansi / Struk Closing" style="border-radius: 4px;">
+                                        <a href="{{ route('closing.cetak', $s->id_servis) }}" target="_blank" class="btn btn-sm btn-outline-success shadow-sm px-2 py-1" title="Cetak Kwitansi / Struk Closing" style="border-radius: 4px;">
                                             <i class="fas fa-print"></i>
                                         </a>
                                         
-                                        <!-- Tombol Hapus -->
-                                        <button class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Batalkan / Hapus Closing" style="border-radius: 4px;">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <!-- Tombol Batalkan Closing -->
+                                        <form action="{{ route('closing.destroy', $s->id_servis) }}" method="POST" class="d-inline" onsubmit="return confirm('Batalkan closing {{ $s->no_invoice }}? Data invoice akan dikosongkan dan tiket kembali ke Proses Servis.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Batalkan / Hapus Closing" style="border-radius: 4px;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- Include Modal Edit -->
-                            @include('closing.edit')
-
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">Belum ada transaksi closing.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -305,17 +331,70 @@ body, html {
     </div>
 </div>
 
+{{-- MODAL EDIT (satu per data, di luar tabel) --}}
+@foreach($closing as $s)
+    @include('closing.edit', ['s' => $s])
+@endforeach
+
 <!-- Include Modal Tambah -->
 @include('closing.create')
 
-<!-- Datalist Global nama teknisi -->
+<!-- Datalist Global nama teknisi (dari tabel ms_teknisi) -->
 <datalist id="datalist_teknisi">
-    <option value="Mas Anto"></option>
-    <option value="Pak Slamet"></option>
-    <option value="Teknisi Freelance / Luar"></option>
+    @foreach($teknisi as $namaTeknisi)
+        <option value="{{ $namaTeknisi }}"></option>
+    @endforeach
 </datalist>
 
 <!-- Script JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function(){
+    setTimeout(function() {
+        $(".alert-success").fadeOut(500, function() { $(this).remove(); });
+    }, 4000);
+
+    // Buka kembali modal yang gagal disimpan, supaya isian tidak hilang
+    @php $modalBuka = old('_modal'); @endphp
+    @if($errors->any() && $modalBuka)
+        $('#{{ $modalBuka === 'tambah' ? 'modalTambahClosing' : 'modalEditClosing' . (int) substr($modalBuka, 5) }}').modal('show');
+    @endif
+});
+
+// Hitung total, tampilkan kolom DP, dan isi teknisi otomatis (semua form closing)
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.form-closing').forEach(function (form) {
+        var jasa = form.querySelector('.in-jasa'), sp = form.querySelector('.in-sparepart'), dk = form.querySelector('.in-diskon');
+        var lbl = form.querySelector('.lbl-total'), st = form.querySelector('.in-status');
+        var grp = form.querySelector('.grp-dp'), dp = form.querySelector('.in-dp');
+        var tiket = form.querySelector('.in-tiket'), tek = form.querySelector('.in-teknisi');
+
+        function hitung() {
+            var total = (parseFloat(jasa.value) || 0) + (parseFloat(sp.value) || 0) - (parseFloat(dk.value) || 0);
+            if (total < 0) total = 0;
+            lbl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+        }
+
+        function aturDp() {
+            var tampil = st.value === 'DP';
+            grp.style.display = tampil ? '' : 'none';
+            dp.required = tampil;
+        }
+
+        [jasa, sp, dk].forEach(function (el) { el.addEventListener('input', hitung); });
+        st.addEventListener('change', aturDp);
+
+        if (tiket && tek) {
+            tiket.addEventListener('change', function () {
+                var o = tiket.options[tiket.selectedIndex];
+                if (o && o.getAttribute('data-teknisi')) tek.value = o.getAttribute('data-teknisi');
+            });
+        }
+
+        hitung();
+        aturDp();
+    });
+});
+</script>
 @endsection

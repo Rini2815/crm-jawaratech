@@ -59,6 +59,32 @@ body, html {
     border-width: 2px !important;
     border-color: #cbd5e1 !important;
 }
+
+/* Tombol silang notifikasi: di ujung kanan, tanpa kotak */
+.alert-dismissible {
+    position: relative;
+    padding-right: 3.5rem !important;
+}
+.alert-close {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.7;
+}
+.alert-close:hover { opacity: 1; }
+.alert-close.alert-close-top { top: 12px; transform: none; }
+.alert-success .alert-close { color: #166534; }
+.alert-danger .alert-close { color: #991b1b; }
 </style>
 
 <div class="container-fluid px-4 pt-3 pb-4" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3 100%); min-height: 100vh; color: #f8fafc;">
@@ -77,6 +103,33 @@ body, html {
         </div>
     </div>
 
+    <!-- Alert Notifikasi -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #dcfce7; color: #166534;">
+            <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+            <button type="button" class="alert-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+            <button type="button" class="alert-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-triangle me-2"></i> <strong>Gagal Menyimpan!</strong> Periksa kembali isian Anda:
+            <ul class="mb-0 mt-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="alert-close alert-close-top" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
     <!-- 2. RINGKASAN KARTU STATISTIK -->
     <div class="row g-3 mb-4">
         <div class="col-xl-3 col-md-6">
@@ -84,7 +137,7 @@ body, html {
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Total Agenda</div>
-                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">24</div>
+                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">{{ $totalAgenda }}</div>
                     </div>
                     <div class="p-3 bg-primary bg-opacity-10 rounded-circle text-primary" style="background-color: rgba(37, 99, 235, 0.15); color: #2563eb;">
                         <i class="fas fa-calendar-alt fa-lg"></i>
@@ -97,7 +150,7 @@ body, html {
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Belum Dihubungi</div>
-                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">8</div>
+                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">{{ $belumDihubungi }}</div>
                     </div>
                     <div class="p-3 rounded-circle" style="background-color: rgba(217, 119, 6, 0.15); color: #d97706;">
                         <i class="fas fa-clock fa-lg"></i>
@@ -110,7 +163,7 @@ body, html {
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Selesai Dihubungi</div>
-                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">14</div>
+                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">{{ $sudahDihubungi }}</div>
                     </div>
                     <div class="p-3 rounded-circle" style="background-color: rgba(22, 163, 74, 0.15); color: #16a34a;">
                         <i class="fas fa-check-circle fa-lg"></i>
@@ -123,7 +176,7 @@ body, html {
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-secondary fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Jadwal Ulang</div>
-                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">2</div>
+                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">{{ $jadwalUlang }}</div>
                     </div>
                     <div class="p-3 rounded-circle" style="background-color: rgba(2, 132, 199, 0.15); color: #0284c7;">
                         <i class="fas fa-sync-alt fa-lg"></i>
@@ -166,163 +219,150 @@ body, html {
                         </tr>
                     </thead>
                     <tbody id="followupTableBody" style="font-weight: 500;">
+                        @forelse($agenda as $f)
                         @php
-                            $dummyFollowups = [
-                                [
-                                    'id' => 1,
-                                    'nama' => 'Budi Santoso',
-                                    'wa' => '6281234567890',
-                                    'wa_fmt' => '081234567890',
-                                    'unit' => 'AC Daikin Inverter 1 PK',
-                                    'layanan' => 'Perbaikan Kebocoran Freon',
-                                    'kategori' => 'Happy Call (H+3)',
-                                    'badge_kat' => 'badge-kategori-happycall',
-                                    'tgl_jadwal' => '27 Sep 2026',
-                                    'status' => 'Belum Dihubungi',
-                                    'badge_status' => 'badge-followup-pending',
-                                    'catatan' => 'Konfirmasi apakah AC masih dingin dan tidak ada kendala bocor ulang.',
-                                    'draft_wa' => 'Halo Bpk Budi Santoso, kami dari Jawaratech CRM ingin mengonfirmasi hasil perbaikan AC Daikin Anda pada tanggal 24 Sep 2026. Apakah AC sudah berfungsi dingin optimal dan tidak ada kendala?'
-                                ],
-                                [
-                                    'id' => 2,
-                                    'nama' => 'Siti Aminah',
-                                    'wa' => '6285712345678',
-                                    'wa_fmt' => '085712345678',
-                                    'unit' => 'AC Sharp 1 PK',
-                                    'layanan' => 'Cuci AC & Perawatan Rutin',
-                                    'kategori' => 'Happy Call (H+3)',
-                                    'badge_kat' => 'badge-kategori-happycall',
-                                    'tgl_jadwal' => '25 Sep 2026',
-                                    'status' => 'Sudah Dihubungi',
-                                    'badge_status' => 'badge-followup-done',
-                                    'catatan' => 'Konsumen puas dengan hasil servis, AC berfungsi dingin dan tidak ada kendala.',
-                                    'draft_wa' => 'Halo Ibu Siti Aminah, kami dari Jawaratech CRM ingin mengonfirmasi hasil perawatan AC Sharp Anda pada tanggal 22 Sep 2026. Apakah AC sudah berfungsi dingin optimal dan tidak ada kendala?'
-                                ],
-                                [
-                                    'id' => 3,
-                                    'nama' => 'Ahmad Faisal',
-                                    'wa' => '6281987654321',
-                                    'wa_fmt' => '081987654321',
-                                    'unit' => 'Dispenser Polytron Hyda',
-                                    'layanan' => 'Perbaikan Pemanas Air',
-                                    'kategori' => 'Happy Call (H+3)',
-                                    'badge_kat' => 'badge-kategori-happycall',
-                                    'tgl_jadwal' => '28 Sep 2026',
-                                    'status' => 'Perlu Jadwal Ulang',
-                                    'badge_status' => 'badge-followup-rescheduled',
-                                    'catatan' => 'Pelanggan minta dihubungi kembali hari Sabtu di jam kerja.',
-                                    'draft_wa' => 'Halo Bpk Ahmad Faisal, kami dari Jawaratech CRM ingin mengonfirmasi perbaikan Dispenser Polytron Anda. Apakah porsi pemanas airnya sudah berfungsi normal?'
-                                ]
-                            ];
+                            $badgeKat = $f->kategori === 'Happy Call' ? 'badge-kategori-happycall' : 'badge-kategori-rutin';
+                            $labelKat = $f->kategori === 'Happy Call' ? 'Happy Call (H+3)' : 'Pengingat Perawatan';
+                            $badgeStatus = [
+                                'Belum Dihubungi'    => 'badge-followup-pending',
+                                'Sudah Dihubungi'    => 'badge-followup-done',
+                                'Perlu Jadwal Ulang' => 'badge-followup-rescheduled',
+                            ][$f->status] ?? 'badge-followup-pending';
                         @endphp
-
-                        @foreach($dummyFollowups as $index => $f)
                         <tr>
-                            <td class="px-4 py-3 text-secondary text-center fw-bold">{{ $index + 1 }}</td>
+                            <td class="px-4 py-3 text-secondary text-center fw-bold">{{ $loop->iteration }}</td>
                             <td class="py-3">
-                                <div class="text-dark fw-bold">{{ $f['nama'] }}</div>
+                                <div class="text-dark fw-bold">{{ $f->nama_konsumen }}</div>
                                 <div class="text-secondary small">
-                                    <span class="badge bg-light text-success border border-success px-2 py-1 mt-1"><i class="fab fa-whatsapp me-1"></i> {{ $f['wa_fmt'] }}</span>
+                                    <span class="badge bg-light text-success border border-success px-2 py-1 mt-1"><i class="fab fa-whatsapp me-1"></i> {{ $f->no_wa }}</span>
                                 </div>
                             </td>
                             <td class="py-3">
-                                <div class="text-dark fw-bold small">{{ $f['unit'] }}</div>
-                                <div class="text-muted small">{{ $f['layanan'] }}</div>
+                                <div class="text-dark fw-bold small">{{ $f->label_unit }}</div>
+                                <div class="text-muted small">{{ $f->layanan }}</div>
                             </td>
                             <td class="py-3">
-                                <span class="badge crm-badge {{ $f['badge_kat'] }} mb-1">{{ $f['kategori'] }}</span>
-                                <div class="text-secondary small"><i class="far fa-calendar text-muted me-1"></i> {{ $f['tgl_jadwal'] }}</div>
+                                <span class="badge crm-badge {{ $badgeKat }} mb-1">{{ $labelKat }}</span>
+                                <div class="text-secondary small"><i class="far fa-calendar text-muted me-1"></i> {{ $f->tanggal_jadwal->translatedFormat('j M Y') }}</div>
+                                @if($f->status === 'Perlu Jadwal Ulang' && $f->tanggal_jadwal_ulang)
+                                    <div class="text-primary small"><i class="fas fa-sync-alt me-1"></i> Ulang: {{ $f->tanggal_jadwal_ulang->translatedFormat('j M Y') }}</div>
+                                @endif
                             </td>
                             <td class="py-3 text-center">
-                                <span class="badge crm-badge {{ $f['badge_status'] }}">
-                                    {{ $f['status'] }}
+                                <span class="badge crm-badge {{ $badgeStatus }}">
+                                    {{ $f->status }}
                                 </span>
                             </td>
                             <td class="py-3 text-secondary small" style="max-width: 220px;">
-                                {{ $f['catatan'] }}
+                                {{ $f->catatan_hasil ?: '-' }}
                             </td>
                             <td class="py-3 text-center">
                                 <div class="d-flex justify-content-center gap-1">
                                     <!-- Direct WhatsApp Link Button -->
-                                    <a href="https://wa.me/{{ $f['wa'] }}?text={{ urlencode($f['draft_wa']) }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-2 py-1 shadow-sm text-white" title="Kirim WA Langsung" style="font-weight: 600;">
+                                    <a href="{{ $f->wa_link }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-2 py-1 shadow-sm text-white" title="Kirim WA Langsung" style="font-weight: 600;">
                                         <i class="fab fa-whatsapp me-1"></i> Chat
                                     </a>
                                     <!-- Modal Trigger Edit Status / Catat Response -->
-                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 shadow-sm" title="Update Status Follow-up" data-toggle="modal" data-bs-toggle="modal" data-target="#modalUpdateFollowup{{ $f['id'] }}" data-bs-target="#modalUpdateFollowup{{ $f['id'] }}">
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 shadow-sm" title="Update Status Follow-up" data-toggle="modal" data-bs-toggle="modal" data-target="#modalUpdateFollowup{{ $f->id_follow_up }}" data-bs-target="#modalUpdateFollowup{{ $f->id_follow_up }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
-
-                        <!-- Modal Update Hasil Follow-up (EDIT) -->
-                        <div class="modal fade crm-wrapper" id="modalUpdateFollowup{{ $f['id'] }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-custom-size modal-dialog-centered">
-                                <div class="modal-content rounded-4 shadow-lg text-dark overflow-hidden" style="background: #f8fafc; border: 1px solid #cbd5e1;">
-                                    <!-- HEADER MODAL EDIT DENGAN NIKMAT GRADIENT BIRU/NAVY -->
-                                    <div class="modal-header text-white px-4 py-3" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 2px solid rgba(56, 189, 248, 0.4);">
-                                        <h5 class="modal-title fw-bold" style="font-size: 1.15rem;">
-                                            <i class="fas fa-user-check text-primary me-2"></i>Update Respon & Status Follow-up
-                                        </h5>
-                                        <button type="button" class="btn-close btn-close-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form action="#" method="POST">
-                                        @csrf
-                                        <div class="modal-body p-4">
-                                            <div class="row mb-3">
-                                                <div class="col-md-6 mb-3 mb-md-0">
-                                                    <label class="form-label text-dark small fw-bold">Pelanggan</label>
-                                                    <input type="text" class="form-control py-2 rounded-pill bg-white border-secondary" value="{{ $f['nama'] }} ({{ $f['wa_fmt'] }})" readonly style="background-color: #f1f5f9 !important; cursor: not-allowed;">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label text-dark small fw-bold">Unit & Layanan</label>
-                                                    <input type="text" class="form-control py-2 rounded-pill bg-white border-secondary" value="{{ $f['unit'] }}" readonly style="background-color: #f1f5f9 !important; cursor: not-allowed;">
-                                                </div>
-                                            </div>
-
-                                            <div class="row mb-3">
-                                                <div class="col-md-6 mb-3 mb-md-0">
-                                                    <label class="form-label text-dark small fw-bold">Status Follow-up</label>
-                                                    <select name="status" class="form-select py-2 rounded-pill bg-white border-secondary">
-                                                        <option value="Belum Dihubungi" {{ $f['status'] == 'Belum Dihubungi' ? 'selected' : '' }}>Belum Dihubungi</option>
-                                                        <option value="Sudah Dihubungi" {{ $f['status'] == 'Sudah Dihubungi' ? 'selected' : '' }}>Sudah Dihubungi (Selesai)</option>
-                                                        <option value="Perlu Jadwal Ulang" {{ $f['status'] == 'Perlu Jadwal Ulang' ? 'selected' : '' }}>Perlu Jadwal Ulang</option>
-                                                        <option value="Tidak Merespon" {{ $f['status'] == 'Tidak Merespon' ? 'selected' : '' }}>Tidak Merespon</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label text-dark small fw-bold">Kategori Follow-up</label>
-                                                    <input type="text" class="form-control py-2 rounded-pill bg-white border-secondary" value="{{ $f['kategori'] }}" readonly style="background-color: #f1f5f9 !important;">
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label class="form-label text-dark small fw-bold">Draft Pesan WhatsApp</label>
-                                                <textarea class="form-control rounded-4 bg-white border-secondary" rows="3" style="font-size: 0.875rem;">{{ $f['draft_wa'] }}</textarea>
-                                            </div>
-
-                                            <div class="mb-2">
-                                                <label class="form-label text-dark small fw-bold">Catatan / Hasil Konsultasi Pelanggan</label>
-                                                <textarea name="catatan" class="form-control rounded-4 bg-white border-secondary" rows="3" placeholder="Masukkan respons konsumen, keluhan tambahan, atau kesepakatan re-servis..." style="font-size: 0.875rem;">{{ $f['catatan'] }}</textarea>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer bg-light px-4 py-3">
-                                            <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal" data-bs-dismiss="modal">Batal</button>
-                                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
-                                                <i class="fas fa-save me-1"></i> Simpan Catatan
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">Belum ada agenda follow-up. Agenda Happy Call muncul otomatis setelah tiket di-closing, dan agenda pengingat muncul saat tombol Chat di halaman Pengingat Perawatan diklik.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Update Hasil Follow-up (EDIT), satu per agenda, di luar container -->
+@foreach($agenda as $f)
+@php
+    $pakaiOld     = (string) old('_id') === (string) $f->id_follow_up;
+    $nilaiStatus  = $pakaiOld ? old('status') : $f->status;
+    $nilaiUlang   = $pakaiOld ? old('tanggal_jadwal_ulang') : optional($f->tanggal_jadwal_ulang)->format('Y-m-d');
+    $nilaiCatatan = $pakaiOld ? old('catatan') : $f->catatan_hasil;
+    $labelKatModal = $f->kategori === 'Happy Call' ? 'Happy Call (H+3)' : 'Pengingat Perawatan';
+@endphp
+<div class="modal fade crm-wrapper" id="modalUpdateFollowup{{ $f->id_follow_up }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-custom-size modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg text-dark overflow-hidden" style="background: #f8fafc; border: 1px solid #cbd5e1;">
+            <!-- HEADER MODAL EDIT DENGAN NIKMAT GRADIENT BIRU/NAVY -->
+            <div class="modal-header text-white px-4 py-3" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 2px solid rgba(56, 189, 248, 0.4);">
+                <h5 class="modal-title fw-bold" style="font-size: 1.15rem;">
+                    <i class="fas fa-user-check text-primary me-2"></i>Update Respon & Status Follow-up
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('followup.update', $f->id_follow_up) }}" method="POST" autocomplete="off">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="_id" value="{{ $f->id_follow_up }}">
+                <div class="modal-body p-4">
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label class="form-label text-dark small fw-bold">Pelanggan</label>
+                            <input type="text" class="form-control py-2 rounded-pill bg-white border-secondary" value="{{ $f->nama_konsumen }} ({{ $f->no_wa }})" readonly style="background-color: #f1f5f9 !important; cursor: not-allowed;">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-dark small fw-bold">Unit & Layanan</label>
+                            <input type="text" class="form-control py-2 rounded-pill bg-white border-secondary" value="{{ $f->label_unit }}" readonly style="background-color: #f1f5f9 !important; cursor: not-allowed;">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label class="form-label text-dark small fw-bold">Status Follow-up</label>
+                            <select name="status" class="form-select py-2 rounded-pill bg-white border-secondary select-status-fu" data-wrap="wrapUlang{{ $f->id_follow_up }}" required>
+                                <option value="Belum Dihubungi" {{ $nilaiStatus == 'Belum Dihubungi' ? 'selected' : '' }}>Belum Dihubungi</option>
+                                <option value="Sudah Dihubungi" {{ $nilaiStatus == 'Sudah Dihubungi' ? 'selected' : '' }}>Sudah Dihubungi (Selesai)</option>
+                                <option value="Perlu Jadwal Ulang" {{ $nilaiStatus == 'Perlu Jadwal Ulang' ? 'selected' : '' }}>Perlu Jadwal Ulang</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-dark small fw-bold">Kategori Follow-up</label>
+                            <input type="text" class="form-control py-2 rounded-pill bg-white border-secondary" value="{{ $labelKatModal }}" readonly style="background-color: #f1f5f9 !important;">
+                        </div>
+                    </div>
+
+                    <!-- Tampil hanya jika status = Perlu Jadwal Ulang -->
+                    <div class="row mb-3" id="wrapUlang{{ $f->id_follow_up }}" style="display: none;">
+                        <div class="col-md-6">
+                            <label class="form-label text-dark small fw-bold">Tanggal Jadwal Ulang <span class="text-danger">*</span></label>
+                            <input type="date" name="tanggal_jadwal_ulang" class="form-control py-2 rounded-pill bg-white border-secondary" value="{{ $nilaiUlang }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold">Draft Pesan WhatsApp</label>
+                        <textarea id="draft{{ $f->id_follow_up }}" class="form-control rounded-4 bg-white border-secondary" rows="3" style="font-size: 0.875rem;">{{ $f->draft_wa }}</textarea>
+                        <button type="button" class="btn btn-sm btn-success rounded-pill px-3 mt-2 fw-semibold btn-wa-draft" data-draft="draft{{ $f->id_follow_up }}" data-nomor="{{ $f->wa_nomor }}">
+                            <i class="fab fa-whatsapp me-1"></i> Buka WhatsApp dengan Draft Ini
+                        </button>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label text-dark small fw-bold">Catatan / Hasil Konsultasi Pelanggan</label>
+                        <textarea name="catatan" class="form-control rounded-4 bg-white border-secondary" rows="3" placeholder="Masukkan respons konsumen, keluhan tambahan, atau kesepakatan re-servis..." style="font-size: 0.875rem;">{{ $nilaiCatatan }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light px-4 py-3">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-dismiss="modal" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                        <i class="fas fa-save me-1"></i> Simpan Catatan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Filter Live Search (Client-Side) -->
@@ -334,6 +374,37 @@ $(document).ready(function(){
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
         });
     });
+
+    // Notifikasi sukses hilang otomatis setelah 4 detik
+    setTimeout(function() {
+        $(".alert-success").fadeOut(500, function() { $(this).remove(); });
+    }, 4000);
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Tampilkan kolom tanggal jadwal ulang hanya jika status = Perlu Jadwal Ulang
+    document.querySelectorAll('.select-status-fu').forEach(function (sel) {
+        function atur() {
+            var wrap = document.getElementById(sel.dataset.wrap);
+            if (wrap) { wrap.style.display = sel.value === 'Perlu Jadwal Ulang' ? '' : 'none'; }
+        }
+        sel.addEventListener('change', atur);
+        atur();
+    });
+
+    // Tombol buka WhatsApp memakai isi draft yang sedang tampil di modal
+    document.querySelectorAll('.btn-wa-draft').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var teks = document.getElementById(btn.dataset.draft).value;
+            window.open('https://wa.me/' + btn.dataset.nomor + '?text=' + encodeURIComponent(teks), '_blank');
+        });
+    });
+
+    // Buka kembali modal yang gagal tervalidasi supaya isian tidak hilang
+    @if($errors->any() && old('_id'))
+        var el = document.getElementById('modalUpdateFollowup{{ old('_id') }}');
+        if (el && window.bootstrap) { new bootstrap.Modal(el).show(); }
+    @endif
 });
 </script>
 @endsection

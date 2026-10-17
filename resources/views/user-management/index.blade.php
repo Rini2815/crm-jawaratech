@@ -33,6 +33,7 @@ body, html {
 .badge-marketing { background-color: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
 .badge-default { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
 .badge-aktif { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.badge-nonaktif { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 .super-thick-table th,
 .super-thick-table td {
     border-width: 2px !important;
@@ -100,14 +101,14 @@ body, html {
         </div>
     @endif
 
-    <!-- 3 Card Statistik Ringkasan -->
+    <!-- Card Statistik Ringkasan -->
     <div class="row g-3 mb-4">
         <div class="col-xl-4 col-md-6">
             <div class="card stat-card-light p-3 h-100" style="border-left: 5px solid #2563eb !important;">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Total Pengguna Aktif</div>
-                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">{{ $users->count() }} <span class="fs-6 fw-normal text-muted">Akun</span></div>
+                        <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">{{ $users->where('status', 'Aktif')->count() }} <span class="fs-6 fw-normal text-muted">Akun</span></div>
                     </div>
                     <div class="p-3 rounded-circle" style="background-color: rgba(37, 99, 235, 0.1); color: #2563eb;">
                         <i class="fas fa-users fa-lg"></i>
@@ -121,7 +122,7 @@ body, html {
                     <div>
                         <div class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Super Admin</div>
                         <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">
-                            {{ $users->where('role', 'Super Admin')->count() }} <span class="fs-6 fw-normal text-muted">Staf</span>
+                            {{ $users->filter(fn($u) => str_contains(strtolower($u->role ?? ''), 'admin'))->count() }} <span class="fs-6 fw-normal text-muted">Staf</span>
                         </div>
                     </div>
                     <div class="p-3 rounded-circle" style="background-color: rgba(79, 70, 229, 0.1); color: #4f46e5;">
@@ -145,6 +146,39 @@ body, html {
                 </div>
             </div>
         </div>
+
+        <!-- Card OTOMATIS untuk setiap role tambahan (dari tabel ms_role) -->
+        @php
+            $warnaRole = [
+                ['#0d9488', 'rgba(13, 148, 136, 0.1)'],
+                ['#d97706', 'rgba(217, 119, 6, 0.1)'],
+                ['#7c3aed', 'rgba(124, 58, 237, 0.1)'],
+                ['#0891b2', 'rgba(8, 145, 178, 0.1)'],
+            ];
+        @endphp
+        @foreach($customRoles as $i => $cRole)
+            @php
+                $namaRole = is_array($cRole) ? ($cRole['name'] ?? '') : $cRole;
+                $warna = $warnaRole[$i % count($warnaRole)];
+            @endphp
+            @if(!empty($namaRole))
+                <div class="col-xl-4 col-md-6">
+                    <div class="card stat-card-light p-3 h-100" style="border-left: 5px solid {{ $warna[0] }} !important;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">{{ $namaRole }}</div>
+                                <div class="h4 mb-0 fw-bold text-dark mt-1" style="font-weight: 700;">
+                                    {{ $users->where('role', $namaRole)->count() }} <span class="fs-6 fw-normal text-muted">Staf</span>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-circle" style="background-color: {{ $warna[1] }}; color: {{ $warna[0] }};">
+                                <i class="fas fa-user-cog fa-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endforeach
     </div>
 
     <!-- Tabel Data Pengguna -->
@@ -183,7 +217,7 @@ body, html {
                                 $roleClass = 'badge-default';
                                 $roleIcon = 'fa-user';
                                 
-                                $roleName = strtolower($user->role);
+                                $roleName = strtolower($user->role ?? '');
                                 if(str_contains($roleName, 'admin')) {
                                     $roleClass = 'badge-superadmin';
                                     $roleIcon = 'fa-user-shield';
@@ -191,12 +225,14 @@ body, html {
                                     $roleClass = 'badge-marketing';
                                     $roleIcon = 'fa-headset';
                                 }
+
+                                $statusAktif = ($user->status === 'Aktif');
                             @endphp
                             
                             <tr>
                                 <td class="px-3 py-3 text-secondary text-center">{{ $index + 1 }}</td>
                                 <td class="py-3">
-                                    <div class="text-dark fw-bold" style="font-weight: 600;">{{ $user->name }}</div>
+                                    <div class="text-dark fw-bold" style="font-weight: 600;">{{ $user->nama }}</div>
                                 </td>
                                 <td class="py-3 text-secondary">{{ $user->email }}</td>
                                 <td class="py-3">
@@ -205,19 +241,19 @@ body, html {
                                     </span>
                                 </td>
                                 <td class="py-3 text-center">
-                                    <span class="badge crm-badge badge-aktif">
-                                        <i class="fas fa-check-circle me-1"></i> Aktif
+                                    <span class="badge crm-badge {{ $statusAktif ? 'badge-aktif' : 'badge-nonaktif' }}">
+                                        <i class="fas {{ $statusAktif ? 'fa-check-circle' : 'fa-times-circle' }} me-1"></i> {{ $user->status }}
                                     </span>
                                 </td>
                                 <td class="py-3 text-center">
                                     <div class="d-flex justify-content-center align-items-center gap-1 flex-nowrap">
-                                        <!-- Tombol Edit DISINKRONKAN MENGGUNAKAN $user->id -->
-                                        <button class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Edit Data" style="border-radius: 4px;" data-toggle="modal" data-bs-toggle="modal" data-target="#modalEditPengguna{{ $user->id }}" data-bs-target="#modalEditPengguna{{ $user->id }}">
+                                        <!-- Tombol Edit DISINKRONKAN MENGGUNAKAN $user->id_pengguna -->
+                                        <button class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Edit Data" style="border-radius: 4px;" data-toggle="modal" data-bs-toggle="modal" data-target="#modalEditPengguna{{ $user->id_pengguna }}" data-bs-target="#modalEditPengguna{{ $user->id_pengguna }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         
                                         <!-- Tombol Hapus Menggunakan Form DELETE -->
-                                        <form action="{{ route('hapus-pengguna', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna {{ $user->name }}?');">
+                                        <form action="{{ route('hapus-pengguna', $user->id_pengguna) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna {{ $user->nama }}?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Hapus Pengguna" style="border-radius: 4px;">
@@ -228,7 +264,7 @@ body, html {
                                 </td>
                             </tr>
                             
-                            <!-- Include Modal Edit per User menggunakan $user->id -->
+                            <!-- Include Modal Edit per User menggunakan $user->id_pengguna -->
                             @include('user-management.edit')
 
                         @endforeach

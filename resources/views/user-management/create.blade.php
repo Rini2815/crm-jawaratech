@@ -73,22 +73,15 @@
                             <label for="role" class="crm-form-label">Tingkat Akses (Role) <span class="text-danger">*</span></label>
                             <select class="form-control crm-form-control" id="role" name="role" required>
                                 <option value="" disabled selected>Pilih Tingkat Akses...</option>
-                                <option value="Super Admin">Super Admin - Akses Penuh Sistem</option>
+                                <option value="Super Administrator">Super Administrator - Akses Penuh Sistem</option>
                                 <option value="Digital Marketing">Digital Marketing - Follow-up & Happy Call</option>
                                 
-                                <!-- MEMBACA ROLE DARI STORAGE JSON SECARA AMAN -->
-                                @php
-                                    $customRoles = [];
-                                    if (\Illuminate\Support\Facades\Storage::exists('user_roles.json')) {
-                                        $customRoles = json_decode(\Illuminate\Support\Facades\Storage::get('user_roles.json'), true) ?? [];
-                                    }
-                                @endphp
-
+                                <!-- ROLE TAMBAHAN DARI TABEL ms_role (dikirim oleh controller) -->
                                 @foreach($customRoles as $cRole)
                                     @php
                                         $roleName = is_array($cRole) ? ($cRole['name'] ?? '') : $cRole;
                                     @endphp
-                                    @if(!empty($roleName) && !in_array($roleName, ['Super Admin', 'Digital Marketing']))
+                                    @if(!empty($roleName) && !in_array($roleName, ['Super Administrator', 'Digital Marketing']))
                                         <option value="{{ $roleName }}">{{ $roleName }}</option>
                                     @endif
                                 @endforeach

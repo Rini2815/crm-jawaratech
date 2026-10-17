@@ -1,17 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@php
-    // DATA DUMMY (nanti diganti data dari database)
-    $tiket = [
-        ['no' => 'SRV-202609-001', 'pelanggan' => 'Budi Santoso', 'wa' => '081234567890', 'unit' => 'AC Daikin (Inverter 1 PK)',      'keluhan' => 'AC Tidak Dingin & Indikator Kedip-Kedip', 'teknisi' => 'Mas Anto',    'status' => 'Sedang Dicek'],
-        ['no' => 'SRV-202609-002', 'pelanggan' => 'Siti Aminah',  'wa' => '089876543210', 'unit' => 'Mesin Cuci LG (Front Loading)', 'keluhan' => 'Air Tidak Mau Keluar Saat Pengeringan',  'teknisi' => 'Pak Slamet',  'status' => 'Proses Servis'],
-    ];
 
-    $tiketAktif   = count($tiket);
-    $tiketProses  = collect($tiket)->whereIn('status', ['Sedang Dicek', 'Proses Servis'])->count();
-    $tiketSelesai = collect($tiket)->where('status', 'Selesai')->count();
-@endphp
 <!-- Import Font 'Inter' untuk tampilan teks profesional & tegas -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -73,13 +63,10 @@ body, html {
     padding: 0.35em 0.65em;
     font-size: 0.75rem;
 }
+.badge-menunggu { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
 .badge-dicek { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 .badge-proses { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-
-.modal-custom-size {
-    max-width: 800px !important;
-    width: 90%;
-}
+.badge-selesai { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
 
 .super-thick-table th, 
 .super-thick-table td {
@@ -105,6 +92,33 @@ body, html {
             </div>
         </div>
     </div>
+
+    <!-- Alert Notifikasi -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #dcfce7; color: #166534;">
+            <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-triangle mr-2"></i> <strong>Gagal Menyimpan!</strong> Periksa kembali form input Anda:
+            <ul class="mb-0 mt-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
 
     <!-- ================================================================= -->
     <!-- REGISTRASI SERVIS                                                 -->
@@ -178,10 +192,9 @@ body, html {
                 <div class="col-md-4 col-sm-6 mb-2 mb-md-0">
                     <select name="status" class="form-control crm-form-control">
                         <option value="">-- Semua Status Servis --</option>
-                        <option value="Proses Antrean">Proses Antrean</option>
-                        <option value="Sedang Dicek">Sedang Dicek</option>
-                        <option value="Proses Servis">Proses Servis</option>
-                        <option value="Selesai">Selesai</option>
+                        @foreach(['Menunggu Konfirmasi', 'Sedang Dicek', 'Proses Servis', 'Selesai'] as $st)
+                            <option value="{{ $st }}" {{ request('status') === $st ? 'selected' : '' }}>{{ $st }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -189,6 +202,11 @@ body, html {
                     <button type="submit" class="btn btn-dark w-100 shadow-sm mr-2 me-2" style="font-weight: 600; border-radius: 6px; background-color: #1e293b; border-color: #1e293b;">
                         <i class="fas fa-filter mr-1 me-1"></i> Filter
                     </button>
+                    @if(request()->filled('search') || request()->filled('status'))
+                        <a href="{{ route('registrasi-servis.index') }}" class="btn btn-light shadow-sm" title="Reset filter" style="border: 1px solid #cbd5e1; border-radius: 6px;">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    @endif
                 </div>
             </form>
         </div>
@@ -209,37 +227,54 @@ body, html {
                         </tr>
                     </thead>
                     <tbody style="font-weight: 500;">
-                        @foreach($tiket as $t)
+                        @forelse($tiket as $t)
                         <tr>
                             <td class="px-3 py-3 text-secondary text-center">{{ $loop->iteration }}</td>
-                            <td class="py-3 text-center text-primary fw-bold" style="font-weight: 700;">{{ $t['no'] }}</td>
+                            <td class="py-3 text-center text-primary fw-bold" style="font-weight: 700;">{{ $t->no_tiket }}</td>
                             <td class="py-3">
-                                <div class="text-dark" style="font-weight: 600;">{{ $t['pelanggan'] }}</div>
-                                <small class="text-muted">{{ $t['wa'] }}</small>
+                                <div class="text-dark" style="font-weight: 600;">{{ $t->unit->konsumen->nama ?? '-' }}</div>
+                                <small class="text-muted">{{ $t->unit->konsumen->no_whatsapp ?? '-' }}</small>
                             </td>
-                            <td class="py-3 text-secondary">{{ $t['unit'] }}</td>
-                            <td class="py-3 text-secondary small">{{ $t['keluhan'] }}</td>
-                            <td class="py-3 text-center text-dark fw-bold">{{ $t['teknisi'] }}</td>
+                            <td class="py-3 text-secondary">{{ $t->label_unit }}</td>
+                            <td class="py-3 text-secondary small">{{ \Illuminate\Support\Str::limit($t->keluhan, 80) }}</td>
+                            <td class="py-3 text-center text-dark fw-bold">{{ $t->teknisi->nama_teknisi ?? '-' }}</td>
                             <td class="py-3 text-center">
-                                @if($t['status'] == 'Sedang Dicek')
+                                @if($t->status == 'Menunggu Konfirmasi')
+                                    <span class="badge crm-badge badge-menunggu">
+                                        <i class="fas fa-hourglass-half mr-1 me-1"></i> Menunggu Konfirmasi
+                                    </span>
+                                @elseif($t->status == 'Sedang Dicek')
                                     <span class="badge crm-badge badge-dicek">
                                         <i class="fas fa-search mr-1 me-1"></i> Sedang Dicek
                                     </span>
+                                @elseif($t->status == 'Selesai')
+                                    <span class="badge crm-badge badge-selesai">
+                                        <i class="fas fa-check-circle mr-1 me-1"></i> Selesai
+                                    </span>
                                 @else
                                     <span class="badge crm-badge badge-proses">
-                                        <i class="fas fa-cog fa-spin mr-1 me-1"></i> {{ $t['status'] }}
+                                        <i class="fas fa-cog fa-spin mr-1 me-1"></i> {{ $t->status }}
                                     </span>
                                 @endif
                             </td>
                             <td class="py-3 text-center">
                                 <div class="d-flex justify-content-center align-items-center gap-1">
-                                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Ubah data" data-toggle="modal" data-target="#modalEditServis{{ $loop->iteration }}"><i class="fas fa-edit"></i></button>
-                                    <button type="button" class="btn btn-sm btn-outline-success shadow-sm px-2 py-1" title="Cetak"><i class="fas fa-print"></i></button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Hapus" onclick="return confirm('Yakin ingin menghapus registrasi ini?')"><i class="fas fa-trash"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Ubah data" data-toggle="modal" data-target="#modalEditRegistrasi{{ $t->id_servis }}"><i class="fas fa-edit"></i></button>
+                                    <a href="{{ route('registrasi-servis.cetak', $t->id_servis) }}" target="_blank" class="btn btn-sm btn-outline-success shadow-sm px-2 py-1" title="Cetak Tanda Terima"><i class="fas fa-print"></i></a>
+
+                                    <form action="{{ route('registrasi-servis.destroy', $t->id_servis) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus tiket {{ $t->no_tiket }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Hapus"><i class="fas fa-trash"></i></button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">Belum ada tiket servis yang terdaftar.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -248,75 +283,34 @@ body, html {
 
 </div>
 
-{{-- MODAL EDIT SERVIS / TIKET (satu per data) --}}
+{{-- MODAL EDIT TIKET (satu per data, di luar container) --}}
 @foreach($tiket as $t)
-<div class="modal fade crm-wrapper" id="modalEditServis{{ $loop->iteration }}" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-custom-size modal-dialog-centered" role="document">
-        <div class="modal-content" style="border-radius: 10px; border: none; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
-            <div class="modal-header py-3 px-4 text-white" style="background-color: #1e293b; border-bottom: 1px solid #1e293b; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <h5 class="modal-title text-white mb-0" style="font-weight: 700; font-size: 1.15rem;"><i class="fas fa-edit mr-2"></i>Edit Tiket Servis</h5>
-                <button type="button" data-dismiss="modal" aria-label="Close" style="color: #ffffff; opacity: 1; background: transparent; border: none; font-size: 1.5rem; padding: 0; line-height: 1;"><span aria-hidden="true">&times;</span></button>
-            </div>
-            <form action="#" method="POST" autocomplete="off">
-                @csrf
-                @method('PUT')
-                <div class="modal-body p-4 bg-white text-dark">
-                    <div class="row mb-3">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">No. Tiket / SPK</label>
-                            <input type="text" class="form-control py-2" value="{{ $t['no'] }}" readonly style="border-radius: 6px; background-color: #f1f5f9; cursor: not-allowed;">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Pelanggan</label>
-                            <input type="text" class="form-control py-2" value="{{ $t['pelanggan'] }} ({{ $t['wa'] }})" readonly style="border-radius: 6px; background-color: #f1f5f9; cursor: not-allowed;">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Unit & Merek</label>
-                        <input type="text" class="form-control py-2" value="{{ $t['unit'] }}" readonly style="border-radius: 6px; background-color: #f1f5f9; cursor: not-allowed;">
-                    </div>
-                    <div class="mb-3">
-                        <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Keluhan / Kendala Utama</label>
-                        <textarea name="keluhan" class="form-control" rows="2" required style="border-radius: 6px;">{{ $t['keluhan'] }}</textarea>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Nama Teknisi</label>
-                            <input type="text" name="teknisi" class="form-control py-2" value="{{ $t['teknisi'] }}" list="datalist_teknisi" required style="border-radius: 6px;">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Status Servis</label>
-                            <select name="status" class="form-control py-2" style="border-radius: 6px;">
-                                <option value="Proses Antrean" {{ $t['status'] == 'Proses Antrean' ? 'selected' : '' }}>Proses Antrean</option>
-                                <option value="Sedang Dicek" {{ $t['status'] == 'Sedang Dicek' ? 'selected' : '' }}>Sedang Dicek</option>
-                                <option value="Proses Servis" {{ $t['status'] == 'Proses Servis' ? 'selected' : '' }}>Proses Servis</option>
-                                <option value="Menunggu Sparepart" {{ $t['status'] == 'Menunggu Sparepart' ? 'selected' : '' }}>Menunggu Sparepart</option>
-                                <option value="Selesai" {{ $t['status'] == 'Selesai' ? 'selected' : '' }}>Selesai</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer px-4 py-3" style="border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-                    <button type="button" class="btn btn-light px-4 py-2" data-dismiss="modal" style="font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1;">Batal</button>
-                    <button type="submit" class="btn btn-primary px-4 py-2" style="font-weight: 600; border-radius: 6px; background-color: #2563eb; border-color: #2563eb;"><i class="fas fa-save mr-1"></i> Perbarui Tiket</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+    @include('registrasi.edit', ['t' => $t])
 @endforeach
 
 <!-- Include Modal Tambah Registrasi -->
 @include('registrasi.create')
 
-<!-- Datalist Global untuk Auto-complete nama teknisi -->
+<!-- Datalist Global untuk Auto-complete nama teknisi (dari tabel ms_teknisi) -->
 <datalist id="datalist_teknisi">
-    <option value="Mas Anto"></option>
-    <option value="Pak Slamet"></option>
-    <option value="Teknisi Freelance / Luar"></option>
+    @foreach($teknisi as $namaTeknisi)
+        <option value="{{ $namaTeknisi }}"></option>
+    @endforeach
 </datalist>
 
 <!-- Script JS (Bootstrap 4.6) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function(){
+    setTimeout(function() {
+        $(".alert-success").fadeOut(500, function() { $(this).remove(); });
+    }, 4000);
+
+    // Buka kembali modal tambah jika validasi gagal, supaya isian tidak hilang
+    @if($errors->any() && session('_modal') === 'tambah')
+        $('#modalTambahRegistrasi').modal('show');
+    @endif
+});
+</script>
 @endsection

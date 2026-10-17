@@ -17,14 +17,29 @@
         </div>
     </div>
 
+    <!-- Alert Notifikasi -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #dcfce7; color: #166534;">
+            <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+            <button type="button" class="alert-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+            <button type="button" class="alert-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
     <!-- 2. RINGKASAN STATISTIK PERAWATAN (Dengan Spasi & Bayangan yang Rapi) -->
     <div class="row g-3 mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-white text-dark border-0 shadow-sm rounded-4 p-2" style="border-left: 5px solid #ca8a04 !important;">
+        <div class="col-xl col-md-6">
+            <div class="card bg-white text-dark border-0 shadow-sm rounded-4 p-2 h-100" style="border-left: 5px solid #ca8a04 !important;">
                 <div class="card-body d-flex align-items-center justify-content-between py-3">
                     <div>
-                        <span class="text-muted small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Jatuh Tempo Bulan Ini</span>
-                        <h4 class="fw-bold mb-0 text-dark">12 <span class="fs-6 fw-normal text-muted">Unit</span></h4>
+                        <span class="text-muted small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;" title="Unit yang sudah jatuh tempo, terlewat, atau jatuh tempo sampai akhir bulan ini">Jatuh Tempo s.d. Bulan Ini</span>
+                        <h4 class="fw-bold mb-0 text-dark">{{ $totalJatuhTempo }} <span class="fs-6 fw-normal text-muted">Unit</span></h4>
                     </div>
                     <div class="bg-warning bg-opacity-25 text-warning p-3 rounded-circle">
                         <i class="fas fa-clock fa-lg"></i>
@@ -32,12 +47,12 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-white text-dark border-0 shadow-sm rounded-4 p-2" style="border-left: 5px solid #2563eb !important;">
+        <div class="col-xl col-md-6">
+            <div class="card bg-white text-dark border-0 shadow-sm rounded-4 p-2 h-100" style="border-left: 5px solid #2563eb !important;">
                 <div class="card-body d-flex align-items-center justify-content-between py-3">
                     <div>
                         <span class="text-muted small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Perawatan AC (3 Bln)</span>
-                        <h4 class="fw-bold mb-0 text-dark">7 <span class="fs-6 fw-normal text-muted">Unit</span></h4>
+                        <h4 class="fw-bold mb-0 text-dark">{{ $totalAc }} <span class="fs-6 fw-normal text-muted">Unit</span></h4>
                     </div>
                     <div class="bg-primary bg-opacity-25 text-primary p-3 rounded-circle">
                         <i class="fas fa-snowflake fa-lg"></i>
@@ -45,12 +60,12 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-white text-dark border-0 shadow-sm rounded-4 p-2" style="border-left: 5px solid #0891b2 !important;">
+        <div class="col-xl col-md-6">
+            <div class="card bg-white text-dark border-0 shadow-sm rounded-4 p-2 h-100" style="border-left: 5px solid #0891b2 !important;">
                 <div class="card-body d-flex align-items-center justify-content-between py-3">
                     <div>
-                        <span class="text-muted small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Dispenser / WH (6 Bln)</span>
-                        <h4 class="fw-bold mb-0 text-dark">3 <span class="fs-6 fw-normal text-muted">Unit</span></h4>
+                        <span class="text-muted small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Dispenser (6 Bln)</span>
+                        <h4 class="fw-bold mb-0 text-dark">{{ $totalDispenser }} <span class="fs-6 fw-normal text-muted">Unit</span></h4>
                     </div>
                     <div class="bg-info bg-opacity-25 text-info p-3 rounded-circle">
                         <i class="fas fa-faucet fa-lg"></i>
@@ -58,12 +73,25 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-white text-dark border-0 shadow-sm rounded-4 p-2" style="border-left: 5px solid #16a34a !important;">
+        <div class="col-xl col-md-6">
+            <div class="card bg-white text-dark border-0 shadow-sm rounded-4 p-2 h-100" style="border-left: 5px solid #ea580c !important;">
+                <div class="card-body d-flex align-items-center justify-content-between py-3">
+                    <div>
+                        <span class="text-muted small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Water Heater (6 Bln)</span>
+                        <h4 class="fw-bold mb-0 text-dark">{{ $totalWaterHeater }} <span class="fs-6 fw-normal text-muted">Unit</span></h4>
+                    </div>
+                    <div class="p-3 rounded-circle" style="background-color: rgba(234, 88, 12, 0.15); color: #ea580c;">
+                        <i class="fas fa-fire fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl col-md-6">
+            <div class="card bg-white text-dark border-0 shadow-sm rounded-4 p-2 h-100" style="border-left: 5px solid #16a34a !important;">
                 <div class="card-body d-flex align-items-center justify-content-between py-3">
                     <div>
                         <span class="text-muted small d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Mesin Cuci (1 Thn)</span>
-                        <h4 class="fw-bold mb-0 text-dark">2 <span class="fs-6 fw-normal text-muted">Unit</span></h4>
+                        <h4 class="fw-bold mb-0 text-dark">{{ $totalMesinCuci }} <span class="fs-6 fw-normal text-muted">Unit</span></h4>
                     </div>
                     <div class="bg-success bg-opacity-25 text-success p-3 rounded-circle">
                         <i class="fas fa-soap fa-lg"></i>
@@ -94,7 +122,8 @@
             <select id="filterPerangkat" class="form-select bg-white text-dark" style="flex: 1 1 260px; max-width: 480px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem; height: 40px;">
                 <option value="">-- Semua Perangkat --</option>
                 <option value="AC">AC (3 Bulan)</option>
-                <option value="Dispenser">Dispenser / Water Heater (6 Bulan)</option>
+                <option value="Dispenser">Dispenser (6 Bulan)</option>
+                <option value="Water Heater">Water Heater (6 Bulan)</option>
                 <option value="Mesin Cuci">Mesin Cuci (1 Tahun)</option>
             </select>
 
@@ -121,80 +150,63 @@
                         </tr>
                     </thead>
                     <tbody id="reminderTableBody" class="small fw-medium">
-                        <!-- Baris 1: AC (3 Bulan) -->
-                        <tr data-kategori="AC">
-                            <td class="py-3 text-secondary text-center fw-bold">1</td>
+                        @forelse($schedules as $j)
+                        @php
+                            $gayaBadge = match ($j->kelompok) {
+                                'AC'           => 'background-color: #1e3a8a; color: #ffffff;',
+                                'Dispenser'    => 'background-color: #78350f; color: #ffffff;',
+                                'Water Heater' => 'background-color: #c2410c; color: #ffffff;',
+                                default        => 'background-color: #0e7490; color: #ffffff;',
+                            };
+                            $ikonUnit = match ($j->jenis_unit) {
+                                'AC'           => 'fa-snowflake',
+                                'Water Heater' => 'fa-fire',
+                                'Dispenser'    => 'fa-faucet',
+                                default        => 'fa-soap',
+                            };
+                        @endphp
+                        <tr data-kategori="{{ $j->kelompok }}">
+                            <td class="py-3 text-secondary text-center fw-bold">{{ $loop->iteration }}</td>
                             <td class="py-3 fw-bold text-dark">
-                                Siti Aminah
-                                <span class="d-block text-muted fw-normal" style="font-size: 0.75rem;">0812-3456-7890</span>
+                                {{ $j->nama_pelanggan }}
+                                <span class="d-block text-muted fw-normal" style="font-size: 0.75rem;">{{ $j->no_hp }}</span>
                             </td>
                             <td class="py-3">
-                                <!-- Badge Biru Tua Kontras & Jelas -->
-                                <span class="badge px-2 py-1 fw-semibold" style="background-color: #1e3a8a; color: #ffffff;">
-                                    <i class="fas fa-snowflake me-1"></i> AC Sharp 1 PK
+                                <span class="badge px-2 py-1 fw-semibold" style="{{ $gayaBadge }}">
+                                    <i class="fas {{ $ikonUnit }} me-1"></i> {{ $j->nama_perangkat }}
                                 </span>
                             </td>
-                            <td class="py-3 text-center"><span class="text-info fw-bold">3 Bulan</span></td>
-                            <td class="py-3 text-secondary text-center">10 Juni 2026</td>
-                            <td class="py-3 text-warning fw-bold text-center">10 Sept 2026</td>
+                            <td class="py-3 text-center"><span class="text-info fw-bold">{{ $j->interval_label }}</span></td>
+                            <td class="py-3 text-secondary text-center">
+                                {{ $j->terakhir->translatedFormat('j M Y') }}
+                                @unless($j->dari_closing)
+                                    <span class="d-block text-muted fw-normal" style="font-size: 0.7rem;">(tgl. masuk unit)</span>
+                                @endunless
+                            </td>
+                            <td class="py-3 fw-bold text-center {{ $j->warna_tanggal }}">{{ $j->jatuh_tempo->translatedFormat('j M Y') }}</td>
                             <td class="py-3 text-center">
-                                <span class="badge bg-warning text-dark fw-bold px-2 py-1"><i class="fas fa-clock me-1"></i> Minggu 1</span>
+                                <span class="badge {{ $j->badge }} fw-bold px-2 py-1"><i class="fas {{ $j->ikon_status }} me-1"></i> {{ $j->status_label }}</span>
+                                <span class="d-block text-muted fw-normal mt-1" style="font-size: 0.7rem;">{{ $j->keterangan }}</span>
+                                @if($j->follow_status)
+                                    <span class="badge bg-light text-dark border mt-1" style="font-size: 0.65rem;">{{ $j->follow_status }}</span>
+                                @endif
                             </td>
                             <td class="py-3 text-center">
-                                <a href="https://wa.me/6281234567890?text=Halo%20Ibu%20Siti%20Aminah,%20jadwal%20perawatan%20cuci%20AC%20Sharp%20Anda%20di%20Jawaratech%20sudah%20jatuh%20tempo." target="_blank" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold">
-                                    <i class="fab fa-whatsapp me-1"></i> Chat
-                                </a>
+                                <!-- Catat agenda follow-up lalu buka WhatsApp di tab baru -->
+                                <form action="{{ route('schedules.hubungi') }}" method="POST" target="_blank" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="id_unit" value="{{ $j->id_unit }}">
+                                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold">
+                                        <i class="fab fa-whatsapp me-1"></i> Chat
+                                    </button>
+                                </form>
                             </td>
                         </tr>
-                        <!-- Baris 2: Dispenser (6 Bulan) -->
-                        <tr data-kategori="Dispenser">
-                            <td class="py-3 text-secondary text-center fw-bold">2</td>
-                            <td class="py-3 fw-bold text-dark">
-                                Hendra Wijaya
-                                <span class="d-block text-muted fw-normal" style="font-size: 0.75rem;">0857-1122-3344</span>
-                            </td>
-                            <td class="py-3">
-                                <!-- Badge Cokelat Tua Kontras & Jelas -->
-                                <span class="badge px-2 py-1 fw-semibold" style="background-color: #78350f; color: #ffffff;">
-                                    <i class="fas fa-faucet me-1"></i> Dispenser Miyako
-                                </span>
-                            </td>
-                            <td class="py-3 text-center"><span class="text-info fw-bold">6 Bulan</span></td>
-                            <td class="py-3 text-secondary text-center">15 Maret 2026</td>
-                            <td class="py-3 text-warning fw-bold text-center">15 Sept 2026</td>
-                            <td class="py-3 text-center">
-                                <span class="badge bg-warning text-dark fw-bold px-2 py-1"><i class="fas fa-clock me-1"></i> Minggu 1</span>
-                            </td>
-                            <td class="py-3 text-center">
-                                <a href="https://wa.me/6285711223344?text=Halo%20Bapak%20Hendra,%20jadwal%20pembersihan%20elemen%20dispenser%20Miyako%20Anda%20di%20Jawaratech%20sudah%20jatuh%20tempo." target="_blank" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold">
-                                    <i class="fab fa-whatsapp me-1"></i> Chat
-                                </a>
-                            </td>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">Belum ada unit yang terdaftar untuk dipantau perawatannya.</td>
                         </tr>
-                        <!-- Baris 3: Mesin Cuci (1 Tahun) -->
-                        <tr data-kategori="Mesin Cuci">
-                            <td class="py-3 text-secondary text-center fw-bold">3</td>
-                            <td class="py-3 fw-bold text-dark">
-                                Budi Santoso
-                                <span class="d-block text-muted fw-normal" style="font-size: 0.75rem;">0813-9988-7766</span>
-                            </td>
-                            <td class="py-3">
-                                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 fw-semibold">
-                                    <i class="fas fa-soap me-1"></i> Mesin Cuci LG
-                                </span>
-                            </td>
-                            <td class="py-3 text-center"><span class="text-info fw-bold">1 Tahun</span></td>
-                            <td class="py-3 text-secondary text-center">28 Sept 2025</td>
-                            <td class="py-3 text-danger fw-bold text-center">28 Sept 2026</td>
-                            <td class="py-3 text-center">
-                                <span class="badge bg-danger text-white fw-bold px-2 py-1"><i class="fas fa-exclamation-circle me-1"></i> Minggu 2</span>
-                            </td>
-                            <td class="py-3 text-center">
-                                <a href="https://wa.me/6281399887766?text=Halo%20Bapak%20Budi,%20jadwal%20perawatan%201%20tahun%20mesin%20cuci%20LG%20Anda%20di%20Jawaratech%20sudah%20memasuki%20minggu%20ke-2." target="_blank" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold">
-                                    <i class="fab fa-whatsapp me-1"></i> Chat
-                                </a>
-                            </td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -225,6 +237,31 @@
     #btnFilter:hover {
         background-color: #0f172a !important;
     }
+
+    /* Tombol silang notifikasi: di ujung kanan, tanpa kotak */
+    .alert-dismissible {
+        position: relative;
+        padding-right: 3.5rem !important;
+    }
+    .alert-close {
+        position: absolute;
+        top: 50%;
+        right: 16px;
+        transform: translateY(-50%);
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        padding: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        opacity: 0.7;
+    }
+    .alert-close:hover { opacity: 1; }
+    .alert-success .alert-close { color: #166534; }
+    .alert-danger .alert-close { color: #991b1b; }
 </style>
 
 <!-- Filter Live Search + Filter Perangkat (Client-Side, tanpa jQuery) -->
@@ -249,6 +286,11 @@ document.addEventListener('DOMContentLoaded', function () {
     searchInput.addEventListener('keyup', terapkanFilter);
     filterSelect.addEventListener('change', terapkanFilter);
     btnFilter.addEventListener('click', terapkanFilter);
+
+    // Notifikasi hilang otomatis setelah 4 detik
+    setTimeout(function () {
+        document.querySelectorAll('.alert').forEach(function (a) { a.style.display = 'none'; });
+    }, 4000);
 });
 </script>
 @endsection

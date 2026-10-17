@@ -167,8 +167,8 @@ body, html {
                                 <!-- Header Kolom Dinamis Berdasarkan Role yang Ada -->
                                 @foreach($rolesData as $role)
                                     <th class="py-3 text-white text-center">
-                                        <span class="badge {{ $role['name'] == 'Super Administrator' ? 'badge-superadmin' : 'badge-marketing' }} px-3 py-1">
-                                            <i class="fas {{ $role['name'] == 'Super Administrator' ? 'fa-user-shield' : 'fa-headset' }} me-1"></i> {{ strtoupper($role['name']) }}
+                                        <span class="badge {{ $role['name'] == 'Super Administrator' ? 'badge-superadmin' : ($role['name'] == 'Digital Marketing' ? 'badge-marketing' : 'badge-custom') }} px-3 py-1">
+                                            <i class="fas {{ $role['name'] == 'Super Administrator' ? 'fa-user-shield' : ($role['name'] == 'Digital Marketing' ? 'fa-headset' : 'fa-user-cog') }} me-1"></i> {{ strtoupper($role['name']) }}
                                         </span>
                                     </th>
                                 @endforeach
@@ -176,13 +176,17 @@ body, html {
                         </thead>
                         <tbody style="font-weight: 500;">
                             @php
+                                // Kunci menu HARUS sama dengan yang dipakai CekMenu di routes/web.php.
+                                // Dashboard & profil terbuka untuk semua user login; Manajemen Pengguna,
+                                // User Group, dan Switch Profile khusus Superadmin (tidak ada di matriks).
                                 $menuList = [
-                                    ['key' => 'dashboard', 'label' => 'Dashboard & Grafik Analisis', 'icon' => 'fa-chart-pie'],
-                                    ['key' => 'data-konsumen', 'label' => 'Data Master Konsumen & Unit', 'icon' => 'fa-users'],
-                                    ['key' => 'layanan-servis', 'label' => 'Layanan Servis (Registrasi, Closing, Followup)', 'icon' => 'fa-tools'],
-                                    ['key' => 'hak-akses', 'label' => 'Manajemen Pengguna & Kelola Akun', 'icon' => 'fa-user-cog'],
-                                    ['key' => 'report', 'label' => 'Laporan & Log Kronologis', 'icon' => 'fa-file-alt'],
-                                    ['key' => 'schedules', 'label' => 'Jadwal Perawatan Servis', 'icon' => 'fa-calendar-alt'],
+                                    ['key' => 'data-konsumen', 'label' => 'Data Konsumen', 'icon' => 'fa-users'],
+                                    ['key' => 'data-unit', 'label' => 'Data Unit Servis', 'icon' => 'fa-tools'],
+                                    ['key' => 'registrasi-servis', 'label' => 'Registrasi Servis', 'icon' => 'fa-clipboard-list'],
+                                    ['key' => 'closing', 'label' => 'Closing Servis', 'icon' => 'fa-file-invoice'],
+                                    ['key' => 'pengingat-perawatan', 'label' => 'Pengingat Perawatan Berkala', 'icon' => 'fa-calendar-alt'],
+                                    ['key' => 'follow-up', 'label' => 'Follow-up Konsumen (Chat & Happy Call)', 'icon' => 'fa-headset'],
+                                    ['key' => 'laporan', 'label' => 'Laporan & Riwayat Servis', 'icon' => 'fa-file-alt'],
                                 ];
                             @endphp
                             @foreach($menuList as $index => $menu)
@@ -226,7 +230,7 @@ body, html {
                 <!-- Footer Simpan Hak Akses -->
                 <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                     <span class="text-secondary small">
-                        <i class="fas fa-info-circle me-1 text-primary"></i> Superadmin secara otomatis memiliki hak akses ke seluruh fitur sistem.
+                        <i class="fas fa-info-circle me-1 text-primary"></i> Superadmin secara otomatis memiliki hak akses ke seluruh fitur sistem. Dashboard, profil, dan notifikasi terbuka untuk semua pengguna yang login, sedangkan Manajemen Pengguna, User Group, dan Switch Profile khusus Superadmin.
                     </span>
                     <button type="submit" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm" style="background-color: #2563eb; border-color: #2563eb;">
                         <i class="fas fa-save me-1"></i> Simpan Hak Akses

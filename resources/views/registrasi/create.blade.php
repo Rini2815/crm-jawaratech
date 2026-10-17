@@ -57,29 +57,40 @@
                 </button>
             </div>
             
-           <form action="#" method="POST" autocomplete="off">
+            <form action="{{ route('registrasi-servis.store') }}" method="POST" autocomplete="off">
                 @csrf
                 <div class="modal-body px-4 py-4" style="background-color: #f8fafc;">
                     
                     <!-- Section 1: Informasi Tiket & Pelanggan -->
                     <div class="crm-section-title">Informasi Tiket & Pelanggan</div>
                     <div class="row mb-4">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-12 mb-3">
                             <label for="no_tiket" class="crm-form-label">No. Tiket / SPK</label>
-                            <input type="text" class="form-control crm-form-control bg-light" id="no_tiket" name="no_tiket" value="SRV-202609-003" readonly>
-                            <small class="text-muted" style="font-size: 11px;">*Nomor SPK tergenerasi otomatis</small>
+                            <input type="text" class="form-control crm-form-control bg-light" id="no_tiket" value="{{ $noTiketBerikut }}" readonly>
+                            <small class="text-muted" style="font-size: 11px;">*Nomor SPK tergenerasi otomatis saat data disimpan</small>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="pelanggan" class="crm-form-label">Nama Pelanggan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="pelanggan" name="pelanggan" placeholder="Masukkan nama lengkap pemilik unit" autocomplete="off" required>
+                            <label for="konsumen_id" class="crm-form-label">Pelanggan (Konsumen) <span class="text-danger">*</span></label>
+                            <select class="form-control crm-form-control" id="konsumen_id" name="konsumen_id" required>
+                                <option value="" disabled {{ old('konsumen_id') ? '' : 'selected' }}>-- Pilih Konsumen --</option>
+                                @foreach($konsumen as $k)
+                                    <option value="{{ $k->id_konsumen }}" {{ old('konsumen_id') == $k->id_konsumen ? 'selected' : '' }}>{{ $k->nama }} - {{ $k->no_whatsapp }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="no_wa" class="crm-form-label">No. WhatsApp <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="no_wa" name="no_wa" placeholder="contoh: 081234567890" autocomplete="off" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="unit" class="crm-form-label">Unit Servis & Merek <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="unit" name="unit" placeholder="contoh: AC Sharp Sayonara 1 PK" autocomplete="off" required>
+                            <label for="unit_id" class="crm-form-label">Unit Servis & Merek <span class="text-danger">*</span></label>
+                            <select class="form-control crm-form-control" id="unit_id" name="unit_id" required>
+                                <option value="" disabled {{ old('unit_id') ? '' : 'selected' }}>-- Pilih Unit --</option>
+                                @foreach($konsumen as $k)
+                                    @foreach($k->unit as $u)
+                                        <option value="{{ $u->id_unit }}" data-konsumen="{{ $k->id_konsumen }}" {{ old('unit_id') == $u->id_unit ? 'selected' : '' }}>
+                                            {{ $u->jenis_unit }} {{ $u->merek }}{{ $u->tipe_model ? ' (' . $u->tipe_model . ')' : '' }}
+                                        </option>
+                                    @endforeach
+                                @endforeach
+                            </select>
+                            <small id="info_unit_kosong" class="text-danger" style="font-size: 11px; display: none;">Konsumen ini belum memiliki unit. Tambahkan dulu di menu Data Unit Servis.</small>
                         </div>
                     </div>
 
@@ -88,33 +99,34 @@
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
                             <label for="tgl_masuk" class="crm-form-label">Tanggal Masuk <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control crm-form-control" id="tgl_masuk" name="tgl_masuk" value="{{ date('Y-m-d') }}" required>
+                            <input type="date" class="form-control crm-form-control" id="tgl_masuk" name="tgl_masuk" value="{{ old('tgl_masuk', date('Y-m-d')) }}" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="perkiraan_selesai" class="crm-form-label">Perkiraan Selesai</label>
-                            <input type="date" class="form-control crm-form-control" id="perkiraan_selesai" name="perkiraan_selesai">
+                            <input type="date" class="form-control crm-form-control" id="perkiraan_selesai" name="perkiraan_selesai" value="{{ old('perkiraan_selesai') }}">
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="keluhan" class="crm-form-label">Keluhan / Kendala Utama <span class="text-danger">*</span></label>
-                            <textarea class="form-control crm-form-control" id="keluhan" name="keluhan" rows="2" placeholder="Catat keluhan perbaikan dari pelanggan..." required></textarea>
+                            <textarea class="form-control crm-form-control" id="keluhan" name="keluhan" rows="2" maxlength="1000" placeholder="Catat keluhan perbaikan dari pelanggan..." required>{{ old('keluhan') }}</textarea>
                         </div>
                         <div class="col-md-12 mb-3">
                             <label class="crm-form-label">Kelengkapan Diserahterimakan</label>
+                            @php $kelengkapanLama = old('kelengkapan', ['Unit Utama']); @endphp
                             <div class="d-flex flex-wrap gap-3 p-3 bg-white border rounded">
                                 <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Unit Utama" id="chk_unit" checked>
+                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Unit Utama" id="chk_unit" {{ in_array('Unit Utama', $kelengkapanLama) ? 'checked' : '' }}>
                                     <label class="form-check-label font-weight-normal text-dark" for="chk_unit">Unit Utama</label>
                                 </div>
                                 <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Remote AC/TV" id="chk_remote">
+                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Remote AC/TV" id="chk_remote" {{ in_array('Remote AC/TV', $kelengkapanLama) ? 'checked' : '' }}>
                                     <label class="form-check-label font-weight-normal text-dark" for="chk_remote">Remote AC/TV</label>
                                 </div>
                                 <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Kabel Power" id="chk_kabel">
+                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Kabel Power" id="chk_kabel" {{ in_array('Kabel Power', $kelengkapanLama) ? 'checked' : '' }}>
                                     <label class="form-check-label font-weight-normal text-dark" for="chk_kabel">Kabel Power</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Adaptor" id="chk_adaptor">
+                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Adaptor" id="chk_adaptor" {{ in_array('Adaptor', $kelengkapanLama) ? 'checked' : '' }}>
                                     <label class="form-check-label font-weight-normal text-dark" for="chk_adaptor">Adaptor</label>
                                 </div>
                             </div>
@@ -127,16 +139,16 @@
                         <!-- INPUT MANUAL NAMA TEKNISI DENGAN AUTOCOMPLETE DATALIST -->
                         <div class="col-md-6 mb-3">
                             <label for="teknisi" class="crm-form-label">Nama Teknisi Penanggung Jawab <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="teknisi" name="teknisi" placeholder="Masukkan / ketik nama teknisi..." list="datalist_teknisi" autocomplete="off" required>
+                            <input type="text" class="form-control crm-form-control" id="teknisi" name="teknisi" value="{{ old('teknisi') }}" maxlength="45" placeholder="Masukkan / ketik nama teknisi..." list="datalist_teknisi" autocomplete="off" required>
                             <small class="text-muted" style="font-size: 11px;">*Bisa diketik bebas atau pilih dari saran</small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="status" class="crm-form-label">Status Awal <span class="text-danger">*</span></label>
+                            @php $statusLama = old('status', 'Sedang Dicek'); @endphp
                             <select class="form-control crm-form-control" id="status" name="status" required>
-                                <option value="Proses Antrean">Proses Antrean</option>
-                                <option value="Sedang Dicek" selected>Sedang Dicek</option>
-                                <option value="Proses Servis">Proses Servis</option>
-                                <option value="Menunggu Sparepart">Menunggu Sparepart</option>
+                                <option value="Menunggu Konfirmasi" {{ $statusLama == 'Menunggu Konfirmasi' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
+                                <option value="Sedang Dicek" {{ $statusLama == 'Sedang Dicek' ? 'selected' : '' }}>Sedang Dicek</option>
+                                <option value="Proses Servis" {{ $statusLama == 'Proses Servis' ? 'selected' : '' }}>Proses Servis</option>
                             </select>
                         </div>
                     </div>
@@ -154,3 +166,30 @@
         </div>
     </div>
 </div>
+
+<script>
+// Pilihan unit otomatis menyesuaikan konsumen yang dipilih
+(function () {
+    var k = document.getElementById('konsumen_id');
+    var u = document.getElementById('unit_id');
+    var info = document.getElementById('info_unit_kosong');
+    if (!k || !u) return;
+
+    function saring() {
+        var id = k.value, ada = 0;
+        Array.prototype.forEach.call(u.options, function (o) {
+            if (!o.value) return;
+            var cocok = o.getAttribute('data-konsumen') === id;
+            o.hidden = !cocok;
+            o.disabled = !cocok;
+            if (cocok) ada++;
+        });
+        if (u.selectedOptions.length && u.selectedOptions[0].disabled) u.value = '';
+        u.disabled = !id || ada === 0;
+        info.style.display = (id && ada === 0) ? 'block' : 'none';
+    }
+
+    k.addEventListener('change', function () { u.value = ''; saring(); });
+    saring();
+})();
+</script>

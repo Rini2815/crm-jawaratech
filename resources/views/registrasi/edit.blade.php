@@ -1,4 +1,4 @@
-<div class="modal fade crm-wrapper" id="modalEditRegistrasi{{ $index }}" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade crm-wrapper" id="modalEditRegistrasi{{ $t->id_servis }}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 8px;">
             
@@ -11,29 +11,31 @@
                 </button>
             </div>
             
-            <form action="{{ route('registrasi.update', $index) }}" method="POST">
+            <form action="{{ route('registrasi-servis.update', $t->id_servis) }}" method="POST" autocomplete="off">
                 @csrf
                 @method('PUT')
                 <div class="modal-body px-4 py-4" style="background-color: #f8fafc;">
+
+                    @if($t->no_invoice)
+                        <div class="alert alert-warning py-2 small">
+                            <i class="fas fa-lock mr-1 me-1"></i> Tiket ini sudah di-closing (invoice {{ $t->no_invoice }}), data tidak dapat diubah dari halaman ini.
+                        </div>
+                    @endif
                     
                     <!-- Section 1: Informasi Tiket & Pelanggan -->
                     <div class="crm-section-title">Informasi Tiket & Pelanggan</div>
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_no_tiket_{{ $index }}" class="crm-form-label">No. Tiket / SPK</label>
-                            <input type="text" class="form-control crm-form-control bg-light" id="edit_no_tiket_{{ $index }}" name="no_tiket" value="{{ $item['no_tiket'] }}" readonly>
+                            <label class="crm-form-label">No. Tiket / SPK</label>
+                            <input type="text" class="form-control crm-form-control bg-light" value="{{ $t->no_tiket }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_pelanggan_{{ $index }}" class="crm-form-label">Nama Pelanggan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="edit_pelanggan_{{ $index }}" name="pelanggan" value="{{ $item['pelanggan'] }}" required>
+                            <label class="crm-form-label">Nama Pelanggan</label>
+                            <input type="text" class="form-control crm-form-control bg-light" value="{{ $t->unit->konsumen->nama ?? '-' }} ({{ $t->unit->konsumen->no_whatsapp ?? '-' }})" readonly>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_no_wa_{{ $index }}" class="crm-form-label">No. WhatsApp <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="edit_no_wa_{{ $index }}" name="no_wa" value="{{ $item['no_wa'] }}" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_unit_{{ $index }}" class="crm-form-label">Unit Servis & Merek <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="edit_unit_{{ $index }}" name="unit" value="{{ $item['unit'] }}" required>
+                        <div class="col-md-12 mb-3">
+                            <label class="crm-form-label">Unit Servis & Merek</label>
+                            <input type="text" class="form-control crm-form-control bg-light" value="{{ $t->label_unit }}" readonly>
                         </div>
                     </div>
 
@@ -41,35 +43,36 @@
                     <div class="crm-section-title">Detail Kerusakan & Kelengkapan</div>
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_tgl_masuk_{{ $index }}" class="crm-form-label">Tanggal Masuk <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control crm-form-control" id="edit_tgl_masuk_{{ $index }}" name="tgl_masuk" value="{{ $item['tgl_masuk'] }}" required>
+                            <label for="edit_tgl_masuk_{{ $t->id_servis }}" class="crm-form-label">Tanggal Masuk <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control crm-form-control" id="edit_tgl_masuk_{{ $t->id_servis }}" name="tgl_masuk" value="{{ $t->tanggal_masuk->format('Y-m-d') }}" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_perkiraan_{{ $index }}" class="crm-form-label">Perkiraan Selesai</label>
-                            <input type="date" class="form-control crm-form-control" id="edit_perkiraan_{{ $index }}" name="perkiraan_selesai" value="{{ $item['perkiraan_selesai'] }}">
+                            <label for="edit_perkiraan_{{ $t->id_servis }}" class="crm-form-label">Perkiraan Selesai</label>
+                            <input type="date" class="form-control crm-form-control" id="edit_perkiraan_{{ $t->id_servis }}" name="perkiraan_selesai" value="{{ optional($t->tanggal_estimasi_selesai)->format('Y-m-d') }}">
                         </div>
                         <div class="col-md-12 mb-3">
-                            <label for="edit_keluhan_{{ $index }}" class="crm-form-label">Keluhan Utama <span class="text-danger">*</span></label>
-                            <textarea class="form-control crm-form-control" id="edit_keluhan_{{ $index }}" name="keluhan" rows="2" required>{{ $item['keluhan'] }}</textarea>
+                            <label for="edit_keluhan_{{ $t->id_servis }}" class="crm-form-label">Keluhan Utama <span class="text-danger">*</span></label>
+                            <textarea class="form-control crm-form-control" id="edit_keluhan_{{ $t->id_servis }}" name="keluhan" rows="2" maxlength="1000" required>{{ $t->keluhan }}</textarea>
                         </div>
                         <div class="col-md-12 mb-3">
                             <label class="crm-form-label">Kelengkapan Diserahterimakan</label>
+                            @php $dipilih = array_filter(array_map('trim', explode(',', (string) $t->kelengkapan))); @endphp
                             <div class="d-flex flex-wrap gap-3 p-3 bg-white border rounded">
                                 <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Unit Utama" id="edit_chk_unit_{{ $index }}" {{ in_array('Unit Utama', $item['kelengkapan']) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal" for="edit_chk_unit_{{ $index }}">Unit Utama</label>
+                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Unit Utama" id="edit_chk_unit_{{ $t->id_servis }}" {{ in_array('Unit Utama', $dipilih) ? 'checked' : '' }}>
+                                    <label class="form-check-label font-weight-normal" for="edit_chk_unit_{{ $t->id_servis }}">Unit Utama</label>
                                 </div>
                                 <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Remote AC/TV" id="edit_chk_remote_{{ $index }}" {{ in_array('Remote AC/TV', $item['kelengkapan']) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal" for="edit_chk_remote_{{ $index }}">Remote AC/TV</label>
+                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Remote AC/TV" id="edit_chk_remote_{{ $t->id_servis }}" {{ in_array('Remote AC/TV', $dipilih) ? 'checked' : '' }}>
+                                    <label class="form-check-label font-weight-normal" for="edit_chk_remote_{{ $t->id_servis }}">Remote AC/TV</label>
                                 </div>
                                 <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Kabel Power" id="edit_chk_kabel_{{ $index }}" {{ in_array('Kabel Power', $item['kelengkapan']) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal" for="edit_chk_kabel_{{ $index }}">Kabel Power</label>
+                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Kabel Power" id="edit_chk_kabel_{{ $t->id_servis }}" {{ in_array('Kabel Power', $dipilih) ? 'checked' : '' }}>
+                                    <label class="form-check-label font-weight-normal" for="edit_chk_kabel_{{ $t->id_servis }}">Kabel Power</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Adaptor" id="edit_chk_adaptor_{{ $index }}" {{ in_array('Adaptor', $item['kelengkapan']) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal" for="edit_chk_adaptor_{{ $index }}">Adaptor</label>
+                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Adaptor" id="edit_chk_adaptor_{{ $t->id_servis }}" {{ in_array('Adaptor', $dipilih) ? 'checked' : '' }}>
+                                    <label class="form-check-label font-weight-normal" for="edit_chk_adaptor_{{ $t->id_servis }}">Adaptor</label>
                                 </div>
                             </div>
                         </div>
@@ -78,20 +81,18 @@
                     <!-- Section 3: Penugasan Teknisi & Status Operasional -->
                     <div class="crm-section-title">Penugasan Teknisi & Status Servis</div>
                     <div class="row">
-                        <!-- INPUT MANUAL NAMA TEKNISI DENGAN AUTOCOMPLETE DATALIST -->
                         <div class="col-md-6 mb-3">
-                            <label for="edit_teknisi_{{ $index }}" class="crm-form-label">Nama Teknisi Penanggung Jawab <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="edit_teknisi_{{ $index }}" name="teknisi" value="{{ $item['teknisi'] }}" placeholder="Ketik nama teknisi..." list="datalist_teknisi" autocomplete="off" required>
+                            <label for="edit_teknisi_{{ $t->id_servis }}" class="crm-form-label">Nama Teknisi Penanggung Jawab <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control crm-form-control" id="edit_teknisi_{{ $t->id_servis }}" name="teknisi" value="{{ $t->teknisi->nama_teknisi ?? '' }}" maxlength="45" placeholder="Ketik nama teknisi..." list="datalist_teknisi" autocomplete="off" required>
                             <small class="text-muted" style="font-size: 11px;">*Bisa diketik bebas atau pilih dari saran</small>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_status_{{ $index }}" class="crm-form-label">Status Pengerjaan <span class="text-danger">*</span></label>
-                            <select class="form-control crm-form-control" id="edit_status_{{ $index }}" name="status" required>
-                                <option value="Proses Antrean" {{ $item['status'] == 'Proses Antrean' ? 'selected' : '' }}>Proses Antrean</option>
-                                <option value="Sedang Dicek" {{ $item['status'] == 'Sedang Dicek' ? 'selected' : '' }}>Sedang Dicek</option>
-                                <option value="Proses Servis" {{ $item['status'] == 'Proses Servis' ? 'selected' : '' }}>Proses Servis</option>
-                                <option value="Menunggu Sparepart" {{ $item['status'] == 'Menunggu Sparepart' ? 'selected' : '' }}>Menunggu Sparepart</option>
-                                <option value="Selesai" {{ $item['status'] == 'Selesai' ? 'selected' : '' }}>Selesai (Siap Closing Servis)</option>
+                            <label for="edit_status_{{ $t->id_servis }}" class="crm-form-label">Status Pengerjaan <span class="text-danger">*</span></label>
+                            <select class="form-control crm-form-control" id="edit_status_{{ $t->id_servis }}" name="status" required>
+                                <option value="Menunggu Konfirmasi" {{ $t->status == 'Menunggu Konfirmasi' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
+                                <option value="Sedang Dicek" {{ $t->status == 'Sedang Dicek' ? 'selected' : '' }}>Sedang Dicek</option>
+                                <option value="Proses Servis" {{ $t->status == 'Proses Servis' ? 'selected' : '' }}>Proses Servis</option>
+                                <option value="Selesai" {{ $t->status == 'Selesai' ? 'selected' : '' }}>Selesai (Siap Closing Servis)</option>
                             </select>
                         </div>
                     </div>
@@ -101,9 +102,11 @@
                     <button type="button" class="btn px-4" data-dismiss="modal" data-bs-dismiss="modal" style="font-weight: 600; color: #475569; background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px;">
                         Batalkan
                     </button>
+                    @unless($t->no_invoice)
                     <button type="submit" class="btn btn-primary px-4 shadow-sm" style="font-weight: 600; border-radius: 6px; background-color: #2563eb; border-color: #2563eb;">
                         <i class="fas fa-check-circle mr-2 me-2"></i> Perbarui Data Tiket
                     </button>
+                    @endunless
                 </div>
             </form>
         </div>

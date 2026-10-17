@@ -1,4 +1,4 @@
-<div class="modal fade crm-wrapper" id="modalEditPengguna{{ $index }}" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade crm-wrapper" id="modalEditPengguna{{ $user->id_pengguna }}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 8px;">
             
@@ -11,7 +11,7 @@
                 </button>
             </div>
             
-            <form action="{{ route('update-pengguna', $user->id) }}" method="POST" autocomplete="off">
+            <form action="{{ route('update-pengguna', $user->id_pengguna) }}" method="POST" autocomplete="off">
                 @csrf
                 @method('PUT') 
                 
@@ -20,46 +20,39 @@
                     <div class="crm-section-title">Informasi Akun</div>
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_nama_{{ $index }}" class="crm-form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="edit_nama_{{ $index }}" name="name" value="{{ $user->name }}" autocomplete="off" required>
+                            <label for="edit_nama_{{ $user->id_pengguna }}" class="crm-form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control crm-form-control" id="edit_nama_{{ $user->id_pengguna }}" name="name" value="{{ $user->nama }}" autocomplete="off" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_email_{{ $index }}" class="crm-form-label">Alamat Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control crm-form-control" id="edit_email_{{ $index }}" name="email" value="{{ $user->email }}" autocomplete="off" required>
+                            <label for="edit_email_{{ $user->id_pengguna }}" class="crm-form-label">Alamat Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control crm-form-control" id="edit_email_{{ $user->id_pengguna }}" name="email" value="{{ $user->email }}" autocomplete="off" required>
                         </div>
                     </div>
 
                     <div class="crm-section-title">Wewenang & Keamanan</div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_role_{{ $index }}" class="crm-form-label">Tingkat Akses (Role) <span class="text-danger">*</span></label>
-                            <select class="form-control crm-form-control" id="edit_role_{{ $index }}" name="role" required>
-                                <option value="Super Admin" {{ $user->role == 'Super Admin' ? 'selected' : '' }}>Super Admin - Akses Penuh Sistem</option>
+                            <label for="edit_role_{{ $user->id_pengguna }}" class="crm-form-label">Tingkat Akses (Role) <span class="text-danger">*</span></label>
+                            <select class="form-control crm-form-control" id="edit_role_{{ $user->id_pengguna }}" name="role" required>
+                                <option value="Super Administrator" {{ $user->role == 'Super Administrator' ? 'selected' : '' }}>Super Administrator - Akses Penuh Sistem</option>
                                 <option value="Digital Marketing" {{ $user->role == 'Digital Marketing' ? 'selected' : '' }}>Digital Marketing - Follow-up & Happy Call</option>
                                 
-                                <!-- MEMBACA ROLE DARI STORAGE JSON SECARA AMAN -->
-                                @php
-                                    $customRoles = [];
-                                    if (\Illuminate\Support\Facades\Storage::exists('user_roles.json')) {
-                                        $customRoles = json_decode(\Illuminate\Support\Facades\Storage::get('user_roles.json'), true) ?? [];
-                                    }
-                                @endphp
-
+                                <!-- ROLE TAMBAHAN DARI TABEL ms_role (dikirim oleh controller) -->
                                 @foreach($customRoles as $cRole)
                                     @php
                                         $roleName = is_array($cRole) ? ($cRole['name'] ?? '') : $cRole;
                                     @endphp
-                                    @if(!empty($roleName) && !in_array($roleName, ['Super Admin', 'Digital Marketing']))
+                                    @if(!empty($roleName) && !in_array($roleName, ['Super Administrator', 'Digital Marketing']))
                                         <option value="{{ $roleName }}" {{ $user->role == $roleName ? 'selected' : '' }}>{{ $roleName }}</option>
                                     @endif
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_status_{{ $index }}" class="crm-form-label">Status Operasional <span class="text-danger">*</span></label>
-                            <select class="form-control crm-form-control" id="edit_status_{{ $index }}" name="status" required>
-                                <option value="Aktif" selected>Aktif Beroperasi</option>
-                                <option value="Tidak Aktif">Ditangguhkan (Suspend)</option>
+                            <label for="edit_status_{{ $user->id_pengguna }}" class="crm-form-label">Status Operasional <span class="text-danger">*</span></label>
+                            <select class="form-control crm-form-control" id="edit_status_{{ $user->id_pengguna }}" name="status" required>
+                                <option value="Aktif" {{ $user->status == 'Aktif' ? 'selected' : '' }}>Aktif Beroperasi</option>
+                                <option value="Tidak Aktif" {{ $user->status == 'Tidak Aktif' ? 'selected' : '' }}>Ditangguhkan (Suspend)</option>
                             </select>
                         </div>
                         
@@ -68,12 +61,12 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="edit_password_{{ $index }}" class="crm-form-label">Kata Sandi Baru</label>
-                            <input type="password" class="form-control crm-form-control" id="edit_password_{{ $index }}" name="password" placeholder="Ketik kata sandi baru (opsional)" autocomplete="new-password">
+                            <label for="edit_password_{{ $user->id_pengguna }}" class="crm-form-label">Kata Sandi Baru</label>
+                            <input type="password" class="form-control crm-form-control" id="edit_password_{{ $user->id_pengguna }}" name="password" placeholder="Ketik kata sandi baru (opsional)" autocomplete="new-password">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_password_confirmation_{{ $index }}" class="crm-form-label">Verifikasi Kata Sandi Baru</label>
-                            <input type="password" class="form-control crm-form-control" id="edit_password_confirmation_{{ $index }}" name="password_confirmation" placeholder="Ketik ulang kata sandi baru" autocomplete="new-password">
+                            <label for="edit_password_confirmation_{{ $user->id_pengguna }}" class="crm-form-label">Verifikasi Kata Sandi Baru</label>
+                            <input type="password" class="form-control crm-form-control" id="edit_password_confirmation_{{ $user->id_pengguna }}" name="password_confirmation" placeholder="Ketik ulang kata sandi baru" autocomplete="new-password">
                         </div>
                     </div>
                 </div>

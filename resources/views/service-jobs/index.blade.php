@@ -1,31 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-@php
-    // DATA DUMMY (nanti diganti data dari database)
-
-    // Konsumen HANYA untuk pilihan dropdown "Pilih Konsumen Pemilik" di modal Tambah Unit.
-    $konsumen = [
-        ['id' => 1, 'nama' => 'Budi Santoso',  'wa' => '081399887766'],
-        ['id' => 2, 'nama' => 'Siti Aminah',   'wa' => '081234567890'],
-        ['id' => 3, 'nama' => 'Hendra Wijaya', 'wa' => '085711223344'],
-        ['id' => 4, 'nama' => 'Ahmad Faisal',  'wa' => '081987654321'],
-    ];
-
-    $unit = [
-        ['pemilik' => 'Budi Santoso',  'wa' => '081399887766', 'jenis' => 'AC',         'merek' => 'Daikin',   'model' => 'Inverter 1 PK (FTKC25)', 'masuk' => '28 Sep 2026', 'garansi' => true],
-        ['pemilik' => 'Budi Santoso',  'wa' => '081399887766', 'jenis' => 'Mesin Cuci', 'merek' => 'LG',       'model' => '2 Tabung 8 Kg (P800N)',  'masuk' => '28 Sep 2025', 'garansi' => false],
-        ['pemilik' => 'Siti Aminah',   'wa' => '081234567890', 'jenis' => 'AC',         'merek' => 'Sharp',    'model' => 'Standar 1 PK',           'masuk' => '4 Jul 2026',  'garansi' => true],
-        ['pemilik' => 'Hendra Wijaya', 'wa' => '085711223344', 'jenis' => 'Dispenser',  'merek' => 'Miyako',   'model' => 'Galon Bawah',            'masuk' => '9 Apr 2026',  'garansi' => false],
-        ['pemilik' => 'Ahmad Faisal',  'wa' => '081987654321', 'jenis' => 'Dispenser',  'merek' => 'Polytron', 'model' => 'Hyda',                   'masuk' => '1 Okt 2026',  'garansi' => true],
-    ];
-
-    // Angka kartu dihitung otomatis dari data di atas
-    $totalUnit     = count($unit);
-    $unitAC        = collect($unit)->where('jenis', 'AC')->count();
-    $unitDispenser = collect($unit)->whereIn('jenis', ['Dispenser', 'Water Heater'])->count();
-    $unitMesinCuci = collect($unit)->where('jenis', 'Mesin Cuci')->count();
-@endphp
 
 <!-- Import Font 'Inter' untuk tampilan teks profesional & tegas -->
 <style>
@@ -45,6 +20,38 @@ body, html {
     background: #ffffff !important;
 }
 
+/* Tombol silang notifikasi: di ujung kanan, tanpa kotak */
+.alert-dismissible {
+    position: relative;
+    padding-right: 3.5rem !important;
+}
+.alert-close {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.7;
+    text-shadow: none;
+}
+.alert-close:hover {
+    opacity: 1;
+}
+.alert-close.alert-close-top {
+    top: 12px;
+    transform: none;
+}
+.alert-success .alert-close { color: #166534; }
+.alert-danger .alert-close { color: #991b1b; }
+
 /* Style Kartu Statistik Ringkasan */
 .stat-card {
     border-radius: 12px;
@@ -61,6 +68,7 @@ body, html {
 .stat-card.green { border-left: 4px solid #10b981 !important; }
 .stat-card.purple { border-left: 4px solid #8b5cf6 !important; }
 .stat-card.cyan { border-left: 4px solid #0891b2 !important; }
+.stat-card.orange { border-left: 4px solid #f97316 !important; }
 
 .crm-table-header {
     background-color: #1e293b; 
@@ -114,13 +122,40 @@ body, html {
         </div>
     </div>
 
+    <!-- Alert Notifikasi -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #dcfce7; color: #166534;">
+            <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+            <button type="button" class="alert-close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
+            <button type="button" class="alert-close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-triangle mr-2"></i> <strong>Gagal Menyimpan!</strong> Periksa kembali form input Anda:
+            <ul class="mb-0 mt-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="alert-close alert-close-top" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+    @endif
+
     <!-- ================================================================= -->
     <!-- DATA UNIT SERVIS                                                  -->
     <!-- ================================================================= -->
 
-    <!-- KARTU STATISTIK DATA UNIT -->
-    <div class="row mb-4">
-        <div class="col-md-3">
+    <!-- KARTU STATISTIK DATA UNIT (5 kartu: Total, AC, Dispenser, Water Heater, Mesin Cuci) -->
+    <div class="row mb-2">
+        <div class="col-lg col-md-4 col-sm-6 mb-3">
             <div class="card stat-card blue h-100 p-3 border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -133,7 +168,7 @@ body, html {
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-lg col-md-4 col-sm-6 mb-3">
             <div class="card stat-card purple h-100 p-3 border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -146,11 +181,11 @@ body, html {
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-lg col-md-4 col-sm-6 mb-3">
             <div class="card stat-card cyan h-100 p-3 border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <p class="text-muted text-uppercase mb-1" style="font-size: 0.75rem; font-weight: 600;">Dispenser / WH</p>
+                        <p class="text-muted text-uppercase mb-1" style="font-size: 0.75rem; font-weight: 600;">Unit Dispenser</p>
                         <h4 class="mb-0 fw-bold text-dark">{{ $unitDispenser }} <span style="font-size: 0.9rem; font-weight: 500; color: #64748b;">Unit</span></h4>
                     </div>
                     <div class="rounded p-2" style="background-color: #cffafe; color: #0891b2;">
@@ -159,7 +194,20 @@ body, html {
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-lg col-md-4 col-sm-6 mb-3">
+            <div class="card stat-card orange h-100 p-3 border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted text-uppercase mb-1" style="font-size: 0.75rem; font-weight: 600;">Unit Water Heater</p>
+                        <h4 class="mb-0 fw-bold text-dark">{{ $unitWaterHeater }} <span style="font-size: 0.9rem; font-weight: 500; color: #64748b;">Unit</span></h4>
+                    </div>
+                    <div class="rounded p-2" style="background-color: #ffedd5; color: #ea580c;">
+                        <i class="fas fa-fire fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg col-md-4 col-sm-6 mb-3">
             <div class="card stat-card green h-100 p-3 border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -200,27 +248,27 @@ body, html {
                         </tr>
                     </thead>
                     <tbody style="font-weight: 500;">
-                        @foreach($unit as $u)
+                        @forelse($unit as $u)
                         <tr>
                             <td class="px-4 py-3 text-secondary text-center fw-bold">{{ $loop->iteration }}</td>
                             <td class="py-3">
-                                <div class="text-dark fw-bold">{{ $u['pemilik'] }}</div>
-                                <small class="text-success"><i class="fab fa-whatsapp"></i> {{ $u['wa'] }}</small>
+                                <div class="text-dark fw-bold">{{ $u->konsumen->nama ?? '-' }}</div>
+                                <small class="text-success"><i class="fab fa-whatsapp"></i> {{ $u->konsumen->no_whatsapp ?? '-' }}</small>
                             </td>
                             <td class="py-3">
-                                @if($u['jenis'] == 'AC')
+                                @if($u->jenis_unit == 'AC')
                                     <span class="badge bg-info text-dark">AC</span>
-                                @elseif($u['jenis'] == 'Mesin Cuci')
+                                @elseif($u->jenis_unit == 'Mesin Cuci')
                                     <span class="badge bg-warning text-dark">Mesin Cuci</span>
                                 @else
-                                    <span class="badge" style="background-color: #cffafe; color: #0e7490;">{{ $u['jenis'] }}</span>
+                                    <span class="badge" style="background-color: #cffafe; color: #0e7490;">{{ $u->jenis_unit }}</span>
                                 @endif
-                                {{ $u['merek'] }}
+                                {{ $u->merek }}
                             </td>
-                            <td class="py-3 text-secondary">{{ $u['model'] }}</td>
-                            <td class="py-3 text-center">{{ $u['masuk'] }}</td>
+                            <td class="py-3 text-secondary">{{ $u->tipe_model ?? '-' }}</td>
+                            <td class="py-3 text-center">{{ $u->tanggal_masuk->translatedFormat('j M Y') }}</td>
                             <td class="py-3 text-center">
-                                @if($u['garansi'])
+                                @if($u->status_garansi === 'Aktif')
                                     <span class="badge" style="background-color: #dcfce3; color: #15803d; border: 1px solid #bbf7d0;">Aktif (Ada Kartu)</span>
                                 @else
                                     <span class="badge" style="background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;">Tidak Bergaransi</span>
@@ -228,12 +276,21 @@ body, html {
                             </td>
                             <td class="py-3 text-center">
                                 <div class="aksi-wrap">
-                                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Ubah data" data-toggle="modal" data-target="#modalEditUnit{{ $loop->iteration }}"><i class="fas fa-edit"></i></button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Hapus" onclick="return confirm('Yakin ingin menghapus unit ini?')"><i class="fas fa-trash"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Ubah data" data-toggle="modal" data-target="#modalEditUnit{{ $u->id_unit }}"><i class="fas fa-edit"></i></button>
+
+                                    <form action="{{ route('service-jobs.destroy', $u->id_unit) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus unit ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Hapus"><i class="fas fa-trash"></i></button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">Belum ada data unit yang terdaftar.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -254,7 +311,7 @@ body, html {
                 <h5 class="modal-title text-white mb-0" style="font-weight: 700; font-size: 1.15rem;"><i class="fas fa-plus-circle mr-2"></i>Tambah Data Unit Servis</h5>
                 <button type="button" data-dismiss="modal" aria-label="Close" style="color: #ffffff; opacity: 1; background: transparent; border: none; font-size: 1.5rem; padding: 0; line-height: 1;"><span aria-hidden="true">&times;</span></button>
             </div>
-            <form action="#" method="POST" autocomplete="off">
+            <form action="{{ route('service-jobs.store') }}" method="POST" autocomplete="off">
                 @csrf
                 <div class="modal-body p-4 bg-white text-dark">
                     <div class="mb-3">
@@ -262,7 +319,7 @@ body, html {
                         <select name="konsumen_id" class="form-control py-2" required style="border-radius: 6px;">
                             <option value="" disabled selected>Pilih Konsumen...</option>
                             @foreach($konsumen as $k)
-                            <option value="{{ $k['id'] }}">{{ $k['nama'] }} - {{ $k['wa'] }}</option>
+                            <option value="{{ $k->id_konsumen }}">{{ $k->nama }} - {{ $k->no_whatsapp }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -279,25 +336,30 @@ body, html {
                         </div>
                         <div class="col-md-6">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Merek Unit</label>
-                            <input type="text" name="merek" class="form-control py-2" placeholder="Contoh: Daikin, LG, Sharp" required style="border-radius: 6px;">
+                            <input type="text" name="merek" class="form-control py-2" placeholder="Contoh: Daikin, LG, Sharp" required maxlength="20" style="border-radius: 6px;">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Model / Tipe Rinci</label>
-                        <input type="text" name="tipe" class="form-control py-2" placeholder="Contoh: Inverter 1 PK / 2 Tabung" required style="border-radius: 6px;">
+                        <input type="text" name="tipe" class="form-control py-2" placeholder="Contoh: Inverter 1 PK / 2 Tabung" required maxlength="45" style="border-radius: 6px;">
                     </div>
-                    <div class="row mb-2">
+                    <div class="row mb-3">
                         <div class="col-md-6 mb-3 mb-md-0">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Tanggal Masuk Servis</label>
-                            <input type="date" name="tgl_masuk" class="form-control py-2" style="border-radius: 6px;">
+                            <input type="date" name="tgl_masuk" class="form-control py-2" required style="border-radius: 6px;">
                         </div>
                         <div class="col-md-6">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Status Garansi</label>
                             <select name="status_garansi" class="form-control py-2" required style="border-radius: 6px;">
-                                <option value="Aktif (Ada Kartu)">Aktif (Ada Kartu)</option>
+                                <option value="Aktif">Aktif (Ada Kartu)</option>
                                 <option value="Tidak Bergaransi">Tidak Bergaransi</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Interval Perawatan (Bulan)</label>
+                        <input type="number" name="interval_bulan" class="form-control py-2" value="6" min="1" max="60" required style="border-radius: 6px;">
+                        <small class="text-muted">Jarak antar jadwal perawatan rutin unit ini.</small>
                     </div>
                 </div>
                 <div class="modal-footer px-4 py-3" style="border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
@@ -311,52 +373,57 @@ body, html {
 
 <!-- Modal Edit Unit (satu per data) -->
 @foreach($unit as $u)
-<div class="modal fade crm-wrapper" id="modalEditUnit{{ $loop->iteration }}" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade crm-wrapper" id="modalEditUnit{{ $u->id_unit }}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-custom-size modal-dialog-centered" role="document">
         <div class="modal-content" style="border-radius: 10px; border: none; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
             <div class="modal-header py-3 px-4 text-white" style="background-color: #1e293b; border-bottom: 1px solid #1e293b; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                 <h5 class="modal-title text-white mb-0" style="font-weight: 700; font-size: 1.15rem;"><i class="fas fa-edit mr-2"></i>Edit Data Unit Servis</h5>
                 <button type="button" data-dismiss="modal" aria-label="Close" style="color: #ffffff; opacity: 1; background: transparent; border: none; font-size: 1.5rem; padding: 0; line-height: 1;"><span aria-hidden="true">&times;</span></button>
             </div>
-            <form action="#" method="POST" autocomplete="off">
+            <form action="{{ route('service-jobs.update', $u->id_unit) }}" method="POST" autocomplete="off">
                 @csrf
                 @method('PUT')
                 <div class="modal-body p-4 bg-white text-dark">
                     <div class="mb-3">
                         <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Pemilik Unit</label>
-                        <input type="text" class="form-control py-2" value="{{ $u['pemilik'] }}" readonly style="border-radius: 6px; background-color: #f1f5f9; cursor: not-allowed;">
+                        <input type="text" class="form-control py-2" value="{{ $u->konsumen->nama ?? '-' }}" readonly style="border-radius: 6px; background-color: #f1f5f9; cursor: not-allowed;">
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3 mb-md-0">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Jenis Unit</label>
-                            <select name="jenis_unit" class="form-control py-2" style="border-radius: 6px;">
-                                <option value="AC" {{ $u['jenis'] == 'AC' ? 'selected' : '' }}>AC</option>
-                                <option value="Mesin Cuci" {{ $u['jenis'] == 'Mesin Cuci' ? 'selected' : '' }}>Mesin Cuci</option>
-                                <option value="Dispenser" {{ $u['jenis'] == 'Dispenser' ? 'selected' : '' }}>Dispenser</option>
-                                <option value="Water Heater" {{ $u['jenis'] == 'Water Heater' ? 'selected' : '' }}>Water Heater</option>
+                            <select name="jenis_unit" class="form-control py-2" required style="border-radius: 6px;">
+                                <option value="AC" {{ $u->jenis_unit == 'AC' ? 'selected' : '' }}>AC</option>
+                                <option value="Mesin Cuci" {{ $u->jenis_unit == 'Mesin Cuci' ? 'selected' : '' }}>Mesin Cuci</option>
+                                <option value="Dispenser" {{ $u->jenis_unit == 'Dispenser' ? 'selected' : '' }}>Dispenser</option>
+                                <option value="Water Heater" {{ $u->jenis_unit == 'Water Heater' ? 'selected' : '' }}>Water Heater</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Merek Unit</label>
-                            <input type="text" name="merek" class="form-control py-2" value="{{ $u['merek'] }}" required style="border-radius: 6px;">
+                            <input type="text" name="merek" class="form-control py-2" value="{{ $u->merek }}" required maxlength="20" style="border-radius: 6px;">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Model / Tipe Rinci</label>
-                        <input type="text" name="tipe" class="form-control py-2" value="{{ $u['model'] }}" required style="border-radius: 6px;">
+                        <input type="text" name="tipe" class="form-control py-2" value="{{ $u->tipe_model }}" required maxlength="45" style="border-radius: 6px;">
                     </div>
-                    <div class="row mb-2">
+                    <div class="row mb-3">
                         <div class="col-md-6 mb-3 mb-md-0">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Tanggal Masuk Servis</label>
-                            <input type="text" name="tgl_masuk" class="form-control py-2" value="{{ $u['masuk'] }}" style="border-radius: 6px;">
+                            <input type="date" name="tgl_masuk" class="form-control py-2" value="{{ $u->tanggal_masuk->format('Y-m-d') }}" required style="border-radius: 6px;">
                         </div>
                         <div class="col-md-6">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Status Garansi</label>
-                            <select name="status_garansi" class="form-control py-2" style="border-radius: 6px;">
-                                <option value="Aktif (Ada Kartu)" {{ $u['garansi'] ? 'selected' : '' }}>Aktif (Ada Kartu)</option>
-                                <option value="Tidak Bergaransi" {{ !$u['garansi'] ? 'selected' : '' }}>Tidak Bergaransi</option>
+                            <select name="status_garansi" class="form-control py-2" required style="border-radius: 6px;">
+                                <option value="Aktif" {{ $u->status_garansi === 'Aktif' ? 'selected' : '' }}>Aktif (Ada Kartu)</option>
+                                <option value="Tidak Bergaransi" {{ $u->status_garansi !== 'Aktif' ? 'selected' : '' }}>Tidak Bergaransi</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Interval Perawatan (Bulan)</label>
+                        <input type="number" name="interval_bulan" class="form-control py-2" value="{{ $u->interval_bulan }}" min="1" max="60" required style="border-radius: 6px;">
+                        <small class="text-muted">Jarak antar jadwal perawatan rutin unit ini.</small>
                     </div>
                 </div>
                 <div class="modal-footer px-4 py-3" style="border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
@@ -372,4 +439,11 @@ body, html {
 <!-- Script JS (Bootstrap 4.6) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function(){
+    setTimeout(function() {
+        $(".alert-success").fadeOut(500, function() { $(this).remove(); });
+    }, 4000);
+});
+</script>
 @endsection

@@ -11,21 +11,21 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="{{ route('simpan-konsumen') }}" method="POST">
+            <form action="{{ route('simpan-konsumen') }}" method="POST" autocomplete="off">
                 @csrf
                 <div class="modal-body px-4 mt-2">
                     <h6 class="text-primary mb-3" style="font-weight: 600; font-size: 0.9rem;">IDENTITAS PELANGGAN</h6>
                     <div class="mb-3">
                         <label style="font-size: 0.85rem; font-weight: 600;">Nama Lengkap</label>
-                        <input type="text" name="nama" class="form-control" required placeholder="Masukkan nama konsumen" style="border-radius: 6px;">
+                        <input type="text" name="nama" class="form-control" required maxlength="45" placeholder="Masukkan nama konsumen" style="border-radius: 6px;">
                     </div>
                     <div class="mb-3">
                         <label style="font-size: 0.85rem; font-weight: 600;">Nomor WhatsApp</label>
-                        <input type="number" name="no_wa" class="form-control" required placeholder="Contoh: 0812xxxxxx" style="border-radius: 6px;">
+                        <input type="text" name="no_wa" class="form-control" required maxlength="15" inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 0812xxxxxx" oninput="this.value=this.value.replace(/\D/g,'')" style="border-radius: 6px;">
                     </div>
                     <div class="mb-3">
                         <label style="font-size: 0.85rem; font-weight: 600;">Alamat Domisili</label>
-                        <textarea name="alamat" class="form-control" rows="3" required placeholder="Detail alamat lengkap konsumen" style="border-radius: 6px;"></textarea>
+                        <textarea name="alamat" class="form-control" rows="3" required maxlength="100" placeholder="Detail alamat lengkap konsumen" style="border-radius: 6px;"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer" style="border-top: 1px solid #e2e8f0; background-color: #f8fafc;">

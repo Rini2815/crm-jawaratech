@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -29,15 +27,15 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        // Hanya akun berstatus Aktif yang boleh login
+        if (Auth::attempt(array_merge($credentials, ['status' => 'Aktif']))) {
             $request->session()->regenerate();
-            
-            // DIUBAH KE /dashboard
+
             return redirect()->intended('dashboard');
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password yang Anda masukkan salah.',
+            'email' => 'Email atau password yang Anda masukkan salah, atau akun tidak aktif.',
         ])->onlyInput('email');
     }
 
@@ -58,20 +56,20 @@ class AuthController extends Controller
             $googleUser = Socialite::driver('google')->user();
             $user = User::where('email', $googleUser->getEmail())->first();
 
-            if ($user) {
-                Auth::login($user);
-            } else {
-                $user = User::create([
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'password' => Hash::make(Str::random(16)),
-                    'email_verified_at' => now(),
+            // Akun harus sudah dibuat Superadmin dan berstatus Aktif
+            if (!$user || $user->status !== 'Aktif') {
+                return redirect('/login')->withErrors([
+                    'email' => 'Akun Google ini belum terdaftar atau tidak aktif. Hubungi Superadmin.',
                 ]);
-
-                Auth::login($user);
             }
 
-            // DIUBAH KE route dashboard (sesuaikan jika nama routernya berbeda, misal: route('dashboard'))
+            if (empty($user->google_id)) {
+                $user->google_id = $googleUser->getId();
+                $user->save();
+            }
+
+            Auth::login($user);
+
             return redirect()->route('dashboard');
 
         } catch (\Exception $e) {

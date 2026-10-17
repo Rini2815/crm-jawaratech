@@ -1,29 +1,52 @@
+@php
+    // ===== Penentuan menu yang tampil (kunci sama dengan matriks Hak Akses) =====
+    $sbU = auth()->user();
+    $sbIsAdmin = str_contains(strtolower((string) ($sbU->role ?? '')), 'admin');
+
+    $canKonsumen = $sbIsAdmin || $sbU->hasMenu('data-konsumen');
+    $canUnit     = $sbIsAdmin || $sbU->hasMenu('data-unit');
+    $canRegis    = $sbIsAdmin || $sbU->hasMenu('registrasi-servis');
+    $canClosing  = $sbIsAdmin || $sbU->hasMenu('closing');
+    $canPengingat= $sbIsAdmin || $sbU->hasMenu('pengingat-perawatan');
+    $canFollowUp = $sbIsAdmin || $sbU->hasMenu('follow-up');
+    $canLaporan  = $sbIsAdmin || $sbU->hasMenu('laporan');
+
+    $showDataMaster = $canKonsumen || $canUnit || $canRegis;
+    $showDashSub    = $canPengingat || $canFollowUp;
+    $showUserMgmt   = $sbIsAdmin; // khusus Superadmin
+    $showHeadingCrm = $showDataMaster || $canClosing || $showUserMgmt;
+@endphp
+
 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion" style="width: 260px !important; min-width: 260px !important; background: linear-gradient(135deg, #455169 0%, #091a2d 40%, #42050b 100%); border-right: 3px solid #25252c;">
 
     <div class="sb-sidenav-menu" style="width: 260px !important;">
         <div class="nav px-2">
             <div class="pt-2"></div>
 
-            <!-- 1. DASHBOARD -->
-            @if(auth()->user()->hasMenu('dashboard'))
+            <!-- 1. DASHBOARD (terbuka untuk semua user yang login) -->
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal" style="font-size: 11px;">UTAMA</div>
             <div class="menu-box d-flex align-items-center justify-content-between px-3 py-2">
                 <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none text-white flex-grow-1">
                     <div class="sb-nav-link-icon text-white me-2"><i class="fas fa-home"></i></div>
                     <span class="nav-text fw-normal">Dashboard</span>
                 </a>
-                <a href="#" data-bs-toggle="collapse" data-bs-target="#collapseDashboard" aria-expanded="false" class="text-white-50 text-decoration-none px-2">
+                @if($showDashSub)
+                <a href="#" data-bs-toggle="collapse" data-bs-target="#collapseDashboard" aria-expanded="{{ request()->routeIs('schedules*', 'followup*') ? 'true' : 'false' }}" class="text-white-50 text-decoration-none px-2">
                     <i class="fas fa-angle-down"></i>
                 </a>
+                @endif
             </div>
 
-            <div class="collapse" id="collapseDashboard" data-bs-parent="#sidenavAccordion">
+            @if($showDashSub)
+            <div class="collapse {{ request()->routeIs('schedules*', 'followup*') ? 'show' : '' }}" id="collapseDashboard" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    @if(auth()->user()->hasMenu('schedules'))
-                    <a class="nav-link sub-item-divider text-white-50" href="{{ route('schedules.index') }}">
+                    @if($canPengingat)
+                    <a class="nav-link {{ $canFollowUp ? 'sub-item-divider' : '' }} {{ request()->routeIs('schedules*') ? 'text-info fw-bold active-sub' : 'text-white-50' }}" href="{{ route('schedules.index') }}">
                         <i class="fas fa-bell me-2 text-white"></i> Pengingat Perawatan
                     </a>
-                    <a class="nav-link" href="{{ route('followup.index') }}">
+                    @endif
+                    @if($canFollowUp)
+                    <a class="nav-link {{ request()->routeIs('followup*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('followup.index') }}">
                         <i class="fab fa-whatsapp me-2 text-white"></i> Follow-up Konsumen
                     </a>
                     @endif
@@ -31,34 +54,43 @@
             </div>
             @endif
 
-            <!-- 2. DATA MASTER (Dipecah: Data Konsumen, Data Unit Service, Registrasi Service) -->
-            @if(auth()->user()->hasMenu('data-konsumen'))
+            <!-- 2. DATA MASTER (Data Konsumen, Data Unit Service, Registrasi Service) -->
+            @if($showHeadingCrm)
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">MANAJEMEN CRM</div>
-            <a class="nav-link {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*') ? '' : 'collapsed' }} menu-box" 
+            @endif
+
+            @if($showDataMaster)
+            <a class="nav-link {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*', 'service-jobs*') ? '' : 'collapsed' }} menu-box" 
                href="#" data-bs-toggle="collapse" data-bs-target="#collapseMaster" 
-               aria-expanded="{{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*') ? 'true' : 'false' }}" 
-               style="border-color: {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
+               aria-expanded="{{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*', 'service-jobs*') ? 'true' : 'false' }}" 
+               style="border-color: {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*', 'service-jobs*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-database"></i></div>
                 <span class="nav-text text-white fw-normal">Data Master</span>
                 <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
             </a>
-            <div class="collapse {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*') ? 'show' : '' }}" id="collapseMaster" data-bs-parent="#sidenavAccordion">
+            <div class="collapse {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*', 'service-jobs*') ? 'show' : '' }}" id="collapseMaster" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link sub-item-divider {{ request()->routeIs('data-konsumen*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-konsumen') }}">
+                    @if($canKonsumen)
+                    <a class="nav-link {{ ($canUnit || $canRegis) ? 'sub-item-divider' : '' }} {{ request()->routeIs('data-konsumen*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-konsumen') }}">
                         <i class="fas fa-users me-2 text-white"></i> Data Konsumen
                     </a>
-                    <a class="nav-link sub-item-divider {{ request()->routeIs('data-unit*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-unit.index') }}">
+                    @endif
+                    @if($canUnit)
+                    <a class="nav-link {{ $canRegis ? 'sub-item-divider' : '' }} {{ request()->routeIs('data-unit*', 'service-jobs*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-unit.index') }}">
                         <i class="fas fa-box me-2 text-white"></i> Data Unit Service
                     </a>
+                    @endif
+                    @if($canRegis)
                     <a class="nav-link {{ request()->routeIs('registrasi-servis*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('registrasi-servis.index') }}">
                         <i class="fas fa-tools me-2 text-white"></i> Registrasi Service
                     </a>
+                    @endif
                 </nav>
             </div>
             @endif
 
-            <!-- 3. MANAJEMEN PENGGUNA (Dipecah: Data Pengguna, Hak Akses, Switch Profile) -->
-            @if(auth()->user()->hasMenu('hak-akses') || auth()->user()->hasMenu('user-group'))
+            <!-- 3. MANAJEMEN PENGGUNA (khusus Superadmin) -->
+            @if($showUserMgmt)
                 <a class="nav-link {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? '' : 'collapsed' }} menu-box" 
                    href="#" data-bs-toggle="collapse" data-bs-target="#collapseUserMgmt" 
                    aria-expanded="{{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? 'true' : 'false' }}" 
@@ -83,16 +115,16 @@
                 </div>
             @endif
 
-            <!-- 4. LAYANAN SERVIS -->
-            @if(auth()->user()->hasMenu('layanan-servis'))
-                <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseServis" aria-expanded="false">
+            <!-- 4. LAYANAN SERVIS (Closing) -->
+            @if($canClosing)
+                <a class="nav-link {{ request()->routeIs('closing*') ? '' : 'collapsed' }} menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseServis" aria-expanded="{{ request()->routeIs('closing*') ? 'true' : 'false' }}">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-wrench"></i></div>
                     <span class="nav-text text-white fw-normal">Layanan Servis</span>
                     <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
                 </a>
-                <div class="collapse" id="collapseServis" data-bs-parent="#sidenavAccordion">
+                <div class="collapse {{ request()->routeIs('closing*') ? 'show' : '' }}" id="collapseServis" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="{{ route('closing.index') }}">
+                        <a class="nav-link {{ request()->routeIs('closing*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('closing.index') }}">
                             <i class="fas fa-check-circle me-2 text-white"></i> Closing Servis
                         </a>
                     </nav>
@@ -100,14 +132,15 @@
             @endif
 
             <!-- 5. LAPORAN -->
-            @if(auth()->user()->hasMenu('report'))
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">LAPORAN & SISTEM</div>
-            <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLaporan" aria-expanded="false">
+
+            @if($canLaporan)
+            <a class="nav-link {{ request()->routeIs('report*') ? '' : 'collapsed' }} menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLaporan" aria-expanded="{{ request()->routeIs('report*') ? 'true' : 'false' }}">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-file-pdf"></i></div>
                 <span class="nav-text text-white fw-normal">Laporan</span>
                 <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
             </a>
-            <div class="collapse" id="collapseLaporan" data-bs-parent="#sidenavAccordion">
+            <div class="collapse {{ request()->routeIs('report*') ? 'show' : '' }}" id="collapseLaporan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link {{ request()->routeIs('report.index') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('report.index') }}">
                         <i class="fas fa-file-invoice me-2 text-white"></i> Riwayat Servis 
@@ -116,7 +149,7 @@
             </div>
             @endif
 
-            <!-- 6. PENGATURAN AKUN -->
+            <!-- 6. PENGATURAN AKUN (semua user yang login) -->
             <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePengaturan" aria-expanded="false">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-user-shield"></i></div>
                 <span class="nav-text text-white fw-normal">Pengaturan Akun</span>
@@ -136,8 +169,6 @@
     <!-- FOOTER SIDEBAR -->
     @php
         $sbUser = auth()->user();
-        $sbRoleRaw = (string) ($sbUser->role ?? '');
-        $sbIsAdmin = str_contains(strtolower($sbRoleRaw), 'admin');
     @endphp
     <div class="sb-sidenav-footer p-3" style="width: 260px !important; background: rgba(13, 27, 42, 0.95) !important; border-top: 1px solid rgba(255,255,255,0.15);">
         <div class="sb-status-label">Status Akun</div>

@@ -1,30 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-@php
-    // DATA DUMMY (nanti diganti data dari database)
-    $konsumen = [
-        ['id' => 1, 'nama' => 'Budi Santoso',  'wa' => '081399887766', 'alamat' => 'Jl. Manggis No. 12, Madiun'],
-        ['id' => 2, 'nama' => 'Siti Aminah',   'wa' => '081234567890', 'alamat' => 'Jl. Pahlawan No. 45, Madiun'],
-        ['id' => 3, 'nama' => 'Hendra Wijaya', 'wa' => '085711223344', 'alamat' => 'Jl. Diponegoro No. 8, Madiun'],
-        ['id' => 4, 'nama' => 'Ahmad Faisal',  'wa' => '081987654321', 'alamat' => 'Jl. Thamrin No. 21, Madiun'],
-    ];
-
-    // Data unit HANYA untuk menghitung "Jumlah Unit" per konsumen & kartu statistik.
-    // Nanti saat pakai database, ganti dengan relasi / withCount('unit').
-    $unit = [
-        ['pemilik' => 'Budi Santoso',  'garansi' => true],
-        ['pemilik' => 'Budi Santoso',  'garansi' => false],
-        ['pemilik' => 'Siti Aminah',   'garansi' => true],
-        ['pemilik' => 'Hendra Wijaya', 'garansi' => false],
-        ['pemilik' => 'Ahmad Faisal',  'garansi' => true],
-    ];
-
-    // Angka kartu dihitung otomatis dari data di atas
-    $totalKonsumen = count($konsumen);
-    $totalUnit     = count($unit);
-    $unitGaransi   = collect($unit)->where('garansi', true)->count();
-@endphp
 
 <!-- Import Font 'Inter' untuk tampilan teks profesional & tegas -->
 <style>
@@ -60,17 +36,15 @@ body, html {
 .stat-card.green { border-left: 4px solid #10b981 !important; }
 
 .crm-table-header {
-    background-color: #1e293b; 
+    background-color: #1e293b;
     color: #ffffff;
     font-weight: 600;
     letter-spacing: 0.5px;
 }
-/* Semua header tabel rata tengah */
 .crm-table-header th {
     text-align: center !important;
     vertical-align: middle !important;
 }
-/* Tombol aksi sejajar horizontal (tidak turun ke bawah) */
 .aksi-wrap {
     display: flex;
     justify-content: center;
@@ -79,25 +53,16 @@ body, html {
     flex-wrap: nowrap;
     white-space: nowrap;
 }
-
-.super-thick-table th, 
+.super-thick-table th,
 .super-thick-table td {
     border-width: 2px !important;
     border-color: #cbd5e1 !important;
-}
-
-/* Lebar modal */
-.modal-custom-size {
-    max-width: 800px !important;
-    width: 90%;
 }
 </style>
 
 <div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3 100%); min-height: 100vh;">
 
-    <!-- ================================================================= -->
-    <!-- BANNER UTAMA                                                      -->
-    <!-- ================================================================= -->
+    <!-- BANNER UTAMA -->
     <div class="card rounded-3 mb-4 text-white shadow-sm overflow-hidden" style="background: #0f172a; border: 1px solid #1e293b;">
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
@@ -111,9 +76,38 @@ body, html {
         </div>
     </div>
 
-    <!-- ================================================================= -->
-    <!-- DATA KONSUMEN                                                     -->
-    <!-- ================================================================= -->
+    <!-- Alert Notifikasi -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #dcfce7; color: #166534;">
+            <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+            <button type="button" class="close float-end" data-dismiss="alert" data-bs-dismiss="alert" aria-label="Close" style="background:transparent; border:none; font-size:1.2rem;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+            <button type="button" class="close float-end" data-dismiss="alert" data-bs-dismiss="alert" aria-label="Close" style="background:transparent; border:none; font-size:1.2rem;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert" style="background-color: #fee2e2; color: #991b1b;">
+            <i class="fas fa-exclamation-triangle me-2"></i> <strong>Gagal Menyimpan!</strong> Periksa kembali form input Anda:
+            <ul class="mb-0 mt-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="close float-end" data-dismiss="alert" data-bs-dismiss="alert" aria-label="Close" style="background:transparent; border:none; font-size:1.2rem;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
 
     <!-- KARTU STATISTIK DATA KONSUMEN -->
     <div class="row mb-4">
@@ -164,9 +158,8 @@ body, html {
                 <h5 class="m-0 text-dark fw-bold">Daftar Konsumen Jawaratech</h5>
                 <small class="text-muted">Buku kontak dan master informasi pelanggan sistem CRM Jawaratech</small>
             </div>
-            <!-- Tombol Tambah Konsumen: membuka modal -->
-            <button type="button" class="btn btn-primary px-3 py-2 fw-semibold rounded-pill shadow-sm text-sm" data-toggle="modal" data-target="#modalTambahKonsumen">
-                <i class="fas fa-user-plus mr-1"></i> Tambah Konsumen
+            <button type="button" class="btn btn-primary px-3 py-2 fw-semibold rounded-pill shadow-sm text-sm" data-toggle="modal" data-bs-toggle="modal" data-target="#modalTambahKonsumen" data-bs-target="#modalTambahKonsumen">
+                <i class="fas fa-user-plus mr-1 me-1"></i> Tambah Konsumen
             </button>
         </div>
         <div class="card-body p-4 bg-white">
@@ -183,21 +176,34 @@ body, html {
                         </tr>
                     </thead>
                     <tbody style="font-weight: 500;">
-                        @foreach($konsumen as $k)
+                        @forelse($konsumen as $k)
                         <tr>
                             <td class="px-4 py-3 text-secondary text-center fw-bold">{{ $loop->iteration }}</td>
-                            <td class="py-3 text-dark fw-bold">{{ $k['nama'] }}</td>
-                            <td class="py-3 text-success fw-semibold"><i class="fab fa-whatsapp"></i> {{ $k['wa'] }}</td>
-                            <td class="py-3 text-secondary">{{ $k['alamat'] }}</td>
-                            <td class="py-3 text-center"><span class="badge bg-primary text-white px-2 py-1">{{ collect($unit)->where('pemilik', $k['nama'])->count() }} Unit</span></td>
+                            <td class="py-3 text-dark fw-bold">{{ $k->nama }}</td>
+                            <td class="py-3 text-success fw-semibold"><i class="fab fa-whatsapp"></i> {{ $k->no_whatsapp }}</td>
+                            <td class="py-3 text-secondary">{{ $k->alamat }}</td>
+                            <td class="py-3 text-center"><span class="badge bg-primary text-white px-2 py-1">{{ $k->unit_count }} Unit</span></td>
                             <td class="py-3 text-center">
                                 <div class="aksi-wrap">
-                                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Ubah data" data-toggle="modal" data-target="#modalEditKonsumen{{ $k['id'] }}"><i class="fas fa-edit"></i></button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Hapus" onclick="return confirm('Yakin ingin menghapus konsumen ini?')"><i class="fas fa-trash"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Ubah data" data-toggle="modal" data-bs-toggle="modal" data-target="#modalEditKonsumen{{ $k->id_konsumen }}" data-bs-target="#modalEditKonsumen{{ $k->id_konsumen }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+
+                                    <form action="{{ route('hapus-konsumen', $k->id_konsumen) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus konsumen {{ e($k->nama) }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Hapus">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">Belum ada data konsumen yang terdaftar.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -206,84 +212,21 @@ body, html {
 
 </div>
 
-{{-- ================================================================= --}}
-{{-- MODAL (diletakkan di luar container agar tidak tertutup layar gelap) --}}
-{{-- ================================================================= --}}
+{{-- MODAL (di luar container agar tidak tertutup layar gelap) --}}
+@include('data-konsumen.create')
 
-<!-- Modal Tambah Konsumen -->
-<div class="modal fade crm-wrapper" id="modalTambahKonsumen" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-custom-size modal-dialog-centered" role="document">
-        <div class="modal-content" style="border-radius: 10px; border: none; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
-            <div class="modal-header py-3 px-4 text-white" style="background-color: #1e293b; border-bottom: 1px solid #1e293b; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <h5 class="modal-title text-white mb-0" style="font-weight: 700; font-size: 1.15rem;"><i class="fas fa-user-plus mr-2"></i>Tambah Data Konsumen</h5>
-                <button type="button" data-dismiss="modal" aria-label="Close" style="color: #ffffff; opacity: 1; background: transparent; border: none; font-size: 1.5rem; padding: 0; line-height: 1;"><span aria-hidden="true">&times;</span></button>
-            </div>
-            <form action="#" method="POST" autocomplete="off">
-                @csrf
-                <div class="modal-body p-4 bg-white text-dark">
-                    <div class="row mb-3">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" name="nama" class="form-control py-2" placeholder="Masukkan nama lengkap konsumen" required style="border-radius: 6px;">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Nomor WhatsApp <span class="text-danger">*</span></label>
-                            <input type="text" name="no_wa" class="form-control py-2" placeholder="contoh: 081234567890" required style="border-radius: 6px;">
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Alamat Domisili <span class="text-danger">*</span></label>
-                        <textarea name="alamat" class="form-control" rows="3" placeholder="contoh: Jl. Manggis No. 12, Madiun" required style="border-radius: 6px;"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer px-4 py-3" style="border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-                    <button type="button" class="btn btn-light px-4 py-2" data-dismiss="modal" style="font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1;">Batal</button>
-                    <button type="submit" class="btn btn-primary px-4 py-2" style="font-weight: 600; border-radius: 6px; background-color: #2563eb; border-color: #2563eb;"><i class="fas fa-save mr-1"></i> Simpan Konsumen</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Edit Konsumen (satu per data) -->
 @foreach($konsumen as $k)
-<div class="modal fade crm-wrapper" id="modalEditKonsumen{{ $k['id'] }}" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-custom-size modal-dialog-centered" role="document">
-        <div class="modal-content" style="border-radius: 10px; border: none; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
-            <div class="modal-header py-3 px-4 text-white" style="background-color: #1e293b; border-bottom: 1px solid #1e293b; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <h5 class="modal-title text-white mb-0" style="font-weight: 700; font-size: 1.15rem;"><i class="fas fa-edit mr-2"></i>Edit Data Konsumen</h5>
-                <button type="button" data-dismiss="modal" aria-label="Close" style="color: #ffffff; opacity: 1; background: transparent; border: none; font-size: 1.5rem; padding: 0; line-height: 1;"><span aria-hidden="true">&times;</span></button>
-            </div>
-            <form action="#" method="POST" autocomplete="off">
-                @csrf
-                @method('PUT')
-                <div class="modal-body p-4 bg-white text-dark">
-                    <div class="row mb-3">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Nama Lengkap</label>
-                            <input type="text" name="nama" class="form-control py-2" value="{{ $k['nama'] }}" required style="border-radius: 6px;">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Nomor WhatsApp</label>
-                            <input type="text" name="no_wa" class="form-control py-2" value="{{ $k['wa'] }}" required style="border-radius: 6px;">
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Alamat Domisili</label>
-                        <textarea name="alamat" class="form-control" rows="3" required style="border-radius: 6px;">{{ $k['alamat'] }}</textarea>
-                    </div>
-                </div>
-                <div class="modal-footer px-4 py-3" style="border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-                    <button type="button" class="btn btn-light px-4 py-2" data-dismiss="modal" style="font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1;">Batal</button>
-                    <button type="submit" class="btn btn-primary px-4 py-2" style="font-weight: 600; border-radius: 6px; background-color: #2563eb; border-color: #2563eb;"><i class="fas fa-save mr-1"></i> Perbarui Konsumen</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+    @include('data-konsumen.edit', ['k' => $k])
 @endforeach
 
 <!-- Script JS (Bootstrap 4.6) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function(){
+    setTimeout(function() {
+        $(".alert-success").fadeOut(500, function() { $(this).remove(); });
+    }, 4000);
+});
+</script>
 @endsection

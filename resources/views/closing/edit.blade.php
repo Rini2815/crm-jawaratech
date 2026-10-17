@@ -1,4 +1,4 @@
-<div class="modal fade crm-wrapper" id="modalEditClosing{{ $index }}" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade crm-wrapper" id="modalEditClosing{{ $s->id_servis }}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 8px;">
             
@@ -11,29 +11,30 @@
                 </button>
             </div>
             
-            <form action="#" method="POST">
+            <form action="{{ route('closing.update', $s->id_servis) }}" method="POST" autocomplete="off" class="form-closing">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="_modal" value="edit-{{ $s->id_servis }}">
                 <div class="modal-body px-4 py-4" style="background-color: #f8fafc;">
                     
                     <!-- Section 1: Referensi Tiket & Pelanggan -->
                     <div class="crm-section-title">Informasi Invoice & Pelanggan</div>
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_no_invoice_{{ $index }}" class="crm-form-label">No. Invoice / Kwitansi</label>
-                            <input type="text" class="form-control crm-form-control bg-light" id="edit_no_invoice_{{ $index }}" name="no_invoice" value="{{ $item['no_invoice'] }}" readonly>
+                            <label class="crm-form-label">No. Invoice / Kwitansi</label>
+                            <input type="text" class="form-control crm-form-control bg-light" value="{{ $s->no_invoice }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_no_tiket_{{ $index }}" class="crm-form-label">No. Tiket / SPK</label>
-                            <input type="text" class="form-control crm-form-control bg-light" id="edit_no_tiket_{{ $index }}" name="no_tiket" value="{{ $item['no_tiket'] }}" readonly>
+                            <label class="crm-form-label">No. Tiket / SPK</label>
+                            <input type="text" class="form-control crm-form-control bg-light" value="{{ $s->no_tiket }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_pelanggan_{{ $index }}" class="crm-form-label">Nama Pelanggan</label>
-                            <input type="text" class="form-control crm-form-control bg-light" id="edit_pelanggan_{{ $index }}" name="pelanggan" value="{{ $item['pelanggan'] }}" readonly>
+                            <label class="crm-form-label">Nama Pelanggan</label>
+                            <input type="text" class="form-control crm-form-control bg-light" value="{{ $s->unit->konsumen->nama ?? '-' }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_teknisi_{{ $index }}" class="crm-form-label">Teknisi Penanggung Jawab <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="edit_teknisi_{{ $index }}" name="teknisi" value="{{ $item['teknisi'] }}" list="datalist_teknisi" autocomplete="off" required>
+                            <label for="edit_teknisi_{{ $s->id_servis }}" class="crm-form-label">Teknisi Penanggung Jawab <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control crm-form-control in-teknisi" id="edit_teknisi_{{ $s->id_servis }}" name="teknisi" value="{{ $s->teknisi->nama_teknisi ?? '' }}" maxlength="45" list="datalist_teknisi" autocomplete="off" required>
                         </div>
                     </div>
 
@@ -41,25 +42,25 @@
                     <div class="crm-section-title">Rincian Perbaikan & Kalkulasi Biaya</div>
                     <div class="row mb-4">
                         <div class="col-md-12 mb-3">
-                            <label for="edit_rincian_{{ $index }}" class="crm-form-label">Rincian Tindakan / Sparepart Diganti <span class="text-danger">*</span></label>
-                            <textarea class="form-control crm-form-control" id="edit_rincian_{{ $index }}" name="rincian_pengerjaan" rows="2" required>{{ $item['rincian_pengerjaan'] }}</textarea>
+                            <label for="edit_rincian_{{ $s->id_servis }}" class="crm-form-label">Rincian Tindakan / Sparepart Diganti <span class="text-danger">*</span></label>
+                            <textarea class="form-control crm-form-control" id="edit_rincian_{{ $s->id_servis }}" name="rincian_pengerjaan" rows="2" maxlength="2000" required>{{ $s->catatan }}</textarea>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="edit_biaya_jasa_{{ $index }}" class="crm-form-label">Biaya Jasa Servis (Rp) <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control crm-form-control edit-hitung" id="edit_biaya_jasa_{{ $index }}" name="biaya_jasa" value="{{ $item['biaya_jasa'] }}" required>
+                            <label for="edit_biaya_jasa_{{ $s->id_servis }}" class="crm-form-label">Biaya Jasa Servis (Rp) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control crm-form-control in-jasa" id="edit_biaya_jasa_{{ $s->id_servis }}" name="biaya_jasa" min="0" value="{{ $s->biaya_jasa }}" required>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="edit_biaya_sparepart_{{ $index }}" class="crm-form-label">Biaya Sparepart (Rp)</label>
-                            <input type="number" class="form-control crm-form-control edit-hitung" id="edit_biaya_sparepart_{{ $index }}" name="biaya_sparepart" value="{{ $item['biaya_sparepart'] }}">
+                            <label for="edit_biaya_sparepart_{{ $s->id_servis }}" class="crm-form-label">Biaya Sparepart (Rp)</label>
+                            <input type="number" class="form-control crm-form-control in-sparepart" id="edit_biaya_sparepart_{{ $s->id_servis }}" name="biaya_sparepart" min="0" value="{{ $s->biaya_sparepart }}">
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="edit_diskon_{{ $index }}" class="crm-form-label">Potongan / Diskon (Rp)</label>
-                            <input type="number" class="form-control crm-form-control edit-hitung" id="edit_diskon_{{ $index }}" name="diskon" value="{{ $item['diskon'] }}">
+                            <label for="edit_diskon_{{ $s->id_servis }}" class="crm-form-label">Potongan / Diskon (Rp)</label>
+                            <input type="number" class="form-control crm-form-control in-diskon" id="edit_diskon_{{ $s->id_servis }}" name="diskon" min="0" value="{{ $s->diskon }}">
                         </div>
                         <div class="col-md-12 mb-2">
                             <div class="p-3 bg-white border rounded d-flex justify-content-between align-items-center">
                                 <span class="fw-bold text-dark" style="font-weight: 700;">TOTAL NETT PEMBAYARAN:</span>
-                                <span class="h4 mb-0 text-success fw-bold" style="font-weight: 700;">Rp {{ number_format($item['total_bayar'], 0, ',', '.') }}</span>
+                                <span class="h4 mb-0 text-success fw-bold lbl-total" style="font-weight: 700;">Rp {{ number_format($s->total_bayar, 0, ',', '.') }}</span>
                             </div>
                         </div>
                     </div>
@@ -68,30 +69,33 @@
                     <div class="crm-section-title">Status Pembayaran & Garansi</div>
                     <div class="row">
                         <div class="col-md-4 mb-3">
-                            <label for="edit_metode_{{ $index }}" class="crm-form-label">Metode Pembayaran <span class="text-danger">*</span></label>
-                            <select class="form-control crm-form-control" id="edit_metode_{{ $index }}" name="metode_pembayaran" required>
-                                <option value="Tunai / Cash" {{ $item['metode_pembayaran'] == 'Tunai / Cash' ? 'selected' : '' }}>Tunai / Cash</option>
-                                <option value="QRIS / Transfer" {{ $item['metode_pembayaran'] == 'QRIS / Transfer' ? 'selected' : '' }}>QRIS / Transfer Bank</option>
-                                <option value="Debit / Kredit" {{ $item['metode_pembayaran'] == 'Debit / Kredit' ? 'selected' : '' }}>Kartu Debit / Kredit</option>
+                            <label for="edit_metode_{{ $s->id_servis }}" class="crm-form-label">Metode Pembayaran <span class="text-danger">*</span></label>
+                            <select class="form-control crm-form-control" id="edit_metode_{{ $s->id_servis }}" name="metode_pembayaran" required>
+                                <option value="Tunai" {{ $s->metode_pembayaran == 'Tunai' ? 'selected' : '' }}>Tunai / Cash</option>
+                                <option value="QRIS/Transfer" {{ $s->metode_pembayaran == 'QRIS/Transfer' ? 'selected' : '' }}>QRIS / Transfer Bank</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="edit_garansi_{{ $index }}" class="crm-form-label">Masa Garansi Servis <span class="text-danger">*</span></label>
-                            <select class="form-control crm-form-control" id="edit_garansi_{{ $index }}" name="garansi" required>
-                                <option value="Tanpa Garansi" {{ $item['garansi'] == 'Tanpa Garansi' ? 'selected' : '' }}>Tanpa Garansi</option>
-                                <option value="7 Hari" {{ $item['garansi'] == '7 Hari' ? 'selected' : '' }}>7 Hari</option>
-                                <option value="14 Hari" {{ $item['garansi'] == '14 Hari' ? 'selected' : '' }}>14 Hari</option>
-                                <option value="30 Hari" {{ $item['garansi'] == '30 Hari' ? 'selected' : '' }}>30 Hari (1 Bulan)</option>
-                                <option value="60 Hari" {{ $item['garansi'] == '60 Hari' ? 'selected' : '' }}>60 Hari (2 Bulan)</option>
+                            <label for="edit_garansi_{{ $s->id_servis }}" class="crm-form-label">Masa Garansi Servis <span class="text-danger">*</span></label>
+                            <select class="form-control crm-form-control" id="edit_garansi_{{ $s->id_servis }}" name="garansi" required>
+                                <option value="0" {{ $s->masa_garansi_hari == 0 ? 'selected' : '' }}>Tanpa Garansi</option>
+                                <option value="7" {{ $s->masa_garansi_hari == 7 ? 'selected' : '' }}>7 Hari</option>
+                                <option value="14" {{ $s->masa_garansi_hari == 14 ? 'selected' : '' }}>14 Hari</option>
+                                <option value="30" {{ $s->masa_garansi_hari == 30 ? 'selected' : '' }}>30 Hari (1 Bulan)</option>
+                                <option value="60" {{ $s->masa_garansi_hari == 60 ? 'selected' : '' }}>60 Hari (2 Bulan)</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="edit_status_pembayaran_{{ $index }}" class="crm-form-label">Status Pembayaran <span class="text-danger">*</span></label>
-                            <select class="form-control crm-form-control" id="edit_status_pembayaran_{{ $index }}" name="status_pembayaran" required>
-                                <option value="Lunas" {{ $item['status_pembayaran'] == 'Lunas' ? 'selected' : '' }}>Lunas</option>
-                                <option value="DP / Belum Lunas" {{ $item['status_pembayaran'] == 'DP / Belum Lunas' ? 'selected' : '' }}>DP / Belum Lunas</option>
-                                <option value="Dibatalkan" {{ $item['status_pembayaran'] == 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                            <label for="edit_status_pembayaran_{{ $s->id_servis }}" class="crm-form-label">Status Pembayaran <span class="text-danger">*</span></label>
+                            <select class="form-control crm-form-control in-status" id="edit_status_pembayaran_{{ $s->id_servis }}" name="status_pembayaran" required>
+                                <option value="Lunas" {{ $s->status_pembayaran == 'Lunas' ? 'selected' : '' }}>Lunas</option>
+                                <option value="DP" {{ $s->status_pembayaran == 'DP' ? 'selected' : '' }}>DP (Bayar Sebagian)</option>
+                                <option value="Belum Lunas" {{ $s->status_pembayaran == 'Belum Lunas' ? 'selected' : '' }}>Belum Lunas</option>
                             </select>
+                        </div>
+                        <div class="col-md-4 mb-3 grp-dp" style="display: none;">
+                            <label for="edit_jumlah_dp_{{ $s->id_servis }}" class="crm-form-label">Jumlah DP (Rp) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control crm-form-control in-dp" id="edit_jumlah_dp_{{ $s->id_servis }}" name="jumlah_dp" min="1" value="{{ $s->jumlah_dp > 0 ? $s->jumlah_dp : '' }}">
                         </div>
                     </div>
                 </div>

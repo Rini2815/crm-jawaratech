@@ -67,18 +67,6 @@ body, html {
         </div>
     </div>
 
-    <!-- BANNER PEMBERITAHUAN: FITUR MASIH UI ONLY -->
-    <div class="alert rounded-4 d-flex align-items-start gap-3 mb-4 shadow-sm" style="background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.35);">
-        <i class="fas fa-tools text-warning fa-lg mt-1"></i>
-        <div>
-            <strong class="text-dark">Tampilan Pratinjau </strong>
-            <p class="mb-0 small text-muted">
-                Tombol <em>"Login Sebagai"</em> sudah bisa diklik untuk simulasi tampilan, namun belum benar-benar
-                memindahkan sesi login. Fitur ini masih menunggu pengembangan backend (kolom role &amp; sistem impersonasi akun).
-            </p>
-        </div>
-    </div>
-
     <!-- 3 CARD STATISTIK RINGKASAN DI ATAS (Gaya Terang Clean) -->
     <div class="row g-3 mb-4">
         <div class="col-xl-4 col-md-6">
@@ -183,6 +171,7 @@ body, html {
                                 @else
                                     <button type="button"
                                             class="btn btn-sm btn-outline-primary rounded-circle btn-login-as shadow-sm"
+                                            data-id="{{ $account->id }}" 
                                             data-nama="{{ $account->name }}"
                                             data-role="{{ $account->role }}"
                                             title="Login Sebagai {{ $account->name }}"
@@ -204,18 +193,17 @@ body, html {
         <h6 class="fw-bold text-dark mb-2"><i class="fas fa-info-circle text-info me-2"></i>Konsep Hak Akses</h6>
         <ul class="small text-muted mb-0 ps-3">
             <li class="mb-1"><strong>Superadmin</strong> &mdash; akses penuh ke seluruh sistem, dapat masuk ke akun Digital Marketing kapan saja tanpa memasukkan username/password mereka.</li>
-            <li><strong>Digital Marketing</strong> &mdash; dapat mengubah username &amp; password akun miliknya sendiri melalui halaman <a href="{{ route('password.edit') }}">Ubah Password</a>, namun tidak dapat mengakses akun lain.</li>
+            <li><strong>Digital Marketing</strong> &mdash; dapat mengubah username &amp; password akun miliknya sendiri melalui halaman <a href="#">Ubah Password</a>, namun tidak dapat mengakses akun lain.</li>
         </ul>
     </div>
 
 </div>
 
-<!-- Modal Konfirmasi & Hasil Login Sebagai -->
+<!-- Modal Konfirmasi Login Sebagai -->
 <div class="modal fade" id="modalLoginAs" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden" style="background-color: #0f172a; color: #fff;">
 
-            <!-- TAHAP 1: KONFIRMASI -->
             <div id="loginAsStepConfirm" class="modal-body text-center p-4">
                 <div class="mb-3">
                     <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center"
@@ -225,35 +213,20 @@ body, html {
                 </div>
                 <h5 class="fw-bold mb-2">Masuk sebagai <span id="confirmNama" class="text-info">...</span>?</h5>
                 <p class="text-light opacity-75 small mb-4">
-                    Anda akan beralih tampilan sebagai akun <span id="confirmRole">...</span> ini tanpa memasukkan password.
-                    <br><em>(Simulasi tampilan &mdash; backend impersonasi belum aktif)</em>
+                    Anda akan beralih sesi sepenuhnya menjadi akun <span id="confirmRole">...</span> ini tanpa perlu memasukkan password.
                 </p>
                 <div class="d-flex justify-content-center gap-2">
                     <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">
                         Batal
                     </button>
-                    <button type="button" id="btnConfirmLoginAs" class="btn btn-primary rounded-pill px-4 fw-bold">
-                        <i class="fas fa-sign-in-alt me-1"></i> Ya, Masuk
-                    </button>
+                    <!-- Form untuk Hit ke Backend -->
+                    <form id="formImpersonate" method="POST" action="">
+                        @csrf
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                            <i class="fas fa-sign-in-alt me-1"></i> Ya, Masuk
+                        </button>
+                    </form>
                 </div>
-            </div>
-
-            <!-- TAHAP 2: HASIL SUKSES -->
-            <div id="loginAsStepSuccess" class="modal-body text-center p-4" style="display: none;">
-                <div class="mb-3">
-                    <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center"
-                         style="width: 60px; height: 60px; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.35);">
-                        <i class="fas fa-check text-success fa-lg"></i>
-                    </div>
-                </div>
-                <h5 class="fw-bold mb-2">Berhasil masuk sebagai <span id="successNama" class="text-success">...</span></h5>
-                <p class="text-light opacity-75 small mb-4">
-                    Simulasi tampilan berhasil. Pada versi backend nanti, sesi Anda akan benar-benar
-                    berpindah menjadi akun <span id="successRole">...</span> ini.
-                </p>
-                <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">
-                    Tutup
-                </button>
             </div>
 
         </div>
@@ -267,38 +240,24 @@ body, html {
 document.addEventListener('DOMContentLoaded', function () {
     const modalEl = document.getElementById('modalLoginAs');
     const modal = new bootstrap.Modal(modalEl);
-    const stepConfirm = document.getElementById('loginAsStepConfirm');
-    const stepSuccess = document.getElementById('loginAsStepSuccess');
-    const btnConfirm = document.getElementById('btnConfirmLoginAs');
-
-    let currentNama = '';
-    let currentRole = '';
 
     document.querySelectorAll('.btn-login-as').forEach(function (btn) {
         btn.addEventListener('click', function () {
-            currentNama = btn.getAttribute('data-nama');
-            currentRole = btn.getAttribute('data-role');
+            // Ambil ID, nama, dan role dari tombol yang di-klik
+            const currentId = btn.getAttribute('data-id');
+            const currentNama = btn.getAttribute('data-nama');
+            const currentRole = btn.getAttribute('data-role');
 
+            // Setel text di dalam modal
             document.getElementById('confirmNama').textContent = currentNama;
             document.getElementById('confirmRole').textContent = currentRole;
 
-            stepConfirm.style.display = 'block';
-            stepSuccess.style.display = 'none';
+            // Masukkan URL beserta ID akun tujuan ke action form POST
+            document.getElementById('formImpersonate').action = '/users/impersonate/' + currentId;
+
+            // Tampilkan Modal
             modal.show();
         });
-    });
-
-    btnConfirm.addEventListener('click', function () {
-        document.getElementById('successNama').textContent = currentNama;
-        document.getElementById('successRole').textContent = currentRole;
-
-        stepConfirm.style.display = 'none';
-        stepSuccess.style.display = 'block';
-    });
-
-    modalEl.addEventListener('hidden.bs.modal', function () {
-        stepConfirm.style.display = 'block';
-        stepSuccess.style.display = 'none';
     });
 
     // Fitur pencarian tabel

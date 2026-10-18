@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use App\Models\ServiceJob; // Uncomment ini nanti jika model databasenya sudah kamu buat
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -12,73 +13,112 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Menangkap filter dari form (Hari, Bulan, Tahun)
-        // Jika tidak ada input, default-nya akan mengambil tanggal dan tahun hari ini
-        $tanggal = $request->input('tanggal', date('Y-m-d'));
-        $bulan = $request->input('bulan');
-        $tahun = $request->input('tahun', date('Y'));
+        $filterTanggal = $request->input('tanggal');
+        $filterBulan = $request->input('bulan');
+        $filterTahun = $request->input('tahun', date('Y'));
 
-        // 2. Di sini nanti tempat menaruh logika query database (opsional)
-        /*
-        $query = ServiceJob::query();
-        if ($bulan) {
-            $query->whereMonth('created_at', $bulan);
-        }
-        if ($tahun) {
-            $query->whereYear('created_at', $tahun);
-        }
-        $reports = $query->get();
-        */
+        // Statistik
+        $totalKonsumen = DB::table('ms_konsumen')->count();
+        $closingBulanIni = DB::table('tr_servis')->where('status', 'Selesai')->whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->count();
+        $garansiAktif = DB::table('ms_unit')->where('status_garansi', 'like', '%Aktif%')->count();
+        
+        $antreanPerawatan = 0;
+        $followUpTerkirim = 0;
+        try {
+            $antreanPerawatan = DB::table('tr_follow_up')->where('status', 'Belum Dihubungi')->count();
+            $followUpTerkirim = DB::table('tr_follow_up')->where('status', '!=', 'Belum Dihubungi')->count();
+        } catch (\Exception $e) {}
 
-        // 3. Me-return tampilan view (menggunakan 'report.index' tanpa 's' agar sinkron)
-        return view('report.index', compact('tanggal', 'bulan', 'tahun'));
+        $totalUnitTahunIni = DB::table('tr_servis')->whereYear('created_at', date('Y'))->count();
+
+        // Query Utama menggunakan kolom asli: tipe_model dan tanggal_masuk
+        $query = DB::table('tr_servis')
+            ->join('ms_unit', 'tr_servis.id_unit', '=', 'ms_unit.id_unit')
+            ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
+            ->select(
+                'tr_servis.*', 
+                'ms_unit.jenis_unit', 
+                'ms_unit.merek',
+                'ms_unit.tipe_model',
+                'ms_unit.tanggal_masuk',
+                'ms_unit.status_garansi',
+                'ms_konsumen.id_konsumen', 
+                'ms_konsumen.nama', 
+                'ms_konsumen.no_whatsapp',
+                'ms_konsumen.alamat'
+            )
+            ->orderBy('tr_servis.created_at', 'desc');
+
+        if (!empty($filterTanggal)) {
+            $query->whereDate('tr_servis.created_at', $filterTanggal);
+        }
+        if (!empty($filterBulan)) {
+            $query->whereMonth('tr_servis.created_at', $filterBulan);
+        }
+        if (!empty($filterTahun)) {
+            $query->whereYear('tr_servis.created_at', $filterTahun);
+        }
+
+        $riwayatServis = $query->paginate(10)->appends($request->all());
+
+        return view('report.index', compact(
+            'totalKonsumen', 'closingBulanIni', 'garansiAktif', 
+            'antreanPerawatan', 'followUpTerkirim', 'totalUnitTahunIni',
+            'riwayatServis', 'filterTanggal', 'filterBulan', 'filterTahun'
+        ));
     }
-
-    /**
-     * Menampilkan halaman khusus Log Kronologis
-     */
+    
     public function kronologis(Request $request)
     {
-        $keyword = $request->input('keyword');
-        $status = $request->input('status');
-        $bulan = $request->input('bulan', '09');
-
-        return view('report.kronologis', compact('keyword', 'status', 'bulan'));
+        return view('report.kronologis');
     }
 
-    /**
-     * Fungsi untuk Export Laporan Harian ke PDF
-     */
     public function exportDailyPdf(Request $request)
     {
-        $tanggal = $request->input('tanggal', date('Y-m-d'));
+        $id_konsumen = $request->input('id_konsumen');
 
-        // Nanti query datanya di sini:
-        // $data = ServiceJob::whereDate('created_at', $tanggal)->get();
+        if ($id_konsumen) {
+            $konsumen = DB::table('ms_konsumen')->where('id_konsumen', $id_konsumen)->first();
+            
+            $riwayatServis = DB::table('tr_servis')
+                ->join('ms_unit', 'tr_servis.id_unit', '=', 'ms_unit.id_unit')
+                ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
+                ->where('ms_konsumen.id_konsumen', $id_konsumen)
+                ->select(
+                    'tr_servis.*', 
+                    'ms_unit.jenis_unit', 
+                    'ms_unit.merek', 
+                    'ms_unit.tipe_model',
+                    'ms_unit.tanggal_masuk',
+                    'ms_unit.status_garansi'
+                )
+                ->orderBy('tr_servis.created_at', 'desc')
+                ->get();
+        } else {
+            $konsumen = null;
+            
+            $riwayatServis = DB::table('tr_servis')
+                ->join('ms_unit', 'tr_servis.id_unit', '=', 'ms_unit.id_unit')
+                ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
+                ->select(
+                    'tr_servis.*', 
+                    'ms_unit.jenis_unit', 
+                    'ms_unit.merek', 
+                    'ms_unit.tipe_model',
+                    'ms_unit.tanggal_masuk',
+                    'ms_unit.status_garansi',
+                    'ms_konsumen.nama',
+                    'ms_konsumen.no_whatsapp'
+                )
+                ->orderBy('tr_servis.created_at', 'desc')
+                ->get();
+        }
 
-        // CATATAN: Untuk bisa membuat PDF, install library DomPDF (composer require barryvdh/laravel-dompdf)
-        /*
-        $pdf = \PDF::loadView('report.pdf_template', compact('data', 'tanggal'));
-        return $pdf->download('Laporan_Harian_Jawaratech_' . $tanggal . '.pdf');
-        */
-
-        return "Fitur Export PDF untuk tanggal $tanggal sedang disiapkan. (Butuh install DomPDF)";
+        return view('report.pdf', compact('konsumen', 'riwayatServis'));
     }
 
-    /**
-     * Fungsi untuk Export Laporan Rekap ke Excel (Bulanan/Tahunan)
-     */
     public function exportExcel(Request $request)
     {
-        $bulan = $request->input('bulan');
-        $tahun = $request->input('tahun', date('Y'));
-
-        // CATATAN: Untuk bisa membuat Excel, install library Laravel Excel (composer require maatwebsite/excel)
-        /*
-        return \Excel::download(new \App\Exports\ReportExport($bulan, $tahun), 'Rekap_Laporan_Jawaratech_'.$tahun.'.xlsx');
-        */
-
-        $namaBulan = $bulan ? "Bulan ke-$bulan" : "Semua Bulan";
-        return "Fitur Export Excel untuk $namaBulan Tahun $tahun sedang disiapkan. (Butuh install Laravel Excel)";
+        return "Fitur Export Excel siap.";
     }
 }

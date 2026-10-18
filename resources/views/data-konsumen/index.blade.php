@@ -58,6 +58,92 @@ body, html {
     border-width: 2px !important;
     border-color: #cbd5e1 !important;
 }
+
+/* ===== Modal konfirmasi hapus (gaya sama dengan modal logout) ===== */
+.hapus-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(2, 6, 23, 0.65);
+    backdrop-filter: blur(2px);
+}
+.hapus-overlay.show { display: flex; }
+
+.hapus-box {
+    width: 100%;
+    max-width: 500px;
+    padding: 24px 28px;
+    text-align: center;
+    color: #ffffff;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    animation: hapusMasuk 0.2s ease-out;
+}
+@keyframes hapusMasuk {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.hapus-ikon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #f43f5e;
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.45);
+    border-radius: 50%;
+}
+
+.hapus-judul {
+    margin: 0 0 6px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+.hapus-pesan {
+    margin: 0 0 18px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #e2e8f0;
+}
+
+.hapus-aksi {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.hapus-btn {
+    padding: 8px 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: filter 0.15s ease, background-color 0.15s ease;
+}
+.hapus-btn-batal {
+    color: #ffffff;
+    background: transparent;
+    border: 1px solid #ffffff;
+}
+.hapus-btn-batal:hover { background: rgba(255, 255, 255, 0.1); }
+.hapus-btn-ya {
+    color: #ffffff;
+    background: #ef4444;
+    border: 1px solid #ef4444;
+}
+.hapus-btn-ya:hover { filter: brightness(1.1); }
+.hapus-btn-ya:disabled { opacity: 0.6; cursor: not-allowed; }
 </style>
 
 <div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3 100%); min-height: 100vh;">
@@ -189,7 +275,7 @@ body, html {
                                         <i class="fas fa-edit"></i>
                                     </button>
 
-                                    <form action="{{ route('hapus-konsumen', $k->id_konsumen) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus konsumen {{ e($k->nama) }}?');">
+                                    <form action="{{ route('hapus-konsumen', $k->id_konsumen) }}" method="POST" class="d-inline form-hapus" data-judul="Yakin ingin menghapus?" data-pesan="Data konsumen {{ $k->nama }} akan dihapus dan tidak dapat dikembalikan.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Hapus">
@@ -219,6 +305,23 @@ body, html {
     @include('data-konsumen.edit', ['k' => $k])
 @endforeach
 
+{{-- ================================================================= --}}
+{{-- MODAL KONFIRMASI HAPUS (gaya sama dengan modal logout)            --}}
+{{-- ================================================================= --}}
+<div id="modalHapus" class="hapus-overlay" role="dialog" aria-modal="true" aria-labelledby="modalHapusJudul">
+    <div class="hapus-box">
+        <div class="hapus-ikon"><i class="fas fa-trash"></i></div>
+        <h5 id="modalHapusJudul" class="hapus-judul">Yakin ingin menghapus?</h5>
+        <p id="modalHapusPesan" class="hapus-pesan">Data yang dihapus tidak dapat dikembalikan.</p>
+        <div class="hapus-aksi">
+            <button type="button" id="modalHapusBatal" class="hapus-btn hapus-btn-batal">Batal</button>
+            <button type="button" id="modalHapusYa" class="hapus-btn hapus-btn-ya">
+                <i class="fas fa-trash me-1"></i> Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Script JS (Bootstrap 4.6) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -228,5 +331,58 @@ $(document).ready(function(){
         $(".alert-success").fadeOut(500, function() { $(this).remove(); });
     }, 4000);
 });
+</script>
+
+<!-- Script modal konfirmasi hapus (JavaScript biasa, tidak bergantung Bootstrap/jQuery) -->
+<script>
+(function () {
+    var overlay  = document.getElementById('modalHapus');
+    var elJudul  = document.getElementById('modalHapusJudul');
+    var elPesan  = document.getElementById('modalHapusPesan');
+    var btnBatal = document.getElementById('modalHapusBatal');
+    var btnYa    = document.getElementById('modalHapusYa');
+    var formAktif = null;
+
+    function buka(form) {
+        formAktif = form;
+        elJudul.textContent = form.getAttribute('data-judul') || 'Yakin ingin menghapus?';
+        elPesan.textContent = form.getAttribute('data-pesan') || 'Data yang dihapus tidak dapat dikembalikan.';
+        btnYa.disabled = false;
+        overlay.classList.add('show');
+        btnBatal.focus();
+    }
+
+    function tutup() {
+        overlay.classList.remove('show');
+        formAktif = null;
+    }
+
+    // Tangkap submit semua form ber-class "form-hapus"
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (form.classList && form.classList.contains('form-hapus')) {
+            e.preventDefault();
+            buka(form);
+        }
+    });
+
+    btnYa.addEventListener('click', function () {
+        if (!formAktif) return;
+        btnYa.disabled = true; // cegah klik ganda
+        HTMLFormElement.prototype.submit.call(formAktif);
+    });
+
+    btnBatal.addEventListener('click', tutup);
+
+    // Klik area gelap di luar kotak = batal
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) tutup();
+    });
+
+    // Tombol Esc = batal
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('show')) tutup();
+    });
+})();
 </script>
 @endsection

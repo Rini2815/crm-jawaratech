@@ -94,7 +94,7 @@ body, html {
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h2 class="text-white fw-bold mb-1" style="font-weight: 700;">
-                    <i class="fas fa-comments text-primary me-2"></i> Follow-up Konsumen
+                    <i class="fas fa-comments text-primary me-2"></i> Follow-up WhatsApp Konsumen
                 </h2>
                 <p class="text-light opacity-75 small mb-0" style="font-weight: 500;">
                     Modul pencatatan hasil Happy Call dan konfirmasi purna servis via WhatsApp

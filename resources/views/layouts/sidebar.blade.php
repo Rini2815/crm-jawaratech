@@ -47,14 +47,14 @@
                     @endif
                     @if($canFollowUp)
                     <a class="nav-link {{ request()->routeIs('followup*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('followup.index') }}">
-                        <i class="fab fa-whatsapp me-2 text-white"></i> Follow-up Konsumen
+                        <i class="fab fa-whatsapp me-2 text-white"></i> Follow-up WhatsApp
                     </a>
                     @endif
                 </nav>
             </div>
             @endif
 
-            <!-- 2. DATA MASTER (Data Konsumen, Data Unit Service, Registrasi Service) -->
+            <!-- 2. DATA MASTER (Data Konsumen, Data Unit, Registrasi Servis) -->
             @if($showHeadingCrm)
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">MANAJEMEN CRM</div>
             @endif
@@ -77,12 +77,12 @@
                     @endif
                     @if($canUnit)
                     <a class="nav-link {{ $canRegis ? 'sub-item-divider' : '' }} {{ request()->routeIs('data-unit*', 'service-jobs*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-unit.index') }}">
-                        <i class="fas fa-box me-2 text-white"></i> Data Unit Service
+                        <i class="fas fa-box me-2 text-white"></i> Data Unit
                     </a>
                     @endif
                     @if($canRegis)
                     <a class="nav-link {{ request()->routeIs('registrasi-servis*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('registrasi-servis.index') }}">
-                        <i class="fas fa-tools me-2 text-white"></i> Registrasi Service
+                        <i class="fas fa-tools me-2 text-white"></i> Registrasi Servis
                     </a>
                     @endif
                 </nav>
@@ -109,7 +109,7 @@
                             <i class="fas fa-shield-alt me-2 text-white"></i> Hak Akses
                         </a>
                         <a class="nav-link {{ request()->routeIs('users.profile-auth*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('users.profile-auth') }}">
-                            <i class="fas fa-id-badge me-2 text-white"></i> Switch Profile
+                            <i class="fas fa-id-badge me-2 text-white"></i> Impersonate / Switch Profile
                         </a>
                     </nav>
                 </div>
@@ -143,7 +143,7 @@
             <div class="collapse {{ request()->routeIs('report*') ? 'show' : '' }}" id="collapseLaporan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link {{ request()->routeIs('report.index') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('report.index') }}">
-                        <i class="fas fa-file-invoice me-2 text-white"></i> Riwayat Servis 
+                        <i class="fas fa-file-invoice me-2 text-white"></i> Laporan & Rekapitulasi
                     </a>
                 </nav>
             </div>
@@ -158,7 +158,7 @@
             <div class="collapse" id="collapsePengaturan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link {{ request()->routeIs('profile.edit', 'password.edit', 'team.manage') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('profile.edit') }}">
-                        <i class="fas fa-user-circle me-2 text-white"></i> Profil Saya
+                        <i class="fas fa-user-circle me-2 text-white"></i> Profil & Ubah Password
                     </a>
                 </nav>
             </div>

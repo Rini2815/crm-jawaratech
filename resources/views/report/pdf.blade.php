@@ -30,14 +30,32 @@
         .client-info td { padding: 3px 5px; vertical-align: top; font-size: 10.5px; border: none; color: #000000; }
         .label { font-weight: bold; width: 110px; color: #000000; }
 
-        /* Tabel Riwayat - Header Hitam Pekat dengan Teks Putih Tebal */
+        /* Tabel Riwayat - Super Komprehensif */
         table.data-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-        table.data-table th, table.data-table td { border: 1px solid #000000; padding: 6px 7px; text-align: left; vertical-align: middle; font-size: 10px; color: #000000; }
+        table.data-table th, table.data-table td { 
+            border: 1px solid #000000; 
+            padding: 8px 7px; 
+            text-align: left; 
+            vertical-align: top; /* Diubah ke top agar teks bertumpuk rapi di atas */
+            font-size: 9.5px; 
+            color: #000000; 
+            line-height: 1.5;
+        }
         
-        /* DIUBAH DI SINI: Background hitam pekat, teks putih bersih & tebal */
-        table.data-table th { background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact; text-transform: uppercase; font-size: 9.5px; text-align: center; font-weight: bold; }
+        /* Header Hitam Pekat */
+        table.data-table th { 
+            background-color: #000000 !important; 
+            color: #ffffff !important; 
+            -webkit-print-color-adjust: exact; 
+            text-transform: uppercase; 
+            font-size: 9.5px; 
+            text-align: center; 
+            font-weight: bold; 
+            vertical-align: middle;
+        }
         
         .text-center { text-align: center; }
+        .fw-bold { font-weight: bold; }
         
         /* Tanda Tangan */
         .footer-sign { margin-top: 25px; width: 100%; page-break-inside: avoid; }
@@ -52,6 +70,7 @@
         <table class="kop-table">
             <tr>
                 <td class="logo-col">
+                    <!-- Ganti path gambar ini sesuai lokasi logo Anda di public folder -->
                     <img src="{{ asset('image/logo.png') }}" alt="Logo Jawaratech">
                 </td>
                 <td class="text-col">
@@ -68,7 +87,7 @@
         </table>
     </div>
 
-    <!-- DESKRIPSI PENGANTAR SEBELUM TABEL -->
+    <!-- DESKRIPSI PENGANTAR -->
     <div class="company-desc">
         <strong>Tentang Jawaratech:</strong> Jawaratech (CV Jawara Tiga Pendiri) adalah pusat layanan servis elektronik panggilan dan pemeliharaan perangkat rumah tangga terkemuka di wilayah Karesidenan Madiun. Laporan resmi ini merangkum rekam jejak riwayat servis, pemeliharaan berkala, serta status pengerjaan unit konsumen secara transparan dan akurat.
     </div>
@@ -98,53 +117,78 @@
     </div>
     @endif
 
-    <!-- Tabel Data / Riwayat Servis -->
+    <!-- Tabel Data / Riwayat Servis Lengkap -->
     <p style="margin-bottom: 5px; font-weight: bold; color: #000000; font-size: 10.5px;">
-        Rekam Jejak Pengerjaan Unit, Keluhan & Status Layanan:
+        Rekam Jejak Transaksi, Pengerjaan Unit, Keluhan & Status Layanan:
     </p>
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 12%;">Tgl Reg</th>
-                @if(!isset($konsumen))
-                    <th style="width: 18%;">Nama Konsumen</th>
-                @endif
-                <th style="width: {{ isset($konsumen) ? '23%' : '20%' }};">Jenis Unit & Merek</th>
-                <th style="width: 25%;">Keluhan Utama</th>
-                <th style="width: 20%;">Status & Teknisi</th>
-                <th style="width: 15%;">Garansi</th>
+                <th style="width: 4%;">NO</th>
+                <th style="width: 22%;">TIKET & INVOICE</th>
+                <th style="width: 26%;">DETAIL UNIT & KELUHAN</th>
+                <th style="width: 24%;">TEKNISI, STATUS & BIAYA</th>
+                <th style="width: 24%;">GARANSI & NEXT SERVIS</th>
             </tr>
         </thead>
         <tbody>
             @forelse($riwayatServis as $index => $item)
             <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
-                <td class="text-center">{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d/m/Y') }}</td>
-                @if(!isset($konsumen))
-                    <td><strong>{{ $item->nama ?? '-' }}</strong><br><span style="font-size: 9px; color: #000000;">{{ $item->no_whatsapp ?? '' }}</span></td>
-                @endif
+                <td class="text-center fw-bold">{{ $index + 1 }}</td>
+                
+                <!-- Kolom 1: Tiket & Invoice -->
                 <td>
-                    <strong>{{ $item->jenis_unit ?? 'Unit' }}</strong><br>
-                    <span style="color: #000000; font-size: 9.5px;">Merek: {{ $item->merek ?? '-' }}</span>
-                </td>
-                <td>{{ $item->keluhan ?? '-' }}</td>
-                <td>
-                    <strong>{{ $item->status ?? 'Proses' }}</strong><br>
-                    <span style="font-size: 9px; color: #000000;">Update: {{ \Carbon\Carbon::parse($item->updated_at)->translatedFormat('d/m/Y') }}</span>
-                </td>
-                <td class="text-center">
-                    @if(str_contains(strtolower($item->status_garansi ?? ''), 'aktif'))
-                        <strong>Valid</strong>
-                    @else
-                        <span>Non-Garansi</span>
+                    <span class="fw-bold">Tiket:</span> {{ $item->no_tiket ?? '-' }}<br>
+                    <span class="fw-bold">Inv:</span> {{ $item->no_invoice ?? 'Belum Cetak' }}<br>
+                    <span class="fw-bold">Tgl Reg:</span> {{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y') }}
+                    
+                    @if(!isset($konsumen))
+                        <div style="margin-top: 5px; padding-top: 5px; border-top: 1px dotted #000;">
+                            <span class="fw-bold">Klien:</span> {{ $item->nama ?? '-' }}<br>
+                            <span style="font-size: 8.5px;">WA: {{ $item->no_whatsapp ?? '-' }}</span>
+                        </div>
                     @endif
+                </td>
+                
+                <!-- Kolom 2: Detail Unit & Keluhan -->
+                <td>
+                    <span class="fw-bold">Unit:</span> {{ $item->jenis_unit ?? 'Unit' }} ({{ $item->merek ?? '-' }})<br>
+                    <span class="fw-bold">Model/Tipe:</span> {{ $item->tipe_model ?? '-' }}<br>
+                    <div style="margin-top: 4px;">
+                        <span class="fw-bold">Keluhan:</span><br>
+                        <span style="font-style: italic;">"{{ $item->keluhan ?? '-' }}"</span>
+                    </div>
+                </td>
+                
+                <!-- Kolom 3: Teknisi, Status & Biaya -->
+                <td>
+                    <span class="fw-bold">Status:</span> {{ $item->status ?? 'Proses' }}<br>
+                    <span class="fw-bold">Teknisi:</span> {{ $item->nama_teknisi ?? 'Belum Ditugaskan' }}<br>
+                    
+                    <div style="margin-top: 5px; padding-top: 5px; border-top: 1px dotted #000;">
+                        <span class="fw-bold">Biaya:</span> 
+                        {{ !empty($item->total_biaya) ? 'Rp ' . number_format($item->total_biaya, 0, ',', '.') : '-' }}<br>
+                        <span class="fw-bold">Metode:</span> {{ $item->metode_pembayaran ?? '-' }}
+                    </div>
+                </td>
+                
+                <!-- Kolom 4: Garansi & After-Sales -->
+                <td>
+                    <span class="fw-bold">Garansi:</span> 
+                    {{ str_contains(strtolower($item->status_garansi ?? ''), 'aktif') ? 'Valid' : 'Non-Garansi' }}<br>
+                    
+                    <div style="margin-top: 5px; padding-top: 5px; border-top: 1px dotted #000;">
+                        <span class="fw-bold">Next Servis:</span><br>
+                        {{ !empty($item->tanggal_jatuh_tempo) ? \Carbon\Carbon::parse($item->tanggal_jatuh_tempo)->translatedFormat('d M Y') : 'Belum Dijadwalkan' }}<br>
+                        <span class="fw-bold">Follow-up:</span> <br>
+                        {{ $item->status_follow_up ?? 'Belum Dihubungi' }}
+                    </div>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="{{ isset($konsumen) ? '6' : '7' }}" class="text-center" style="padding: 15px; color: #000000;">
-                    Tidak ada riwayat servis tercatat pada periode ini.
+                <td colspan="5" class="text-center" style="padding: 15px; color: #000000;">
+                    Tidak ada riwayat servis tercatat pada periode pencarian ini.
                 </td>
             </tr>
             @endforelse
@@ -164,6 +208,7 @@
         </table>
     </div>
 
+    <!-- Script Print Otomatis -->
     <script>
         window.onload = function() {
             window.print();

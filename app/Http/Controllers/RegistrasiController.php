@@ -17,8 +17,8 @@ class RegistrasiController extends Controller
 
     public function index(Request $request)
     {
+        // Tiket terbaru di atas, tiket pertama (nomor 1) di paling bawah
         $query = Servis::with(['unit.konsumen', 'teknisi'])
-            ->orderByDesc('tanggal_masuk')
             ->orderByDesc('id_servis');
 
         if ($request->filled('status')) {

@@ -4,7 +4,17 @@
 @php
     $notifications = $notifications ?? collect();
     $totalJatuhTempo = $totalJatuhTempo ?? 0;
+
+    // Halaman Pengingat Perawatan hanya bisa dibuka role yang berizin
+    $bolehBukaPengingat = auth()->user()->hasMenu('pengingat-perawatan');
 @endphp
+
+<style>
+    /* Baris notifikasi bisa diklik -> membuka halaman Pengingat Perawatan */
+    .baris-notif { cursor: pointer; }
+    .baris-notif:hover > td { background-color: #f1f5f9 !important; }
+</style>
+
 <div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="min-height: 100vh;">
 
     <!-- 1. HEADER HALAMAN -->
@@ -57,9 +67,11 @@
             <h5 class="fw-bold text-white mb-0">
                 <i class="fas fa-list text-info me-2"></i> Daftar Notifikasi
             </h5>
-            <a href="{{ route('schedules.index') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
-                <i class="fas fa-calendar-alt me-1"></i> Buka Halaman Pengingat Perawatan
-            </a>
+            @if($bolehBukaPengingat)
+                <a href="{{ route('schedules.index') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                    <i class="fas fa-calendar-alt me-1"></i> Buka Halaman Pengingat Perawatan
+                </a>
+            @endif
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -76,7 +88,7 @@
                     </thead>
                     <tbody class="border-top-0 small fw-medium">
                         @forelse ($notifications as $item)
-                        <tr>
+                        <tr @if($bolehBukaPengingat) class="baris-notif" data-href="{{ route('schedules.index') }}" title="Klik untuk membuka Pengingat Perawatan" @endif>
                             <td class="ps-4 fw-bold text-dark">
                                 {{ $item->nama_pelanggan }}
                                 <span class="d-block text-muted fw-normal" style="font-size: 0.75rem;">{{ $item->no_hp }}</span>
@@ -113,4 +125,17 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Klik baris notifikasi -> buka halaman Pengingat Perawatan
+    // (klik pada tombol/link di dalam baris, misalnya Chat WhatsApp, tidak ikut membuka halaman)
+    document.querySelectorAll('tr.baris-notif').forEach(function (baris) {
+        baris.addEventListener('click', function (e) {
+            if (e.target.closest('a, button')) return;
+            window.location.href = baris.getAttribute('data-href');
+        });
+    });
+});
+</script>
 @endsection

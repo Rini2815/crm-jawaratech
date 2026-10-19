@@ -26,6 +26,11 @@
                 ->get();
                 
             $globalNotifCount = \Illuminate\Support\Facades\DB::table('tr_follow_up')->where('status', 'Belum Dihubungi')->count();
+
+            // Tujuan klik notifikasi: halaman Pengingat Perawatan (jika role berizin), selain itu halaman Notifikasi
+            $nbUrlPengingat = auth()->user()->hasMenu('pengingat-perawatan')
+                ? route('schedules.index')
+                : route('notifications.index');
         @endphp
 
         <li class="nav-item dropdown me-3 position-relative">
@@ -58,9 +63,13 @@
                             elseif (str_contains($jenis, 'dispenser')) { $icon = 'fa-tint'; $icon_color = 'text-warning'; $bg_color = 'bg-warning'; } 
                             elseif (str_contains($jenis, 'cuci')) { $icon = 'fa-tshirt'; $icon_color = 'text-success'; $bg_color = 'bg-success'; } 
                             elseif (str_contains($jenis, 'heater')) { $icon = 'fa-fire'; $icon_color = 'text-danger'; $bg_color = 'bg-danger'; }
+
+                            // Nomor WhatsApp format internasional (08xxx -> 628xxx) untuk link wa.me
+                            $noWa = preg_replace('/[^0-9]/', '', (string) $notif->no_whatsapp);
+                            if (str_starts_with($noWa, '0')) { $noWa = '62' . substr($noWa, 1); }
                         @endphp
                         <li>
-                            <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 border-bottom border-secondary border-opacity-25" href="{{ route('schedules.index') ?? '#' }}" style="color: #f8fafc; white-space: normal;">
+                            <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 border-bottom border-secondary border-opacity-25" href="{{ $nbUrlPengingat }}" style="color: #f8fafc; white-space: normal;">
                                 <div class="{{ $bg_color }} bg-opacity-25 {{ $icon_color }} p-2 rounded-circle mt-1">
                                     <i class="fas {{ $icon }} fa-fw"></i>
                                 </div>
@@ -72,7 +81,7 @@
                                     </div>
                                     <p class="mb-1 small text-light opacity-75">Perawatan {{ $notif->jenis_unit }} - {{ $notif->merek }}</p>
                                     <div class="d-flex gap-2 mt-1">
-                                        <button type="button" class="btn btn-sm btn-success py-0 px-2 rounded-pill" style="font-size: 0.75rem;" onclick="window.open('https://wa.me/{{ preg_replace('/[^0-9]/', '', $notif->no_whatsapp) }}', '_blank'); event.preventDefault();">
+                                        <button type="button" class="btn btn-sm btn-success py-0 px-2 rounded-pill" style="font-size: 0.75rem;" onclick="window.open('https://wa.me/{{ $noWa }}', '_blank'); event.preventDefault();">
                                             <i class="fab fa-whatsapp me-1"></i> Chat
                                         </button>
                                     </div>
@@ -90,7 +99,7 @@
 
                 <!-- Footer Pop-up -->
                 <li style="border-top: 1px solid #334155;">
-                    <a class="dropdown-item text-center fw-bold text-info py-2 small" href="{{ route('notifications.index') ?? '#' }}">
+                    <a class="dropdown-item text-center fw-bold text-info py-2 small" href="{{ $nbUrlPengingat }}">
                         Lihat Semua Pengingat <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </li>

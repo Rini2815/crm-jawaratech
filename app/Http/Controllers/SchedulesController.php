@@ -29,12 +29,12 @@ class SchedulesController extends Controller
         });
 
         // Kartu ringkasan: unit yang sudah jatuh tempo / terlewat sampai akhir bulan ini
-        $perluDihubungi   = $schedules->filter(fn ($j) => $j->jatuh_tempo->lte($akhirBulan));
-        $totalJatuhTempo  = $perluDihubungi->count();
-        $totalAc          = $perluDihubungi->where('kelompok', 'AC')->count();
-        $totalDispenser   = $perluDihubungi->where('kelompok', 'Dispenser')->count();
+        $perluDihubungi  = $schedules->filter(fn ($j) => $j->jatuh_tempo->lte($akhirBulan));
+        $totalJatuhTempo = $perluDihubungi->count();
+        $totalAc         = $perluDihubungi->where('kelompok', 'AC')->count();
+        $totalDispenser  = $perluDihubungi->where('kelompok', 'Dispenser')->count();
         $totalWaterHeater = $perluDihubungi->where('kelompok', 'Water Heater')->count();
-        $totalMesinCuci   = $perluDihubungi->where('kelompok', 'Mesin Cuci')->count();
+        $totalMesinCuci  = $perluDihubungi->where('kelompok', 'Mesin Cuci')->count();
 
         return view('schedules.index', compact(
             'schedules', 'totalJatuhTempo', 'totalAc', 'totalDispenser', 'totalWaterHeater', 'totalMesinCuci'
@@ -118,7 +118,6 @@ class SchedulesController extends Controller
 
                 $status = $this->statusJatuhTempo($telat, $jatuhTempo, $akhirBulan);
 
-                // Dispenser dan Water Heater dipisah agar masing-masing punya kartu & filter sendiri
                 $kelompok = match ($u->jenis_unit) {
                     'AC'           => 'AC',
                     'Mesin Cuci'   => 'Mesin Cuci',

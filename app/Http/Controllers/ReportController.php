@@ -110,7 +110,7 @@ class ReportController extends Controller
 
         $riwayatServis = $query->get();
 
-        // 2. Query Data Follow-up / Perawatan Berkala yang terhubung dengan ms_unit & ms_konsumen
+        // 2. Query Data Follow-up / Perawatan Berkala
         $followUpQuery = DB::table('tr_follow_up')
             ->join('ms_unit', 'tr_follow_up.id_unit', '=', 'ms_unit.id_unit')
             ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
@@ -135,6 +135,76 @@ class ReportController extends Controller
 
     public function exportExcel(Request $request)
     {
-        return "Fitur Export Excel siap.";
+        $id_konsumen = $request->input('id_konsumen');
+        
+        $query = DB::table('tr_servis')
+            ->join('ms_unit', 'tr_servis.id_unit', '=', 'ms_unit.id_unit')
+            ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
+            ->leftJoin('ms_teknisi', 'tr_servis.id_teknisi', '=', 'ms_teknisi.id_teknisi')
+            ->select(
+                'tr_servis.*', 
+                'ms_unit.jenis_unit', 
+                'ms_unit.merek', 
+                'ms_unit.tipe_model',
+                'ms_unit.tanggal_masuk',
+                'ms_unit.status_garansi',
+                'ms_konsumen.id_konsumen',
+                'ms_konsumen.nama',
+                'ms_konsumen.no_whatsapp',
+                'ms_konsumen.alamat',
+                'ms_teknisi.nama_teknisi'
+            )
+            ->orderBy('tr_servis.created_at', 'desc');
+
+        if ($id_konsumen) {
+            $query->where('ms_konsumen.id_konsumen', $id_konsumen);
+        }
+        $riwayatServis = $query->get();
+
+        $fileName = 'Laporan_Rekapitulasi_Jawaratech_' . date('Y-m-d') . '.csv';
+        
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use($riwayatServis) {
+            $file = fopen('php://output', 'w');
+            
+            // Tambahkan BOM agar karakter UTF-8 terbaca rapi di Microsoft Excel
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Header Kolom CSV (menggunakan delimiter titik koma ';')
+            fputcsv($file, ['NO', 'NO TIKET', 'INVOICE', 'TANGGAL', 'KONSUMEN', 'WHATSAPP', 'UNIT', 'MEREK', 'MODEL', 'KELUHAN', 'STATUS', 'TEKNISI', 'BIAYA (RP)', 'METODE', 'GARANSI', 'NEXT SERVIS'], ';');
+
+            // Baris Data
+            foreach ($riwayatServis as $index => $item) {
+                fputcsv($file, [
+                    $index + 1,
+                    $item->no_tiket ?? '-',
+                    $item->no_invoice ?? 'Belum Cetak',
+                    $item->created_at ?? '-',
+                    $item->nama ?? '-',
+                    $item->no_whatsapp ?? '-',
+                    $item->jenis_unit ?? '-',
+                    $item->merek ?? '-',
+                    $item->tipe_model ?? '-',
+                    $item->keluhan ?? '-',
+                    $item->status ?? '-',
+                    $item->nama_teknisi ?? 'Belum Ditugaskan',
+                    $item->biaya_jasa ?? ($item->total_biaya ?? 0),
+                    $item->metode_pembayaran ?? '-',
+                    str_contains(strtolower($item->status_garansi ?? ''), 'aktif') ? 'Valid' : 'Non-Garansi',
+                    $item->tanggal_jatuh_tempo ?? '-'
+                ], ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

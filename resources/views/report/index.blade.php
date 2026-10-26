@@ -17,9 +17,9 @@
                     <i class="fas fa-file-pdf"></i> Cetak Laporan PDF (Global)
                 </a>
                 <!-- Tombol Rekap Excel -->
-                <a href="{{ route('report.excel', request()->all()) }}" class="btn btn-success px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
-                    <i class="fas fa-file-excel"></i> Rekap Excel
-                </a>
+                <a href="{{ route('report.export-csv') }}" class="btn btn-success">
+    <i class="fas fa-file-csv"></i> Rekap CSV (Excel)
+</a>
             </div>
         </div>
     </div>

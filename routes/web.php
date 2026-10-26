@@ -26,7 +26,6 @@ Route::get('/', function () {
 
 // 2. KELOMPOK GUEST: Rute yang HANYA bisa diakses jika BELUM login
 Route::middleware('guest')->group(function () {
-
     // Fitur Login Biasa
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -45,10 +44,6 @@ Route::middleware('guest')->group(function () {
 // 3. KELOMPOK AUTH: Rute yang DIKUNCI (HANYA BISA DIAKSES JIKA SUDAH LOGIN)
 Route::middleware('auth')->group(function () {
 
-    // =====================================================================
-    // A. TERBUKA UNTUK SEMUA USER YANG SUDAH LOGIN
-    // =====================================================================
-
     // Fitur Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -64,13 +59,12 @@ Route::middleware('auth')->group(function () {
 
     // --- Rute Notifikasi ---
     Route::get('/notifikasi', [ProfileController::class, 'notifications'])->name('notifications.index');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
     // =====================================================================
     // B. KHUSUS SUPERADMIN
     // =====================================================================
     Route::middleware(CekMenu::class . ':superadmin')->group(function () {
-
-        // --- Rute Kelola Akun Tim ---
         Route::get('/kelola-akun-tim', [ProfileController::class, 'manageUsers'])->name('team.manage');
 
         // --- MANAJEMEN PENGGUNA ---
@@ -158,15 +152,13 @@ Route::middleware('auth')->group(function () {
         Route::put('/layanan-servis/followup/{id}', [FollowUpController::class, 'update'])->name('followup.update');
     });
 
-    // --- Laporan & Log Kronologis (Disesuaikan namanya agar sinkron dengan View) ---
+    // --- Laporan & Log Kronologis ---
     Route::middleware(CekMenu::class . ':laporan')->group(function () {
         Route::get('/report', [ReportController::class, 'index'])->name('report.index');
         Route::get('/report/kronologis', [ReportController::class, 'kronologis'])->name('report.kronologis');
         
-        // Diubah alias/namanya menjadi report.pdf & report.excel agar match dengan tombol di Blade
+        // Rute Export PDF & Excel (CSV)
         Route::get('/report/export-daily-pdf', [ReportController::class, 'exportDailyPdf'])->name('report.pdf');
         Route::get('/report/export-excel', [ReportController::class, 'exportExcel'])->name('report.excel');
     });
-// --- Notifikasi ---
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 });

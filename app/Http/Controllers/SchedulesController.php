@@ -42,7 +42,8 @@ class SchedulesController extends Controller
     }
 
     /**
-     * Tombol Chat: catat agenda follow-up (jika belum ada untuk siklus ini),
+     * Tombol Chat: catat agenda follow-up sebagai "Sudah Dihubungi" untuk siklus ini
+     * (buat baru jika belum ada, atau perbarui jika masih "Belum Dihubungi"),
      * lalu buka WhatsApp konsumen dengan template pesan.
      */
     public function hubungi(Request $request)
@@ -58,20 +59,31 @@ class SchedulesController extends Controller
                 ->with('error', 'Unit ini sedang dalam proses servis atau tidak ditemukan, sehingga pengingat tidak dapat dibuat.');
         }
 
-        $sudahAda = DB::table('tr_follow_up')
+        $tanggal = $j->jatuh_tempo->toDateString();
+
+        $agenda = DB::table('tr_follow_up')
             ->where('kategori', 'Pengingat Perawatan')
             ->where('id_unit', $j->id_unit)
-            ->whereDate('tanggal_jadwal', $j->jatuh_tempo->toDateString())
-            ->exists();
+            ->whereDate('tanggal_jadwal', $tanggal);
 
-        if (!$sudahAda) {
+        if ((clone $agenda)->exists()) {
+            // Agenda sudah ada tapi masih "Belum Dihubungi": tandai sudah dihubungi
+            (clone $agenda)
+                ->where('status', 'Belum Dihubungi')
+                ->update([
+                    'status'       => 'Sudah Dihubungi',
+                    'waktu_kontak' => now(),
+                    'id_pengguna'  => auth()->id(),
+                ]);
+        } else {
             DB::table('tr_follow_up')->insert([
                 'id_unit'        => $j->id_unit,
                 'id_servis'      => null,
                 'id_pengguna'    => auth()->id(),
                 'kategori'       => 'Pengingat Perawatan',
-                'tanggal_jadwal' => $j->jatuh_tempo->toDateString(),
-                'status'         => 'Belum Dihubungi',
+                'tanggal_jadwal' => $tanggal,
+                'status'         => 'Sudah Dihubungi',
+                'waktu_kontak'   => now(),
             ]);
         }
 

@@ -35,6 +35,7 @@ class ReportController extends Controller
         $query = DB::table('tr_servis')
             ->join('ms_unit', 'tr_servis.id_unit', '=', 'ms_unit.id_unit')
             ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
+            ->leftJoin('ms_teknisi', 'tr_servis.id_teknisi', '=', 'ms_teknisi.id_teknisi')
             ->select(
                 'tr_servis.*', 
                 'ms_unit.jenis_unit', 
@@ -45,7 +46,8 @@ class ReportController extends Controller
                 'ms_konsumen.id_konsumen', 
                 'ms_konsumen.nama', 
                 'ms_konsumen.no_whatsapp',
-                'ms_konsumen.alamat'
+                'ms_konsumen.alamat',
+                'ms_teknisi.nama_teknisi'
             )
             ->orderBy('tr_servis.created_at', 'desc');
 
@@ -76,45 +78,59 @@ class ReportController extends Controller
     public function exportDailyPdf(Request $request)
     {
         $id_konsumen = $request->input('id_konsumen');
-
+        
+        $konsumen = null;
         if ($id_konsumen) {
             $konsumen = DB::table('ms_konsumen')->where('id_konsumen', $id_konsumen)->first();
-            
-            $riwayatServis = DB::table('tr_servis')
-                ->join('ms_unit', 'tr_servis.id_unit', '=', 'ms_unit.id_unit')
-                ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
-                ->where('ms_konsumen.id_konsumen', $id_konsumen)
-                ->select(
-                    'tr_servis.*', 
-                    'ms_unit.jenis_unit', 
-                    'ms_unit.merek', 
-                    'ms_unit.tipe_model',
-                    'ms_unit.tanggal_masuk',
-                    'ms_unit.status_garansi'
-                )
-                ->orderBy('tr_servis.created_at', 'desc')
-                ->get();
-        } else {
-            $konsumen = null;
-            
-            $riwayatServis = DB::table('tr_servis')
-                ->join('ms_unit', 'tr_servis.id_unit', '=', 'ms_unit.id_unit')
-                ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
-                ->select(
-                    'tr_servis.*', 
-                    'ms_unit.jenis_unit', 
-                    'ms_unit.merek', 
-                    'ms_unit.tipe_model',
-                    'ms_unit.tanggal_masuk',
-                    'ms_unit.status_garansi',
-                    'ms_konsumen.nama',
-                    'ms_konsumen.no_whatsapp'
-                )
-                ->orderBy('tr_servis.created_at', 'desc')
-                ->get();
         }
 
-        return view('report.pdf', compact('konsumen', 'riwayatServis'));
+        // 1. Query Data Riwayat Servis Utama
+        $query = DB::table('tr_servis')
+            ->join('ms_unit', 'tr_servis.id_unit', '=', 'ms_unit.id_unit')
+            ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
+            ->leftJoin('ms_teknisi', 'tr_servis.id_teknisi', '=', 'ms_teknisi.id_teknisi')
+            ->select(
+                'tr_servis.*', 
+                'ms_unit.jenis_unit', 
+                'ms_unit.merek', 
+                'ms_unit.tipe_model',
+                'ms_unit.tanggal_masuk',
+                'ms_unit.status_garansi',
+                'ms_konsumen.id_konsumen',
+                'ms_konsumen.nama',
+                'ms_konsumen.no_whatsapp',
+                'ms_konsumen.alamat',
+                'ms_teknisi.nama_teknisi'
+            )
+            ->orderBy('tr_servis.created_at', 'desc');
+
+        if ($id_konsumen) {
+            $query->where('ms_konsumen.id_konsumen', $id_konsumen);
+        }
+
+        $riwayatServis = $query->get();
+
+        // 2. Query Data Follow-up / Perawatan Berkala yang terhubung dengan ms_unit & ms_konsumen
+        $followUpQuery = DB::table('tr_follow_up')
+            ->join('ms_unit', 'tr_follow_up.id_unit', '=', 'ms_unit.id_unit')
+            ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
+            ->select(
+                'tr_follow_up.*', 
+                'ms_unit.jenis_unit', 
+                'ms_unit.merek', 
+                'ms_unit.tipe_model',
+                'ms_konsumen.nama', 
+                'ms_konsumen.no_whatsapp'
+            )
+            ->orderBy('tr_follow_up.tanggal_jadwal', 'asc');
+
+        if ($id_konsumen) {
+            $followUpQuery->where('ms_konsumen.id_konsumen', $id_konsumen);
+        }
+
+        $followUpList = $followUpQuery->get();
+
+        return view('report.pdf', compact('konsumen', 'riwayatServis', 'followUpList'));
     }
 
     public function exportExcel(Request $request)

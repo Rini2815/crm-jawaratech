@@ -113,7 +113,7 @@ body, html {
         <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h1 class="h4 mb-1 text-white fw-bold d-flex align-items-center gap-2">
-                    <i class="fas fa-check-circle text-info"></i> Closing Servis (FR04)
+                    <i class="fas fa-check-circle text-info"></i> Closing Servis
                 </h1>
                 <p class="text-light opacity-75 mb-0" style="font-weight: 400; font-size: 0.85rem;">
                     Selesaikan tiket servis, catat biaya &amp; pembayaran, terbitkan invoice, dan cetak nota

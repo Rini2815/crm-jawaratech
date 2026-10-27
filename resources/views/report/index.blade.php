@@ -16,10 +16,10 @@
                 <a href="{{ route('report.pdf', request()->all()) }}" target="_blank" class="btn btn-danger px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
                     <i class="fas fa-file-pdf"></i> Cetak Laporan PDF (Global)
                 </a>
-                <!-- Tombol Rekap Excel -->
-                <a href="{{ route('report.export-csv') }}" class="btn btn-success">
-    <i class="fas fa-file-csv"></i> Rekap CSV (Excel)
-</a>
+                <!-- Tombol Rekap Excel (CSV) -->
+                <a href="{{ route('report.excel', request()->all()) }}" class="btn btn-success px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
+                    <i class="fas fa-file-csv"></i> Rekap CSV (Excel)
+                </a>
             </div>
         </div>
     </div>
@@ -236,7 +236,7 @@
                                     <span class="badge bg-info text-dark fw-bold px-2 py-1 mb-1 border border-info">
                                         <i class="fas fa-snowflake text-info me-1"></i> {{ $item->jenis_unit ?? 'Unit' }} ({{ $item->merek ?? '-' }})
                                     </span>
-                                    <div class="small text-dark">Model/Tipe: <strong>{{ $item->model_tipe ?? '-' }}</strong></div>
+                                    <div class="small text-dark">Model/Tipe: <strong>{{ $item->tipe_model ?? $item->model_tipe ?? '-' }}</strong></div>
                                     <div class="small text-muted">Masuk: {{ $item->tanggal_masuk ?? '-' }}</div>
                                     <div>
                                         @if(str_contains(strtolower($item->status_garansi ?? ''), 'aktif'))
@@ -307,18 +307,19 @@
                                                             <p class="mb-0"><strong>Alamat:</strong> {{ $item->alamat ?? '-' }}</p>
                                                         </div>
                                                     </div>
-                                                 <!-- Spesifikasi Master Unit -->
-<div class="col-md-6">
-    <div class="p-3 bg-white rounded-3 border shadow-sm h-100">
-        <h6 class="fw-bold text-success border-bottom pb-2 mb-2"><i class="fas fa-snowflake me-1"></i> Master Unit & Garansi</h6>
-        <p class="mb-1"><strong>Jenis Unit:</strong> {{ $item->jenis_unit ?? '-' }}</p>
-        <p class="mb-1"><strong>Merek:</strong> {{ $item->merek ?? '-' }}</p>
-        <!-- UBAH DI SINI DARI model_tipe MENJADI tipe_model -->
-        <p class="mb-1"><strong>Model / Tipe:</strong> {{ $item->tipe_model ?? '-' }}</p>
-        <p class="mb-1"><strong>Tanggal Masuk:</strong> {{ $item->tanggal_masuk ?? '-' }}</p>
-        <p class="mb-0"><strong>Status Garansi:</strong> <span class="badge bg-success">{{ $item->status_garansi ?? 'Valid' }}</span></p>
-    </div>
-</div>
+
+                                                    <!-- Spesifikasi Master Unit -->
+                                                    <div class="col-md-6">
+                                                        <div class="p-3 bg-white rounded-3 border shadow-sm h-100">
+                                                            <h6 class="fw-bold text-success border-bottom pb-2 mb-2"><i class="fas fa-snowflake me-1"></i> Master Unit & Garansi</h6>
+                                                            <p class="mb-1"><strong>Jenis Unit:</strong> {{ $item->jenis_unit ?? '-' }}</p>
+                                                            <p class="mb-1"><strong>Merek:</strong> {{ $item->merek ?? '-' }}</p>
+                                                            <p class="mb-1"><strong>Model / Tipe:</strong> {{ $item->tipe_model ?? $item->model_tipe ?? '-' }}</p>
+                                                            <p class="mb-1"><strong>Tanggal Masuk:</strong> {{ $item->tanggal_masuk ?? '-' }}</p>
+                                                            <p class="mb-0"><strong>Status Garansi:</strong> <span class="badge bg-success">{{ $item->status_garansi ?? 'Valid' }}</span></p>
+                                                        </div>
+                                                    </div>
+
                                                     <!-- Kronologi, Teknisi & Closing -->
                                                     <div class="col-12">
                                                         <div class="p-3 bg-white rounded-3 border shadow-sm">

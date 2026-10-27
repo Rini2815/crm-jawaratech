@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    // Hanya Superadmin (id_role 1) yang boleh mengklik tautan di dashboard.
+    // Role lain (Digital Marketing) hanya melihat data.
+    $isSuperadmin = (int) (auth()->user()->id_role ?? 0) === 1;
+@endphp
+
 <!-- Wrapper Utama dengan background terang/putih keabuan -->
 <div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3); min-height: 100vh; color: #f8fafc;">
     
@@ -39,9 +45,15 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-0 px-4 pb-3 pt-0">
-                    <a class="small text-primary text-decoration-none d-flex align-items-center fw-semibold" href="{{ route('data-konsumen') ?? '#' }}">
-                        <span>Kelola Data Konsumen</span> <i class="fas fa-arrow-right ms-auto"></i>
-                    </a>
+                    @if($isSuperadmin)
+                        <a class="small text-primary text-decoration-none d-flex align-items-center fw-semibold" href="{{ route('data-konsumen') ?? '#' }}">
+                            <span>Kelola Data Konsumen</span> <i class="fas fa-arrow-right ms-auto"></i>
+                        </a>
+                    @else
+                        <div class="small text-primary d-flex align-items-center fw-semibold" style="cursor: default;">
+                            <span>Kelola Data Konsumen</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -61,9 +73,15 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-0 px-4 pb-3 pt-0">
-                    <a class="text-decoration-none d-flex align-items-center fw-bold" href="{{ route('registrasi.index') ?? '#' }}" style="color: #b45309; font-size: 0.875rem;">
-                        <span>Registrasi Unit</span> <i class="fas fa-arrow-right ms-auto"></i>
-                    </a>
+                    @if($isSuperadmin)
+                        <a class="text-decoration-none d-flex align-items-center fw-bold" href="{{ route('registrasi.index') ?? '#' }}" style="color: #b45309; font-size: 0.875rem;">
+                            <span>Registrasi Unit</span> <i class="fas fa-arrow-right ms-auto"></i>
+                        </a>
+                    @else
+                        <div class="d-flex align-items-center fw-bold" style="color: #b45309; font-size: 0.875rem; cursor: default;">
+                            <span>Registrasi Unit</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -83,9 +101,15 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-0 px-4 pb-3 pt-0">
-                    <a class="small text-success text-decoration-none d-flex align-items-center fw-semibold" href="{{ route('closing.index') ?? '#' }}">
-                        <span>Lihat Riwayat Closing</span> <i class="fas fa-arrow-right ms-auto"></i>
-                    </a>
+                    @if($isSuperadmin)
+                        <a class="small text-success text-decoration-none d-flex align-items-center fw-semibold" href="{{ route('closing.index') ?? '#' }}">
+                            <span>Lihat Riwayat Closing</span> <i class="fas fa-arrow-right ms-auto"></i>
+                        </a>
+                    @else
+                        <div class="small text-success d-flex align-items-center fw-semibold" style="cursor: default;">
+                            <span>Lihat Riwayat Closing</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -105,9 +129,15 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-0 px-4 pb-3 pt-0">
-                    <a class="small text-danger text-decoration-none d-flex align-items-center fw-semibold" href="{{ route('schedules.index') ?? '#' }}">
-                        <span>Cek Jadwal Rutin</span> <i class="fas fa-arrow-right ms-auto"></i>
-                    </a>
+                    @if($isSuperadmin)
+                        <a class="small text-danger text-decoration-none d-flex align-items-center fw-semibold" href="{{ route('schedules.index') ?? '#' }}">
+                            <span>Cek Jadwal Rutin</span> <i class="fas fa-arrow-right ms-auto"></i>
+                        </a>
+                    @else
+                        <div class="small text-danger d-flex align-items-center fw-semibold" style="cursor: default;">
+                            <span>Cek Jadwal Rutin</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -304,7 +334,9 @@
     <div class="card rounded-4 mb-4 text-dark" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
         <div class="card-header bg-transparent border-0 pt-4 px-4 pb-3 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold text-dark m-0"><i class="fas fa-table text-primary me-2"></i> Daftar Antrean Servis Terbaru</h5>
-            <a href="{{ route('service-jobs.index') ?? '#' }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill">Lihat Semua</a>
+            @if($isSuperadmin)
+                <a href="{{ route('service-jobs.index') ?? '#' }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill">Lihat Semua</a>
+            @endif
         </div>
         <div class="card-body px-4 pb-4">
             <div class="table-responsive">

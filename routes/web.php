@@ -18,6 +18,7 @@ use App\Http\Controllers\FollowUpController;
 use App\Http\Middleware\CekMenu;
 use App\Http\Controllers\ProfileAuthController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TeknisiController; // <-- BARU
 
 // 1. Halaman utama (URL root '/') diarahkan langsung ke DASHBOARD
 Route::get('/', function () {
@@ -100,6 +101,14 @@ Route::middleware('auth')->group(function () {
         Route::post('/data-konsumen/tambah', [KonsumenController::class, 'store'])->name('simpan-konsumen');
         Route::put('/data-konsumen/edit/{id}', [KonsumenController::class, 'update'])->name('update-konsumen');
         Route::delete('/data-konsumen/hapus/{id}', [KonsumenController::class, 'destroy'])->name('hapus-konsumen');
+    });
+
+    // --- Data Teknisi --- (BARU)
+    Route::middleware(CekMenu::class . ':data-teknisi')->group(function () {
+        Route::get('/data-teknisi', [TeknisiController::class, 'index'])->name('data-teknisi.index');
+        Route::post('/data-teknisi', [TeknisiController::class, 'store'])->name('data-teknisi.store');
+        Route::put('/data-teknisi/{id}', [TeknisiController::class, 'update'])->name('data-teknisi.update');
+        Route::delete('/data-teknisi/{id}', [TeknisiController::class, 'destroy'])->name('data-teknisi.destroy');
     });
 
     // --- Data Unit Servis ---

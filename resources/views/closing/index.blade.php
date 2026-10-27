@@ -102,6 +102,102 @@ body, html {
     font-weight: 700;
 }
 .total-box .lbl-total { color: #1d4ed8; font-size: 1.1rem; }
+
+/* ===== Modal Konfirmasi Hapus (Custom) ===== */
+.hapus-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(6, 9, 16, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    font-family: 'Inter', sans-serif;
+}
+.hapus-overlay.show {
+    display: flex;
+    animation: hapusFade 0.18s ease-out;
+}
+.hapus-box {
+    width: 100%;
+    max-width: 500px;
+    background: #0f172a;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 18px;
+    padding: 28px 28px 26px;
+    text-align: center;
+    color: #ffffff;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    animation: hapusPop 0.2s ease-out;
+}
+.hapus-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.55);
+    color: #f87171;
+    font-size: 1.25rem;
+}
+.hapus-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: #ffffff;
+}
+.hapus-text {
+    font-size: 0.8rem;
+    margin: 0 0 20px;
+    color: #e2e8f0;
+}
+.hapus-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.hapus-btn {
+    border-radius: 999px;
+    padding: 9px 22px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.hapus-btn:hover { transform: translateY(-1px); }
+.hapus-btn-batal {
+    background: transparent;
+    color: #ffffff;
+    border: 1.5px solid #ffffff;
+}
+.hapus-btn-batal:hover { background: rgba(255, 255, 255, 0.1); }
+.hapus-btn-ya {
+    background: #ef4444;
+    color: #ffffff;
+    border: 1.5px solid #ef4444;
+}
+.hapus-btn-ya:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+}
+@keyframes hapusFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hapusPop {
+    from { opacity: 0; transform: scale(0.92) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
 </style>
 
 <div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3 100%); min-height: 100vh;">
@@ -218,7 +314,7 @@ body, html {
         <!-- Bar Filter & Pencarian -->
         <div class="card-body border-bottom bg-white py-3 px-4">
             <form action="{{ route('closing.index') }}" method="GET" autocomplete="off" class="row align-items-center">
-                <div class="col-md-5 col-sm-12 mb-2 mb-md-0">
+                <div class="col-md-4 col-sm-12 mb-2 mb-md-0">
                     <div class="input-group">
                         <div class="input-group-prepend input-group-text bg-white border-right-0 border-end-0 text-muted" style="border-radius: 6px 0 0 6px; border-color: #cbd5e1;">
                             <i class="fas fa-search"></i>
@@ -227,7 +323,8 @@ body, html {
                     </div>
                 </div>
 
-                <div class="col-md-4 col-sm-6 mb-2 mb-md-0">
+                <!-- Filter status pembayaran -->
+                <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
                     <select name="status_pembayaran" class="form-control crm-form-control">
                         <option value="">-- Semua Status Pembayaran --</option>
                         @foreach(['Belum Lunas', 'DP', 'Lunas'] as $st)
@@ -236,11 +333,21 @@ body, html {
                     </select>
                 </div>
 
-                <div class="col-md-3 col-sm-6 d-flex">
+                <!-- Filter periode berdasarkan tanggal closing -->
+                <div class="col-md-2 col-sm-6 mb-2 mb-md-0">
+                    <select name="periode" class="form-control crm-form-control">
+                        <option value="">-- Semua Periode --</option>
+                        @foreach(['hari_ini' => 'Hari Ini', 'minggu_ini' => 'Minggu Ini', 'bulan_ini' => 'Bulan Ini', 'tahun_ini' => 'Tahun Ini'] as $nilai => $label)
+                            <option value="{{ $nilai }}" {{ request('periode') === $nilai ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-12 d-flex">
                     <button type="submit" class="btn btn-dark w-100 shadow-sm mr-2 me-2" style="font-weight: 600; border-radius: 6px; background-color: #1e293b; border-color: #1e293b;">
                         <i class="fas fa-filter mr-1 me-1"></i> Filter
                     </button>
-                    @if(request()->filled('search') || request()->filled('status_pembayaran'))
+                    @if(request()->filled('search') || request()->filled('status_pembayaran') || request()->filled('periode'))
                         <a href="{{ route('closing.index') }}" class="btn btn-light shadow-sm" style="font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1;" title="Reset filter"><i class="fas fa-undo"></i></a>
                     @endif
                 </div>
@@ -295,10 +402,11 @@ body, html {
                                 <div class="aksi-wrap">
                                     <button type="button" class="btn btn-sm btn-outline-primary shadow-sm px-2 py-1" title="Ubah data" data-toggle="modal" data-target="#modalEditClosing{{ $c->id_servis }}"><i class="fas fa-edit"></i></button>
                                     <a href="{{ route('closing.cetak', $c->id_servis) }}" target="_blank" class="btn btn-sm btn-outline-success shadow-sm px-2 py-1" title="Cetak nota"><i class="fas fa-print"></i></a>
-                                    <form action="{{ route('closing.destroy', $c->id_servis) }}" method="POST" class="d-inline" onsubmit="return confirm('Batalkan closing {{ $c->no_invoice }}? Tiket {{ $c->no_tiket }} akan kembali ke status Proses Servis.');">
+                                    <!-- Tombol Batalkan Closing: konfirmasi memakai modal custom -->
+                                    <form id="formHapusClosing{{ $c->id_servis }}" action="{{ route('closing.destroy', $c->id_servis) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1" title="Batalkan closing"><i class="fas fa-trash"></i></button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger shadow-sm px-2 py-1 btn-hapus-closing" title="Batalkan closing" data-form="formHapusClosing{{ $c->id_servis }}" data-invoice="{{ $c->no_invoice }}" data-tiket="{{ $c->no_tiket }}"><i class="fas fa-trash"></i></button>
                                     </form>
                                 </div>
                             </td>
@@ -306,7 +414,7 @@ body, html {
                         @empty
                         <tr>
                             <td colspan="9" class="py-4 text-center text-muted">
-                                @if(request()->filled('search') || request()->filled('status_pembayaran'))
+                                @if(request()->filled('search') || request()->filled('status_pembayaran') || request()->filled('periode'))
                                     Tidak ada data closing yang cocok dengan pencarian / filter.
                                 @else
                                     Belum ada data closing. Klik "Tambah Closing" untuk menyelesaikan tiket servis.
@@ -362,8 +470,10 @@ body, html {
                             <input type="text" class="form-control py-2" value="{{ $c->label_unit }}" readonly style="border-radius: 6px; background-color: #f1f5f9; cursor: not-allowed;">
                         </div>
                         <div class="col-md-6">
-                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Nama Teknisi <span class="text-danger">*</span></label>
-                            <input type="text" name="teknisi" class="form-control py-2" list="datalist_teknisi" value="{{ $isOld ? old('teknisi') : ($c->teknisi->nama_teknisi ?? '') }}" required style="border-radius: 6px;">
+                            <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Nama Teknisi</label>
+                            {{-- Hanya tampilan: nama teknisi tidak dikirim ke server, controller memakai teknisi bawaan tiket --}}
+                            <input type="text" class="form-control py-2" value="{{ $c->teknisi->nama_teknisi ?? '' }}" readonly style="border-radius: 6px; background-color: #f1f5f9; cursor: not-allowed;">
+                            <small class="text-muted" style="font-size: 11px;">*Mengikuti data registrasi tiket, tidak dapat diubah di sini</small>
                         </div>
                     </div>
 
@@ -390,7 +500,7 @@ body, html {
                     <div class="row mb-3">
                         <div class="col-md-4 mb-3 mb-md-0">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Metode Pembayaran <span class="text-danger">*</span></label>
-                            <select name="metode_pembayaran" class="form-control py-2" required style="border-radius: 6px;">
+                            <select name="metode_pembayaran" class="form-control py-2 select-cari" data-search-placeholder="Cari metode pembayaran..." required style="border-radius: 6px;">
                                 @php $metodeNow = $isOld ? old('metode_pembayaran') : $c->metode_pembayaran; @endphp
                                 @foreach(['Tunai', 'QRIS/Transfer'] as $m)
                                     <option value="{{ $m }}" {{ $metodeNow === $m ? 'selected' : '' }}>{{ $m }}</option>
@@ -399,7 +509,7 @@ body, html {
                         </div>
                         <div class="col-md-4 mb-3 mb-md-0">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Masa Garansi <span class="text-danger">*</span></label>
-                            <select name="garansi" class="form-control py-2" required style="border-radius: 6px;">
+                            <select name="garansi" class="form-control py-2 select-cari" data-search-placeholder="Cari masa garansi..." required style="border-radius: 6px;">
                                 @php $garansiNow = $isOld ? old('garansi') : $c->masa_garansi_hari; @endphp
                                 @foreach([0 => 'Tanpa Garansi', 7 => '7 Hari', 14 => '14 Hari', 30 => '30 Hari', 60 => '60 Hari'] as $hari => $label)
                                     <option value="{{ $hari }}" {{ (string) $garansiNow === (string) $hari ? 'selected' : '' }}>{{ $label }}</option>
@@ -408,7 +518,7 @@ body, html {
                         </div>
                         <div class="col-md-4">
                             <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Status Pembayaran <span class="text-danger">*</span></label>
-                            <select name="status_pembayaran" class="form-control py-2 in-status" required style="border-radius: 6px;">
+                            <select name="status_pembayaran" class="form-control py-2 in-status select-cari" data-search-placeholder="Cari status pembayaran..." required style="border-radius: 6px;">
                                 @php $statusNow = $isOld ? old('status_pembayaran') : $c->status_pembayaran; @endphp
                                 @foreach(['Lunas', 'DP', 'Belum Lunas'] as $sb)
                                     <option value="{{ $sb }}" {{ $statusNow === $sb ? 'selected' : '' }}>{{ $sb }}</option>
@@ -447,9 +557,25 @@ body, html {
     @endforeach
 </datalist>
 
+<!-- Modal Konfirmasi Batalkan Closing (Custom) -->
+<div class="hapus-overlay" id="hapusOverlay" aria-hidden="true">
+    <div class="hapus-box" role="dialog" aria-modal="true" aria-labelledby="hapusTitle">
+        <div class="hapus-icon"><i class="fas fa-trash"></i></div>
+        <h5 class="hapus-title" id="hapusTitle">Yakin ingin membatalkan closing?</h5>
+        <p class="hapus-text">Closing <span id="hapusInvoice" style="font-weight: 600;"></span> akan dibatalkan. Tiket <span id="hapusTiket" style="font-weight: 600;"></span> akan kembali ke status Proses Servis.</p>
+        <div class="hapus-actions">
+            <button type="button" class="hapus-btn hapus-btn-batal" id="hapusBatal">Batal</button>
+            <button type="button" class="hapus-btn hapus-btn-ya" id="hapusYa"><i class="fas fa-trash"></i> Ya, Batalkan</button>
+        </div>
+    </div>
+</div>
+
 <!-- Script JS (Bootstrap 4.6) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 (kolom pencarian pada pilihan tiket servis, metode, garansi, dan status pembayaran) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/id.min.js"></script>
 <script>
 $(document).ready(function(){
     // Notifikasi sukses hilang otomatis setelah 4 detik
@@ -496,12 +622,83 @@ $(document).ready(function(){
         }
     });
 
-    // Isi otomatis nama teknisi dari tiket yang dipilih (jika kolom teknisi masih kosong)
+    // Semua pilihan ber-class "select-cari" (tiket servis, metode, garansi, status pembayaran)
+    // dibuat punya kolom pencarian (Select2), di modal Tambah maupun Edit.
+    // minimumResultsForSearch: 0 -> kolom pencarian selalu tampil, walau pilihannya sedikit.
+    // dropdownParent: .modal-content (bukan .modal) supaya posisi dropdown tepat di bawah kolom,
+    // tidak melenceng ke atas saat modal ter-scroll.
+    if ($.fn.select2) {
+        $('.select-cari').each(function() {
+            var $pilihan = $(this);
+            var opsi = {
+                theme: 'bootstrap4',
+                width: '100%',
+                language: 'id',
+                minimumResultsForSearch: 0,
+                dropdownParent: $pilihan.closest('.modal-content')
+            };
+            if ($pilihan.data('placeholder')) {
+                opsi.placeholder = $pilihan.data('placeholder');
+            }
+            $pilihan.select2(opsi);
+        });
+
+        // Isi placeholder kolom pencarian (mis. "Cari nama / no. WhatsApp pelanggan...") dan fokuskan
+        $(document).on('select2:open', '.select-cari', function() {
+            var $dropdown = $(this).data('select2').$dropdown;
+            var teks      = $(this).data('search-placeholder') || 'Cari...';
+            var $kolom    = $dropdown.find('.select2-search__field');
+            $kolom.attr('placeholder', teks);
+            setTimeout(function() { $kolom.trigger('focus'); }, 0);
+        });
+    }
+
+    // Nama teknisi selalu mengikuti tiket yang dipilih (bawaan registrasi, tidak bisa diubah manual)
+    function isiTeknisi($select) {
+        var teknisi = $select.find('option:selected').data('teknisi') || '';
+        $select.closest('form').find('.in-teknisi').val(teknisi);
+    }
     $(document).on('change', '.in-tiket', function() {
-        var teknisi = $(this).find('option:selected').data('teknisi');
-        var $input  = $(this).closest('form').find('.in-teknisi');
-        if (teknisi && !$input.val()) {
-            $input.val(teknisi);
+        isiTeknisi($(this));
+    });
+    // Saat halaman dimuat ulang (mis. validasi gagal) dan tiket sudah terpilih
+    $('.in-tiket').each(function() {
+        if ($(this).val()) {
+            isiTeknisi($(this));
+        }
+    });
+
+    // ===== Modal Konfirmasi Batalkan Closing (Custom) =====
+    var formTerpilih = null;
+    var $overlay = $("#hapusOverlay");
+
+    function tutupHapus() {
+        $overlay.removeClass("show").attr("aria-hidden", "true");
+        formTerpilih = null;
+    }
+
+    $(document).on("click", ".btn-hapus-closing", function() {
+        formTerpilih = document.getElementById($(this).data("form"));
+        $("#hapusInvoice").text($(this).data("invoice"));
+        $("#hapusTiket").text($(this).data("tiket"));
+        $overlay.addClass("show").attr("aria-hidden", "false");
+    });
+
+    $("#hapusBatal").on("click", tutupHapus);
+
+    // Klik area gelap di luar kotak = batal
+    $overlay.on("click", function(e) {
+        if (e.target === this) tutupHapus();
+    });
+
+    // Tombol ESC = batal
+    $(document).on("keydown", function(e) {
+        if (e.key === "Escape" && $overlay.hasClass("show")) tutupHapus();
+    });
+
+    $("#hapusYa").on("click", function() {
+        if (formTerpilih) {
+            formTerpilih.submit();
         }
     });
 

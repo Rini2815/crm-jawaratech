@@ -53,6 +53,99 @@ body, html {
     height: 1.3em;
     cursor: pointer;
 }
+
+/* ===== Modal Konfirmasi Hapus (Custom) ===== */
+.hapus-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(6, 9, 16, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    font-family: 'Inter', sans-serif;
+}
+.hapus-overlay.show {
+    display: flex;
+    animation: hapusFade 0.18s ease-out;
+}
+.hapus-box {
+    width: 100%;
+    max-width: 500px;
+    background: #0f172a;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 18px;
+    padding: 28px 28px 26px;
+    text-align: center;
+    color: #ffffff;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    animation: hapusPop 0.2s ease-out;
+}
+.hapus-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.55);
+    color: #f87171;
+    font-size: 1.25rem;
+}
+.hapus-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: #ffffff;
+}
+.hapus-text {
+    font-size: 0.8rem;
+    margin: 0 0 20px;
+    color: #e2e8f0;
+}
+.hapus-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.hapus-btn {
+    border-radius: 999px;
+    padding: 9px 22px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.hapus-btn:hover { transform: translateY(-1px); }
+.hapus-btn-batal {
+    background: transparent;
+    color: #ffffff;
+    border: 1.5px solid #ffffff;
+}
+.hapus-btn-batal:hover { background: rgba(255, 255, 255, 0.1); }
+.hapus-btn-ya {
+    background: #ef4444;
+    color: #ffffff;
+    border: 1.5px solid #ef4444;
+}
+.hapus-btn-ya:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+}
+@keyframes hapusFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hapusPop {
+    from { opacity: 0; transform: scale(0.92) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
 </style>
 <div class="container-fluid px-4 pt-3 pb-4 crm-wrapper" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3 100%); min-height: 100vh;">
     <!-- Header Halaman -->
@@ -127,10 +220,10 @@ body, html {
                 <!-- TOMBOL HAPUS ROLE (muncul untuk semua role kecuali Super Administrator) -->
                 @if($role['name'] !== 'Super Administrator')
                     <div class="mt-auto pt-2 border-top text-end">
-                        <form action="{{ route('user-group.destroy', $role['name']) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus role {{ $role['name'] }}? Pastikan tidak ada staf yang sedang menggunakan role ini.');">
+                        <form id="formHapusRole{{ $loop->iteration }}" action="{{ route('user-group.destroy', $role['name']) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2 shadow-sm fw-bold" style="font-size: 0.75rem; border-radius: 6px;">
+                            <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 shadow-sm fw-bold btn-hapus-role" style="font-size: 0.75rem; border-radius: 6px;" data-form="formHapusRole{{ $loop->iteration }}" data-nama="{{ $role['name'] }}">
                                 <i class="fas fa-trash-alt me-1"></i> Hapus Role
                             </button>
                         </form>
@@ -182,6 +275,7 @@ body, html {
                                 $menuList = [
                                     ['key' => 'data-konsumen', 'label' => 'Data Konsumen', 'icon' => 'fa-users'],
                                     ['key' => 'data-unit', 'label' => 'Data Unit Servis', 'icon' => 'fa-tools'],
+                                    ['key' => 'data-teknisi', 'label' => 'Data Teknisi', 'icon' => 'fa-user-cog'],
                                     ['key' => 'registrasi-servis', 'label' => 'Registrasi Servis', 'icon' => 'fa-clipboard-list'],
                                     ['key' => 'closing', 'label' => 'Closing Servis', 'icon' => 'fa-file-invoice'],
                                     ['key' => 'pengingat-perawatan', 'label' => 'Pengingat Perawatan Berkala', 'icon' => 'fa-calendar-alt'],
@@ -272,6 +366,20 @@ body, html {
         </div>
     </div>
 </div>
+
+<!-- Modal Konfirmasi Hapus Role (Custom) -->
+<div class="hapus-overlay" id="hapusOverlay" aria-hidden="true">
+    <div class="hapus-box" role="dialog" aria-modal="true" aria-labelledby="hapusTitle">
+        <div class="hapus-icon"><i class="fas fa-trash"></i></div>
+        <h5 class="hapus-title" id="hapusTitle">Yakin ingin menghapus?</h5>
+        <p class="hapus-text">Role <span id="hapusNama" style="font-weight: 600;"></span> akan dihapus dan tidak dapat dikembalikan. Pastikan tidak ada staf yang sedang menggunakan role ini.</p>
+        <div class="hapus-actions">
+            <button type="button" class="hapus-btn hapus-btn-batal" id="hapusBatal">Batal</button>
+            <button type="button" class="hapus-btn hapus-btn-ya" id="hapusYa"><i class="fas fa-trash"></i> Ya, Hapus</button>
+        </div>
+    </div>
+</div>
+
 <!-- Script JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -287,6 +395,39 @@ $(document).ready(function(){
         $("#tableGroup tbody tr").filter(function() {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
         });
+    });
+
+    // ===== Modal Konfirmasi Hapus Role (Custom) =====
+    var formTerpilih = null;
+    var $overlay = $("#hapusOverlay");
+
+    function tutupHapus() {
+        $overlay.removeClass("show").attr("aria-hidden", "true");
+        formTerpilih = null;
+    }
+
+    $(document).on("click", ".btn-hapus-role", function() {
+        formTerpilih = document.getElementById($(this).data("form"));
+        $("#hapusNama").text($(this).data("nama"));
+        $overlay.addClass("show").attr("aria-hidden", "false");
+    });
+
+    $("#hapusBatal").on("click", tutupHapus);
+
+    // Klik area gelap di luar kotak = batal
+    $overlay.on("click", function(e) {
+        if (e.target === this) tutupHapus();
+    });
+
+    // Tombol ESC = batal
+    $(document).on("keydown", function(e) {
+        if (e.key === "Escape" && $overlay.hasClass("show")) tutupHapus();
+    });
+
+    $("#hapusYa").on("click", function() {
+        if (formTerpilih) {
+            formTerpilih.submit();
+        }
     });
 });
 </script>

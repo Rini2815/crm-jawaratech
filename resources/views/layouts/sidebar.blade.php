@@ -5,16 +5,21 @@
 
     $canKonsumen = $sbIsAdmin || $sbU->hasMenu('data-konsumen');
     $canUnit     = $sbIsAdmin || $sbU->hasMenu('data-unit');
+    $canTeknisi  = $sbIsAdmin || $sbU->hasMenu('data-teknisi');
     $canRegis    = $sbIsAdmin || $sbU->hasMenu('registrasi-servis');
     $canClosing  = $sbIsAdmin || $sbU->hasMenu('closing');
     $canPengingat= $sbIsAdmin || $sbU->hasMenu('pengingat-perawatan');
     $canFollowUp = $sbIsAdmin || $sbU->hasMenu('follow-up');
     $canLaporan  = $sbIsAdmin || $sbU->hasMenu('laporan');
 
-    $showDataMaster = $canKonsumen || $canUnit || $canRegis;
-    $showDashSub    = $canPengingat || $canFollowUp;
-    $showUserMgmt   = $sbIsAdmin; // khusus Superadmin
-    $showHeadingCrm = $showDataMaster || $canClosing || $showUserMgmt;
+    $showDataMaster    = $canKonsumen || $canUnit || $canTeknisi;
+    $showLayananServis = $canRegis || $canClosing;
+    $showDashSub       = $canPengingat || $canFollowUp;
+    $showUserMgmt      = $sbIsAdmin; // khusus Superadmin
+    $showHeadingCrm    = $showDataMaster || $showLayananServis || $showUserMgmt;
+
+    // Menu Pengaturan Akun aktif (termasuk Switch Profile yang kini ada di dalamnya)
+    $pengaturanAktif   = request()->routeIs('profile.edit', 'password.edit', 'team.manage', 'users.profile-auth*');
 @endphp
 
 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion" style="width: 260px !important; min-width: 260px !important; background: linear-gradient(135deg, #455169 0%, #091a2d 40%, #42050b 100%); border-right: 3px solid #25252c;">
@@ -54,35 +59,35 @@
             </div>
             @endif
 
-            <!-- 2. DATA MASTER (Data Konsumen, Data Unit, Registrasi Servis) -->
+            <!-- 2. DATA MASTER (Data Konsumen, Data Unit, Data Teknisi) -->
             @if($showHeadingCrm)
             <div class="sb-sidenav-menu-heading text-white-50 fw-normal mt-2" style="font-size: 11px;">MANAJEMEN CRM</div>
             @endif
 
             @if($showDataMaster)
-            <a class="nav-link {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*', 'service-jobs*') ? '' : 'collapsed' }} menu-box" 
+            <a class="nav-link {{ request()->routeIs('data-konsumen*', 'data-unit*', 'data-teknisi*', 'service-jobs*') ? '' : 'collapsed' }} menu-box" 
                href="#" data-bs-toggle="collapse" data-bs-target="#collapseMaster" 
-               aria-expanded="{{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*', 'service-jobs*') ? 'true' : 'false' }}" 
-               style="border-color: {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*', 'service-jobs*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
+               aria-expanded="{{ request()->routeIs('data-konsumen*', 'data-unit*', 'data-teknisi*', 'service-jobs*') ? 'true' : 'false' }}" 
+               style="border-color: {{ request()->routeIs('data-konsumen*', 'data-unit*', 'data-teknisi*', 'service-jobs*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-database"></i></div>
                 <span class="nav-text text-white fw-normal">Data Master</span>
                 <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
             </a>
-            <div class="collapse {{ request()->routeIs('data-konsumen*', 'data-unit*', 'registrasi-servis*', 'service-jobs*') ? 'show' : '' }}" id="collapseMaster" data-bs-parent="#sidenavAccordion">
+            <div class="collapse {{ request()->routeIs('data-konsumen*', 'data-unit*', 'data-teknisi*', 'service-jobs*') ? 'show' : '' }}" id="collapseMaster" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     @if($canKonsumen)
-                    <a class="nav-link {{ ($canUnit || $canRegis) ? 'sub-item-divider' : '' }} {{ request()->routeIs('data-konsumen*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-konsumen') }}">
+                    <a class="nav-link {{ ($canUnit || $canTeknisi) ? 'sub-item-divider' : '' }} {{ request()->routeIs('data-konsumen*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-konsumen') }}">
                         <i class="fas fa-users me-2 text-white"></i> Data Konsumen
                     </a>
                     @endif
                     @if($canUnit)
-                    <a class="nav-link {{ $canRegis ? 'sub-item-divider' : '' }} {{ request()->routeIs('data-unit*', 'service-jobs*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-unit.index') }}">
+                    <a class="nav-link {{ $canTeknisi ? 'sub-item-divider' : '' }} {{ request()->routeIs('data-unit*', 'service-jobs*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-unit.index') }}">
                         <i class="fas fa-box me-2 text-white"></i> Data Unit
                     </a>
                     @endif
-                    @if($canRegis)
-                    <a class="nav-link {{ request()->routeIs('registrasi-servis*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('registrasi-servis.index') }}">
-                        <i class="fas fa-tools me-2 text-white"></i> Registrasi Servis
+                    @if($canTeknisi)
+                    <a class="nav-link {{ request()->routeIs('data-teknisi*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-teknisi.index') }}">
+                        <i class="fas fa-user-cog me-2 text-white"></i> Data Teknisi
                     </a>
                     @endif
                 </nav>
@@ -91,42 +96,46 @@
 
             <!-- 3. MANAJEMEN PENGGUNA (khusus Superadmin) -->
             @if($showUserMgmt)
-                <a class="nav-link {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? '' : 'collapsed' }} menu-box" 
+                <a class="nav-link {{ request()->routeIs('hak-akses*', 'user-group*', 'data-pengguna*') ? '' : 'collapsed' }} menu-box" 
                    href="#" data-bs-toggle="collapse" data-bs-target="#collapseUserMgmt" 
-                   aria-expanded="{{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? 'true' : 'false' }}" 
-                   style="border-color: {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
+                   aria-expanded="{{ request()->routeIs('hak-akses*', 'user-group*', 'data-pengguna*') ? 'true' : 'false' }}" 
+                   style="border-color: {{ request()->routeIs('hak-akses*', 'user-group*', 'data-pengguna*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-users-cog"></i></div>
                     <span class="nav-text text-white fw-normal">Manajemen Pengguna</span>
                     <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
                 </a>
 
-                <div class="collapse {{ request()->routeIs('hak-akses*', 'user-group*', 'users.profile-auth*', 'data-pengguna*') ? 'show' : '' }}" id="collapseUserMgmt" data-bs-parent="#sidenavAccordion">
+                <div class="collapse {{ request()->routeIs('hak-akses*', 'user-group*', 'data-pengguna*') ? 'show' : '' }}" id="collapseUserMgmt" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
                         <a class="nav-link sub-item-divider {{ request()->routeIs('data-pengguna*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-pengguna.index') }}">
                             <i class="fas fa-user-friends me-2 text-white"></i> Data Pengguna
                         </a>
-                        <a class="nav-link sub-item-divider {{ request()->routeIs('user-group*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('user-group.index') }}">
+                        <a class="nav-link {{ request()->routeIs('user-group*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('user-group.index') }}">
                             <i class="fas fa-shield-alt me-2 text-white"></i> Hak Akses
-                        </a>
-                        <a class="nav-link {{ request()->routeIs('users.profile-auth*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('users.profile-auth') }}">
-                            <i class="fas fa-id-badge me-2 text-white"></i> Impersonate / Switch Profile
                         </a>
                     </nav>
                 </div>
             @endif
 
-            <!-- 4. LAYANAN SERVIS (Closing) -->
-            @if($canClosing)
-                <a class="nav-link {{ request()->routeIs('closing*') ? '' : 'collapsed' }} menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseServis" aria-expanded="{{ request()->routeIs('closing*') ? 'true' : 'false' }}">
+            <!-- 4. LAYANAN SERVIS (Registrasi Servis, Closing Servis) -->
+            @if($showLayananServis)
+                <a class="nav-link {{ request()->routeIs('registrasi-servis*', 'closing*') ? '' : 'collapsed' }} menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapseServis" aria-expanded="{{ request()->routeIs('registrasi-servis*', 'closing*') ? 'true' : 'false' }}">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-wrench"></i></div>
                     <span class="nav-text text-white fw-normal">Layanan Servis</span>
                     <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
                 </a>
-                <div class="collapse {{ request()->routeIs('closing*') ? 'show' : '' }}" id="collapseServis" data-bs-parent="#sidenavAccordion">
+                <div class="collapse {{ request()->routeIs('registrasi-servis*', 'closing*') ? 'show' : '' }}" id="collapseServis" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
+                        @if($canRegis)
+                        <a class="nav-link {{ $canClosing ? 'sub-item-divider' : '' }} {{ request()->routeIs('registrasi-servis*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('registrasi-servis.index') }}">
+                            <i class="fas fa-tools me-2 text-white"></i> Registrasi Servis
+                        </a>
+                        @endif
+                        @if($canClosing)
                         <a class="nav-link {{ request()->routeIs('closing*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('closing.index') }}">
                             <i class="fas fa-check-circle me-2 text-white"></i> Closing Servis
                         </a>
+                        @endif
                     </nav>
                 </div>
             @endif
@@ -149,17 +158,22 @@
             </div>
             @endif
 
-            <!-- 6. PENGATURAN AKUN (semua user yang login) -->
-            <a class="nav-link collapsed menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePengaturan" aria-expanded="false">
+            <!-- 6. PENGATURAN AKUN (semua user yang login; Switch Profile khusus Superadmin) -->
+            <a class="nav-link {{ $pengaturanAktif ? '' : 'collapsed' }} menu-box" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePengaturan" aria-expanded="{{ $pengaturanAktif ? 'true' : 'false' }}">
                 <div class="sb-nav-link-icon text-white"><i class="fas fa-user-shield"></i></div>
                 <span class="nav-text text-white fw-normal">Pengaturan Akun</span>
                 <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
             </a>
-            <div class="collapse" id="collapsePengaturan" data-bs-parent="#sidenavAccordion">
+            <div class="collapse {{ $pengaturanAktif ? 'show' : '' }}" id="collapsePengaturan" data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link {{ request()->routeIs('profile.edit', 'password.edit', 'team.manage') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('profile.edit') }}">
+                    <a class="nav-link {{ $showUserMgmt ? 'sub-item-divider' : '' }} {{ request()->routeIs('profile.edit', 'password.edit', 'team.manage') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('profile.edit') }}">
                         <i class="fas fa-user-circle me-2 text-white"></i> Profil & Ubah Password
                     </a>
+                    @if($showUserMgmt)
+                    <a class="nav-link {{ request()->routeIs('users.profile-auth*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('users.profile-auth') }}">
+                        <i class="fas fa-id-badge me-2 text-white"></i> Impersonate / Switch Profile
+                    </a>
+                    @endif
                 </nav>
             </div>
 

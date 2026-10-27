@@ -13,6 +13,88 @@
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         border-radius: 8px;
     }
+
+    /* ===== Dropdown dengan kolom pencarian ===== */
+    .cs-wrap { position: relative; }
+    .cs-native {
+        position: absolute !important;
+        left: 0; bottom: 0;
+        width: 1px !important; height: 1px !important;
+        padding: 0 !important; border: 0 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    .cs-trigger {
+        position: relative;
+        display: block;
+        background-color: #ffffff;
+        cursor: pointer;
+        user-select: none;
+        border-radius: 6px;
+    }
+    .cs-label {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-right: 22px;
+    }
+    .cs-label.cs-placeholder { color: #64748b; font-weight: 400; }
+    .cs-caret {
+        position: absolute;
+        right: 12px; top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.7rem;
+        color: #64748b;
+        pointer-events: none;
+    }
+    .cs-panel {
+        display: none;
+        position: absolute;
+        left: 0; right: 0; top: calc(100% + 4px);
+        z-index: 1060;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        padding: 8px;
+    }
+    .cs-wrap.cs-open .cs-panel { display: block; }
+    .cs-search {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 0.4rem 0.65rem;
+        font-size: 0.9rem;
+        color: #0f172a;
+        outline: none;
+        margin-bottom: 6px;
+    }
+    .cs-search:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.15rem rgba(59, 130, 246, 0.2);
+    }
+    .cs-list {
+        max-height: 220px;
+        overflow-y: auto;
+        margin: 0; padding: 0;
+        list-style: none;
+    }
+    .cs-item {
+        padding: 7px 10px;
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: #0f172a;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .cs-item:hover, .cs-item.cs-active { background: #e0f2fe; }
+    .cs-item.cs-selected { color: #1d4ed8; font-weight: 700; }
+    .cs-empty {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
 </style>
 
 <div class="container-fluid py-4 crm-wrapper">
@@ -53,7 +135,7 @@
                         
                         <div class="mb-3">
                             <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Pemilik Unit (Konsumen)</label>
-                            <select name="konsumen_id" class="form-control" required style="border-radius: 6px;">
+                            <select name="konsumen_id" class="form-control" data-cari="Cari nama / no. WhatsApp pelanggan..." required style="border-radius: 6px;">
                                 <option value="" disabled {{ old('konsumen_id') ? '' : 'selected' }}>-- Pilih Pemilik Unit --</option>
                                 @foreach($konsumen as $k)
                                     <option value="{{ $k->id_konsumen }}" {{ old('konsumen_id') == $k->id_konsumen ? 'selected' : '' }}>{{ $k->nama }} - {{ $k->no_whatsapp }}</option>
@@ -64,7 +146,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label text-dark" style="font-size: 0.875rem; font-weight: 600;">Jenis Unit</label>
-                                <select name="jenis_unit" class="form-control" required style="border-radius: 6px;">
+                                <select name="jenis_unit" class="form-control" data-cari="Cari jenis unit..." required style="border-radius: 6px;">
                                     <option value="" disabled {{ old('jenis_unit') ? '' : 'selected' }}>Pilih Jenis...</option>
                                     <option value="AC" {{ old('jenis_unit') == 'AC' ? 'selected' : '' }}>AC</option>
                                     <option value="Mesin Cuci" {{ old('jenis_unit') == 'Mesin Cuci' ? 'selected' : '' }}>Mesin Cuci</option>
@@ -115,4 +197,161 @@
         </div>
     </div>
 </div>
+
+<script>
+// Dropdown dengan kolom pencarian: dipakai oleh semua <select data-cari="...">.
+// <select> aslinya tetap dipakai untuk kirim data, jadi validasi & controller tidak berubah.
+(function () {
+    function buat(sel) {
+        if (sel.getAttribute('data-cs-siap')) return;
+        sel.setAttribute('data-cs-siap', '1');
+
+        var wrap = document.createElement('div');
+        wrap.className = 'cs-wrap';
+        sel.parentNode.insertBefore(wrap, sel);
+        wrap.appendChild(sel);
+        sel.classList.add('cs-native');
+        sel.tabIndex = -1;
+
+        var trigger = document.createElement('div');
+        trigger.className = 'form-control cs-trigger';
+        trigger.tabIndex = 0;
+        var label = document.createElement('span');
+        label.className = 'cs-label';
+        var caret = document.createElement('i');
+        caret.className = 'fas fa-chevron-down cs-caret';
+        trigger.appendChild(label);
+        trigger.appendChild(caret);
+
+        var panel = document.createElement('div');
+        panel.className = 'cs-panel';
+        var cari = document.createElement('input');
+        cari.type = 'text';
+        cari.className = 'cs-search';
+        cari.autocomplete = 'off';
+        cari.placeholder = sel.getAttribute('data-cari') || 'Cari...';
+        var list = document.createElement('ul');
+        list.className = 'cs-list';
+        panel.appendChild(cari);
+        panel.appendChild(list);
+
+        wrap.appendChild(trigger);
+        wrap.appendChild(panel);
+
+        var tampil = [];   // opsi yang sedang tampil
+        var aktif = -1;    // indeks yang disorot
+
+        function teks(o) { return (o.text || '').replace(/\s+/g, ' ').trim(); }
+
+        function segarkanLabel() {
+            var o = sel.options[sel.selectedIndex];
+            label.textContent = o ? teks(o) : '';
+            label.classList.toggle('cs-placeholder', !sel.value);
+        }
+
+        function gambar(kata) {
+            kata = (kata || '').toLowerCase();
+            list.innerHTML = '';
+            tampil = [];
+            Array.prototype.forEach.call(sel.options, function (o) {
+                if (!o.value) return; // lewati opsi placeholder
+                if (kata && teks(o).toLowerCase().indexOf(kata) === -1) return;
+                tampil.push(o);
+            });
+
+            if (!tampil.length) {
+                var kosong = document.createElement('li');
+                kosong.className = 'cs-empty';
+                kosong.textContent = 'Tidak ditemukan.';
+                list.appendChild(kosong);
+                aktif = -1;
+                return;
+            }
+
+            tampil.forEach(function (o, i) {
+                var li = document.createElement('li');
+                li.className = 'cs-item' + (o.value === sel.value ? ' cs-selected' : '');
+                li.textContent = teks(o);
+                li.addEventListener('mousedown', function (e) { e.preventDefault(); pilih(o); });
+                li.addEventListener('mouseenter', function () { sorot(i); });
+                list.appendChild(li);
+            });
+            sorot(0);
+        }
+
+        function sorot(i) {
+            var items = list.querySelectorAll('.cs-item');
+            if (!items.length) return;
+            if (i < 0) i = items.length - 1;
+            if (i >= items.length) i = 0;
+            Array.prototype.forEach.call(items, function (el) { el.classList.remove('cs-active'); });
+            items[i].classList.add('cs-active');
+            items[i].scrollIntoView({ block: 'nearest' });
+            aktif = i;
+        }
+
+        function pilih(o) {
+            sel.value = o.value;
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+            tutup();
+        }
+
+        function buka() {
+            wrap.classList.add('cs-open');
+            cari.value = '';
+            gambar('');
+            setTimeout(function () { cari.focus(); }, 0);
+        }
+
+        function tutup() {
+            wrap.classList.remove('cs-open');
+        }
+
+        trigger.addEventListener('click', function () {
+            wrap.classList.contains('cs-open') ? tutup() : buka();
+        });
+        trigger.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                buka();
+            }
+        });
+
+        cari.addEventListener('input', function () { gambar(cari.value); });
+        cari.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowDown') { e.preventDefault(); sorot(aktif + 1); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); sorot(aktif - 1); }
+            else if (e.key === 'Enter') {
+                e.preventDefault(); // jangan ikut mengirim form
+                if (aktif > -1 && tampil[aktif]) pilih(tampil[aktif]);
+            }
+            else if (e.key === 'Escape') {
+                e.preventDefault();
+                tutup();
+                trigger.focus();
+            }
+        });
+
+        // Klik di luar = tutup
+        document.addEventListener('mousedown', function (e) {
+            if (!wrap.contains(e.target)) tutup();
+        });
+
+        // Jika nilai select berubah dari luar, tampilan ikut menyesuaikan
+        sel.addEventListener('change', segarkanLabel);
+
+        segarkanLabel();
+    }
+
+    function mulai() {
+        Array.prototype.forEach.call(document.querySelectorAll('select[data-cari]'), buat);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', mulai);
+    } else {
+        mulai();
+    }
+})();
+</script>
 @endsection

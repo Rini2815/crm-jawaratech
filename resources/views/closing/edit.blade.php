@@ -33,8 +33,9 @@
                             <input type="text" class="form-control crm-form-control bg-light" value="{{ $s->unit->konsumen->nama ?? '-' }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_teknisi_{{ $s->id_servis }}" class="crm-form-label">Teknisi Penanggung Jawab <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control in-teknisi" id="edit_teknisi_{{ $s->id_servis }}" name="teknisi" value="{{ $s->teknisi->nama_teknisi ?? '' }}" maxlength="45" list="datalist_teknisi" autocomplete="off" required>
+                            <label for="edit_teknisi_{{ $s->id_servis }}" class="crm-form-label">Teknisi Penanggung Jawab</label>
+                            <input type="text" class="form-control crm-form-control in-teknisi bg-light" id="edit_teknisi_{{ $s->id_servis }}" name="teknisi" value="{{ $s->teknisi->nama_teknisi ?? '' }}" maxlength="45" readonly style="cursor: not-allowed;">
+                            <small class="text-muted" style="font-size: 11px;">*Mengikuti data registrasi tiket, tidak dapat diubah di sini</small>
                         </div>
                     </div>
 

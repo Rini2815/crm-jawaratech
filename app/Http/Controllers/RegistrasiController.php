@@ -25,6 +25,30 @@ class RegistrasiController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Filter periode berdasarkan tanggal masuk (hari ini, minggu ini, bulan ini, tahun ini)
+        if ($request->filled('periode')) {
+            $sekarang = now();
+
+            switch ($request->periode) {
+                case 'hari_ini':
+                    $query->whereDate('tanggal_masuk', $sekarang->toDateString());
+                    break;
+                case 'minggu_ini':
+                    $query->whereBetween('tanggal_masuk', [
+                        $sekarang->copy()->startOfWeek()->toDateString(),
+                        $sekarang->copy()->endOfWeek()->toDateString(),
+                    ]);
+                    break;
+                case 'bulan_ini':
+                    $query->whereYear('tanggal_masuk', $sekarang->year)
+                          ->whereMonth('tanggal_masuk', $sekarang->month);
+                    break;
+                case 'tahun_ini':
+                    $query->whereYear('tanggal_masuk', $sekarang->year);
+                    break;
+            }
+        }
+
         if ($request->filled('search')) {
             $kata = trim($request->search);
             $query->where(function ($q) use ($kata) {
@@ -48,7 +72,7 @@ class RegistrasiController extends Controller
         $tiketSelesai = Servis::where('status', 'Selesai')->count();
 
         $konsumen       = Konsumen::with('unit')->orderBy('nama')->get();
-        $teknisi        = Teknisi::orderBy('nama_teknisi')->pluck('nama_teknisi');
+        $teknisi        = Teknisi::orderBy('nama_teknisi')->pluck('nama_teknisi'); // dipakai dropdown teknisi
         $noTiketBerikut = $this->buatNoTiket();
 
         return view('registrasi.index', compact(
@@ -86,7 +110,8 @@ class RegistrasiController extends Controller
         $noTiket = null;
 
         DB::transaction(function () use ($request, &$noTiket) {
-            $teknisi = Teknisi::firstOrCreate(['nama_teknisi' => trim($request->teknisi)]);
+            // Teknisi dipilih dari dropdown (data master), bukan dibuat otomatis
+            $teknisi = Teknisi::where('nama_teknisi', trim($request->teknisi))->firstOrFail();
             $noTiket = $this->buatNoTiket();
 
             $servis = Servis::create([
@@ -128,7 +153,8 @@ class RegistrasiController extends Controller
         ], $this->aturanUmum()), $this->pesan());
 
         DB::transaction(function () use ($request, $servis) {
-            $teknisi    = Teknisi::firstOrCreate(['nama_teknisi' => trim($request->teknisi)]);
+            // Teknisi dipilih dari dropdown (data master), bukan dibuat otomatis
+            $teknisi    = Teknisi::where('nama_teknisi', trim($request->teknisi))->firstOrFail();
             $statusLama = $servis->status;
 
             $servis->update([
@@ -219,7 +245,7 @@ class RegistrasiController extends Controller
             'keluhan'           => 'required|string|max:1000',
             'kelengkapan'       => 'nullable|array',
             'kelengkapan.*'     => 'in:' . implode(',', self::KELENGKAPAN),
-            'teknisi'           => 'required|string|max:45',
+            'teknisi'           => 'required|string|max:45|exists:ms_teknisi,nama_teknisi',
         ];
     }
 
@@ -236,8 +262,9 @@ class RegistrasiController extends Controller
             'perkiraan_selesai.after_or_equal'=> 'Perkiraan selesai tidak boleh sebelum tanggal masuk.',
             'keluhan.required'                => 'Keluhan utama wajib diisi.',
             'keluhan.max'                     => 'Keluhan maksimal 1000 karakter.',
-            'teknisi.required'                => 'Nama teknisi wajib diisi.',
+            'teknisi.required'                => 'Nama teknisi wajib dipilih.',
             'teknisi.max'                     => 'Nama teknisi maksimal 45 karakter.',
+            'teknisi.exists'                  => 'Teknisi yang dipilih tidak terdaftar di Data Teknisi.',
             'status.required'                 => 'Status servis wajib dipilih.',
             'status.in'                       => 'Status servis tidak valid.',
         ];

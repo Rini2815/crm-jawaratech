@@ -27,15 +27,15 @@
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
                             <label class="crm-form-label">No. Tiket / SPK</label>
-                            <input type="text" class="form-control crm-form-control bg-light" value="{{ $t->no_tiket }}" readonly>
+                            <input type="text" class="form-control crm-form-control" value="{{ $t->no_tiket }}" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="crm-form-label">Nama Pelanggan</label>
-                            <input type="text" class="form-control crm-form-control bg-light" value="{{ $t->unit->konsumen->nama ?? '-' }} ({{ $t->unit->konsumen->no_whatsapp ?? '-' }})" readonly>
+                            <input type="text" class="form-control crm-form-control" value="{{ $t->unit->konsumen->nama ?? '-' }} ({{ $t->unit->konsumen->no_whatsapp ?? '-' }})" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
                         </div>
                         <div class="col-md-12 mb-3">
                             <label class="crm-form-label">Unit Servis & Merek</label>
-                            <input type="text" class="form-control crm-form-control bg-light" value="{{ $t->label_unit }}" readonly>
+                            <input type="text" class="form-control crm-form-control" value="{{ $t->label_unit }}" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
                         </div>
                     </div>
 
@@ -81,14 +81,21 @@
                     <!-- Section 3: Penugasan Teknisi & Status Operasional -->
                     <div class="crm-section-title">Penugasan Teknisi & Status Servis</div>
                     <div class="row">
+                        <!-- DROPDOWN TEKNISI (diambil dari menu Data Teknisi, ada kolom pencarian) -->
                         <div class="col-md-6 mb-3">
                             <label for="edit_teknisi_{{ $t->id_servis }}" class="crm-form-label">Nama Teknisi Penanggung Jawab <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control" id="edit_teknisi_{{ $t->id_servis }}" name="teknisi" value="{{ $t->teknisi->nama_teknisi ?? '' }}" maxlength="45" placeholder="Ketik nama teknisi..." list="datalist_teknisi" autocomplete="off" required>
-                            <small class="text-muted" style="font-size: 11px;">*Bisa diketik bebas atau pilih dari saran</small>
+                            @php $teknisiSekarang = $t->teknisi->nama_teknisi ?? ''; @endphp
+                            <select class="form-control crm-form-control" id="edit_teknisi_{{ $t->id_servis }}" name="teknisi" data-cari="Cari nama teknisi..." required>
+                                <option value="" disabled {{ $teknisiSekarang ? '' : 'selected' }}>-- Pilih Teknisi --</option>
+                                @foreach($teknisi as $namaTeknisi)
+                                    <option value="{{ $namaTeknisi }}" {{ $teknisiSekarang === $namaTeknisi ? 'selected' : '' }}>{{ $namaTeknisi }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted" style="font-size: 11px;">*Teknisi belum ada? Tambahkan dulu di menu Data Teknisi</small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_status_{{ $t->id_servis }}" class="crm-form-label">Status Pengerjaan <span class="text-danger">*</span></label>
-                            <select class="form-control crm-form-control" id="edit_status_{{ $t->id_servis }}" name="status" required>
+                            <select class="form-control crm-form-control" id="edit_status_{{ $t->id_servis }}" name="status" data-cari="Cari status pengerjaan..." required>
                                 <option value="Menunggu Konfirmasi" {{ $t->status == 'Menunggu Konfirmasi' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
                                 <option value="Sedang Dicek" {{ $t->status == 'Sedang Dicek' ? 'selected' : '' }}>Sedang Dicek</option>
                                 <option value="Proses Servis" {{ $t->status == 'Proses Servis' ? 'selected' : '' }}>Proses Servis</option>

@@ -11,7 +11,8 @@ class KonsumenController extends Controller
 {
     public function index()
     {
-        $konsumen = Konsumen::withCount('unit')->orderBy('nama')->get();
+        // Konsumen terbaru di paling atas
+        $konsumen = Konsumen::withCount('unit')->orderByDesc('id_konsumen')->get();
 
         $totalKonsumen = $konsumen->count();
         $totalUnit     = Unit::count();

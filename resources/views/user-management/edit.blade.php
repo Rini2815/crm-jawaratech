@@ -33,7 +33,8 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="edit_role_{{ $user->id_pengguna }}" class="crm-form-label">Tingkat Akses (Role) <span class="text-danger">*</span></label>
-                            <select class="form-control crm-form-control" id="edit_role_{{ $user->id_pengguna }}" name="role" required>
+                            <!-- data-cari = dropdown dengan kolom pencarian -->
+                            <select class="form-control crm-form-control" id="edit_role_{{ $user->id_pengguna }}" name="role" data-cari="Cari nama role..." required>
                                 <option value="Super Administrator" {{ $user->role == 'Super Administrator' ? 'selected' : '' }}>Super Administrator - Akses Penuh Sistem</option>
                                 <option value="Digital Marketing" {{ $user->role == 'Digital Marketing' ? 'selected' : '' }}>Digital Marketing - Follow-up & Happy Call</option>
                                 

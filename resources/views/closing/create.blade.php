@@ -1,3 +1,7 @@
+<!-- Select2 (kolom pencarian pada pilihan tiket servis, metode, garansi, dan status pembayaran) -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css" rel="stylesheet" />
+
 <style>
     /* Styling khusus form modal closing */
     .crm-modal-header {
@@ -37,6 +41,91 @@
         padding-bottom: 0.5rem;
         border-bottom: 2px solid #e2e8f0;
     }
+
+    /* ===== Select2: tampilan kolom pilihan (sama seperti input CRM) ===== */
+    .crm-wrapper .select2-container--bootstrap4 .select2-selection--single {
+        height: calc(1.5em + 1rem + 2px) !important;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        background-color: #ffffff;
+    }
+    .crm-wrapper .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+        line-height: calc(1.5em + 1rem) !important;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #0f172a;
+    }
+    .crm-wrapper .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
+        height: calc(1.5em + 1rem) !important;
+    }
+    .crm-wrapper .select2-container--bootstrap4.select2-container--focus .select2-selection--single,
+    .crm-wrapper .select2-container--bootstrap4.select2-container--open .select2-selection--single {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+    }
+
+    /* ===== Select2: dropdown & kolom pencarian (model "Pilih Konsumen") ===== */
+    .select2-container--bootstrap4 .select2-dropdown {
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 4px 10px -6px rgba(15, 23, 42, 0.12);
+        overflow: hidden;
+    }
+    .select2-container--bootstrap4 .select2-search--dropdown {
+        padding: 0 0 8px 0;
+    }
+    .select2-container--bootstrap4 .select2-search--dropdown .select2-search__field {
+        width: 100%;
+        height: 38px;
+        padding: 0 0.75rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #0f172a;
+        background-color: #ffffff;
+        outline: none;
+    }
+    .select2-container--bootstrap4 .select2-search--dropdown .select2-search__field::placeholder {
+        color: #94a3b8;
+        font-weight: 400;
+    }
+    .select2-container--bootstrap4 .select2-search--dropdown .select2-search__field:focus {
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 0.15rem rgba(56, 189, 248, 0.25);
+    }
+    .select2-container--bootstrap4 .select2-results__options {
+        max-height: 240px;
+    }
+    .select2-container--bootstrap4 .select2-results__option {
+        padding: 8px 12px;
+        margin-bottom: 2px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #0f172a;
+        background-color: transparent;
+    }
+    /* Pilihan yang sedang terpilih */
+    .select2-container--bootstrap4 .select2-results__option[aria-selected=true] {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+    /* Pilihan yang disorot (hover / keyboard): biru muda, teks tetap gelap */
+    .select2-container--bootstrap4 .select2-results__option--highlighted,
+    .select2-container--bootstrap4 .select2-results__option--highlighted[aria-selected],
+    .select2-container--bootstrap4 .select2-results__option--highlighted[aria-selected=true] {
+        background-color: #e0f2fe !important;
+        color: #0f172a !important;
+    }
+    .select2-container--bootstrap4 .select2-results__message {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
 </style>
 
 <div class="modal fade crm-wrapper" id="modalTambahClosing" tabindex="-1" role="dialog" aria-hidden="true">
@@ -67,7 +156,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="servis_id" class="crm-form-label">Pilih Tiket Servis <span class="text-danger">*</span></label>
-                            <select class="form-control crm-form-control in-tiket" id="servis_id" name="servis_id" required>
+                            <select class="form-control crm-form-control in-tiket select-cari" id="servis_id" name="servis_id" data-placeholder="-- Cari / Pilih Tiket Servis --" data-search-placeholder="Cari no. tiket / nama pelanggan..." required>
                                 <option value="" disabled {{ old('servis_id') ? '' : 'selected' }}>-- Pilih Tiket Servis --</option>
                                 @foreach($tiketSiap as $t)
                                     <option value="{{ $t->id_servis }}" data-teknisi="{{ $t->teknisi->nama_teknisi ?? '' }}" {{ old('servis_id') == $t->id_servis ? 'selected' : '' }}>
@@ -78,7 +167,7 @@
                             @if($tiketSiap->isEmpty())
                                 <small class="text-danger" style="font-size: 11px;">Belum ada tiket siap closing. Tiket harus berstatus Proses Servis atau Selesai.</small>
                             @else
-                                <small class="text-muted" style="font-size: 11px;">*Tiket berstatus Proses Servis / Selesai yang belum punya invoice</small>
+                                <small class="text-muted" style="font-size: 11px;">*Hanya tiket berstatus Proses Servis / Selesai yang belum punya invoice</small>
                             @endif
                         </div>
                         <div class="col-md-6 mb-3">
@@ -86,8 +175,10 @@
                             <input type="date" class="form-control crm-form-control" id="tgl_closing" name="tgl_closing" value="{{ old('tgl_closing', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="teknisi" class="crm-form-label">Teknisi Penanggung Jawab <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control crm-form-control in-teknisi" id="teknisi" name="teknisi" value="{{ old('teknisi') }}" maxlength="45" placeholder="Nama teknisi utama..." list="datalist_teknisi" autocomplete="off" required>
+                            <label for="teknisi" class="crm-form-label">Teknisi Penanggung Jawab</label>
+                            {{-- Hanya tampilan: nama teknisi tidak dikirim ke server, controller memakai teknisi bawaan tiket --}}
+                            <input type="text" class="form-control crm-form-control in-teknisi bg-light" id="teknisi" value="{{ old('teknisi') }}" maxlength="45" placeholder="Otomatis terisi dari tiket yang dipilih" readonly style="cursor: not-allowed;">
+                            <small class="text-muted" style="font-size: 11px;">*Mengikuti data registrasi tiket, tidak dapat diubah di sini</small>
                         </div>
                     </div>
 
@@ -124,7 +215,7 @@
                         <div class="col-md-4 mb-3">
                             <label for="metode_pembayaran" class="crm-form-label">Metode Pembayaran <span class="text-danger">*</span></label>
                             @php $metodeLama = old('metode_pembayaran', 'Tunai'); @endphp
-                            <select class="form-control crm-form-control" id="metode_pembayaran" name="metode_pembayaran" required>
+                            <select class="form-control crm-form-control select-cari" id="metode_pembayaran" name="metode_pembayaran" data-search-placeholder="Cari metode pembayaran..." required>
                                 <option value="Tunai" {{ $metodeLama == 'Tunai' ? 'selected' : '' }}>Tunai / Cash</option>
                                 <option value="QRIS/Transfer" {{ $metodeLama == 'QRIS/Transfer' ? 'selected' : '' }}>QRIS / Transfer Bank</option>
                             </select>
@@ -132,7 +223,7 @@
                         <div class="col-md-4 mb-3">
                             <label for="garansi" class="crm-form-label">Masa Garansi Servis <span class="text-danger">*</span></label>
                             @php $garansiLama = (string) old('garansi', '30'); @endphp
-                            <select class="form-control crm-form-control" id="garansi" name="garansi" required>
+                            <select class="form-control crm-form-control select-cari" id="garansi" name="garansi" data-search-placeholder="Cari masa garansi..." required>
                                 <option value="0" {{ $garansiLama === '0' ? 'selected' : '' }}>Tanpa Garansi</option>
                                 <option value="7" {{ $garansiLama === '7' ? 'selected' : '' }}>7 Hari</option>
                                 <option value="14" {{ $garansiLama === '14' ? 'selected' : '' }}>14 Hari</option>
@@ -143,7 +234,7 @@
                         <div class="col-md-4 mb-3">
                             <label for="status_pembayaran" class="crm-form-label">Status Pembayaran <span class="text-danger">*</span></label>
                             @php $bayarLama = old('status_pembayaran', 'Lunas'); @endphp
-                            <select class="form-control crm-form-control in-status" id="status_pembayaran" name="status_pembayaran" required>
+                            <select class="form-control crm-form-control in-status select-cari" id="status_pembayaran" name="status_pembayaran" data-search-placeholder="Cari status pembayaran..." required>
                                 <option value="Lunas" {{ $bayarLama == 'Lunas' ? 'selected' : '' }}>Lunas</option>
                                 <option value="DP" {{ $bayarLama == 'DP' ? 'selected' : '' }}>DP (Bayar Sebagian)</option>
                                 <option value="Belum Lunas" {{ $bayarLama == 'Belum Lunas' ? 'selected' : '' }}>Belum Lunas</option>

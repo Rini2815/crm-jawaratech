@@ -263,10 +263,11 @@ body, html {
                 <i class="fas fa-file-signature mr-1"></i> Tambah Registrasi Baru
             </button>
         </div>
+
         <!-- Bar Filter & Pencarian Registrasi -->
         <div class="card-body border-bottom bg-white py-3 px-4">
             <form action="{{ route('registrasi-servis.index') }}" method="GET" autocomplete="off" class="row align-items-center">
-                <div class="col-md-5 col-sm-12 mb-2 mb-md-0">
+                <div class="col-md-4 col-sm-12 mb-2 mb-md-0">
                     <div class="input-group">
                         <div class="input-group-prepend input-group-text bg-white border-right-0 border-end-0 text-muted" style="border-radius: 6px 0 0 6px; border-color: #cbd5e1;">
                             <i class="fas fa-search"></i>
@@ -275,20 +276,31 @@ body, html {
                     </div>
                 </div>
 
-                <div class="col-md-4 col-sm-6 mb-2 mb-md-0">
+                <!-- Filter periode berdasarkan tanggal masuk -->
+                <div class="col-md-2 col-sm-6 mb-2 mb-md-0">
+                    <select name="periode" class="form-control crm-form-control">
+                        <option value="">-- Semua Periode --</option>
+                        @foreach(['hari_ini' => 'Hari Ini', 'minggu_ini' => 'Minggu Ini', 'bulan_ini' => 'Bulan Ini', 'tahun_ini' => 'Tahun Ini'] as $nilai => $label)
+                            <option value="{{ $nilai }}" {{ request('periode') === $nilai ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Filter status servis -->
+                <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
                     <select name="status" class="form-control crm-form-control">
-                        <option value="">-- Semua Status Servis --</option>
+                        <option value="">-- Semua Status --</option>
                         @foreach(['Menunggu Konfirmasi', 'Sedang Dicek', 'Proses Servis', 'Selesai'] as $st)
                             <option value="{{ $st }}" {{ request('status') === $st ? 'selected' : '' }}>{{ $st }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="col-md-3 col-sm-6 d-flex">
+                <div class="col-md-3 col-sm-12 d-flex">
                     <button type="submit" class="btn btn-dark w-100 shadow-sm mr-2 me-2" style="font-weight: 600; border-radius: 6px; background-color: #1e293b; border-color: #1e293b;">
                         <i class="fas fa-filter mr-1 me-1"></i> Filter
                     </button>
-                    @if(request()->filled('search') || request()->filled('status'))
+                    @if(request()->filled('search') || request()->filled('periode') || request()->filled('status'))
                         <a href="{{ route('registrasi-servis.index') }}" class="btn btn-light shadow-sm" title="Reset filter" style="border: 1px solid #cbd5e1; border-radius: 6px;">
                             <i class="fas fa-times"></i>
                         </a>
@@ -302,14 +314,16 @@ body, html {
                 <table class="table table-hover table-bordered align-middle mb-0 super-thick-table">
                     <thead class="crm-table-header text-uppercase text-center fs-7">
                         <tr>
-                            <th class="py-3 text-white text-center" style="width: 5%;">NO</th>
-                            <th class="py-3 text-white text-center" style="width: 15%;">NO TIKET / SPK</th>
-                            <th class="py-3 text-white text-center" style="width: 15%;">PELANGGAN</th>
-                            <th class="py-3 text-white text-center" style="width: 18%;">UNIT & MEREK</th>
-                            <th class="py-3 text-white text-center" style="width: 18%;">KELUHAN</th>
-                            <th class="py-3 text-white text-center" style="width: 11%;">TEKNISI</th>
-                            <th class="py-3 text-white text-center" style="width: 12%;">STATUS SERVIS</th>
-                            <th class="py-3 text-white text-center" style="width: 8%;">AKSI</th>
+                            <th class="py-3 text-white text-center" style="width: 4%;">NO</th>
+                            <th class="py-3 text-white text-center" style="width: 11%;">NO TIKET / SPK</th>
+                            <th class="py-3 text-white text-center" style="width: 13%;">PELANGGAN</th>
+                            <th class="py-3 text-white text-center" style="width: 9%;">TGL MASUK</th>
+                            <th class="py-3 text-white text-center" style="width: 10%;">PERKIRAAN SELESAI</th>
+                            <th class="py-3 text-white text-center" style="width: 14%;">UNIT & MEREK</th>
+                            <th class="py-3 text-white text-center" style="width: 14%;">KELUHAN</th>
+                            <th class="py-3 text-white text-center" style="width: 9%;">TEKNISI</th>
+                            <th class="py-3 text-white text-center" style="width: 10%;">STATUS SERVIS</th>
+                            <th class="py-3 text-white text-center" style="width: 6%;">AKSI</th>
                         </tr>
                     </thead>
                     <tbody style="font-weight: 500;">
@@ -320,6 +334,12 @@ body, html {
                             <td class="py-3">
                                 <div class="text-dark" style="font-weight: 600;">{{ $t->unit->konsumen->nama ?? '-' }}</div>
                                 <small class="text-muted">{{ $t->unit->konsumen->no_whatsapp ?? '-' }}</small>
+                            </td>
+                            <td class="py-3 text-center text-dark small">
+                                {{ $t->tanggal_masuk ? \Carbon\Carbon::parse($t->tanggal_masuk)->format('d/m/Y') : '-' }}
+                            </td>
+                            <td class="py-3 text-center text-dark small">
+                                {{ $t->tanggal_estimasi_selesai ? \Carbon\Carbon::parse($t->tanggal_estimasi_selesai)->format('d/m/Y') : '-' }}
                             </td>
                             <td class="py-3 text-secondary">{{ $t->label_unit }}</td>
                             <td class="py-3 text-secondary small">{{ \Illuminate\Support\Str::limit($t->keluhan, 80) }}</td>
@@ -358,7 +378,7 @@ body, html {
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-4">Belum ada tiket servis yang terdaftar.</td>
+                            <td colspan="10" class="text-center text-muted py-4">Belum ada tiket servis yang terdaftar.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -376,13 +396,6 @@ body, html {
 
 <!-- Include Modal Tambah Registrasi -->
 @include('registrasi.create')
-
-<!-- Datalist Global untuk Auto-complete nama teknisi (dari tabel ms_teknisi) -->
-<datalist id="datalist_teknisi">
-    @foreach($teknisi as $namaTeknisi)
-        <option value="{{ $namaTeknisi }}"></option>
-    @endforeach
-</datalist>
 
 {{-- ================================================================= --}}
 {{-- MODAL KONFIRMASI HAPUS (gaya sama dengan modal logout)            --}}

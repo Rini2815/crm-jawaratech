@@ -26,6 +26,30 @@ class ClosingController extends Controller
             $query->where('status_pembayaran', $request->status_pembayaran);
         }
 
+        // Filter periode berdasarkan tanggal closing (hari ini, minggu ini, bulan ini, tahun ini)
+        if ($request->filled('periode')) {
+            $sekarang = now();
+
+            switch ($request->periode) {
+                case 'hari_ini':
+                    $query->whereDate('tanggal_closing', $sekarang->toDateString());
+                    break;
+                case 'minggu_ini':
+                    $query->whereBetween('tanggal_closing', [
+                        $sekarang->copy()->startOfWeek()->toDateString(),
+                        $sekarang->copy()->endOfWeek()->toDateString(),
+                    ]);
+                    break;
+                case 'bulan_ini':
+                    $query->whereYear('tanggal_closing', $sekarang->year)
+                          ->whereMonth('tanggal_closing', $sekarang->month);
+                    break;
+                case 'tahun_ini':
+                    $query->whereYear('tanggal_closing', $sekarang->year);
+                    break;
+            }
+        }
+
         if ($request->filled('search')) {
             $kata = trim($request->search);
             $query->where(function ($q) use ($kata) {
@@ -75,6 +99,11 @@ class ClosingController extends Controller
             return back()->withErrors(['servis_id' => "Tiket {$servis->no_tiket} masih berstatus {$servis->status}. Closing hanya untuk tiket Proses Servis atau Selesai."])->withInput();
         }
 
+        // Teknisi selalu mengikuti data registrasi tiket (tidak diambil dari input form)
+        if (!$servis->id_teknisi) {
+            return back()->withErrors(['servis_id' => "Tiket {$servis->no_tiket} belum memiliki teknisi. Lengkapi teknisi pada data tiket terlebih dahulu."])->withInput();
+        }
+
         $tglClosing = Carbon::parse($request->tgl_closing)->startOfDay();
 
         if ($tglClosing->lt($servis->tanggal_masuk)) {
@@ -88,13 +117,12 @@ class ClosingController extends Controller
         }
 
         $servis = DB::transaction(function () use ($request, $servis, $tglClosing, $jasa, $sparepart, $diskon, $total) {
-            $teknisi    = Teknisi::firstOrCreate(['nama_teknisi' => trim($request->teknisi)]);
             $noInvoice  = $this->buatNoInvoice($tglClosing);
             $hari       = (int) $request->garansi;
             $statusLama = $servis->status;
 
+            // id_teknisi tidak diubah: tetap teknisi bawaan tiket
             $servis->update(array_merge([
-                'id_teknisi'        => $teknisi->id_teknisi,
                 'no_invoice'        => $noInvoice,
                 'tanggal_closing'   => $tglClosing->toDateString(),
                 'biaya_jasa'        => $jasa,
@@ -131,7 +159,7 @@ class ClosingController extends Controller
             return $servis;
         });
 
-               // Tombol "Simpan & Cetak Struk": langsung buka nota untuk dicetak
+        // Tombol "Simpan & Cetak Struk": langsung buka nota untuk dicetak
         if ($request->input('aksi') === 'cetak') {
             return redirect()->route('closing.cetak', ['id' => $servis->id_servis, 'auto' => 1])
                 ->with('success', "Closing tiket {$servis->no_tiket} berhasil disimpan (invoice {$servis->no_invoice}).");
@@ -155,11 +183,10 @@ class ClosingController extends Controller
         }
 
         DB::transaction(function () use ($request, $servis, $jasa, $sparepart, $diskon, $total) {
-            $teknisi = Teknisi::firstOrCreate(['nama_teknisi' => trim($request->teknisi)]);
-            $hari    = (int) $request->garansi;
+            $hari = (int) $request->garansi;
 
+            // id_teknisi tidak diubah: tetap teknisi bawaan tiket
             $servis->update(array_merge([
-                'id_teknisi'        => $teknisi->id_teknisi,
                 'biaya_jasa'        => $jasa,
                 'biaya_sparepart'   => $sparepart,
                 'diskon'            => $diskon,
@@ -323,7 +350,6 @@ class ClosingController extends Controller
     private function aturanUmum(): array
     {
         return [
-            'teknisi'            => 'required|string|max:45',
             'rincian_pengerjaan' => 'required|string|max:2000',
             'biaya_jasa'         => 'required|integer|min:0|max:999999999',
             'biaya_sparepart'    => 'nullable|integer|min:0|max:999999999',
@@ -343,8 +369,6 @@ class ClosingController extends Controller
             'tgl_closing.required'           => 'Tanggal closing wajib diisi.',
             'tgl_closing.date'               => 'Format tanggal closing tidak valid.',
             'tgl_closing.before_or_equal'    => 'Tanggal closing tidak boleh melebihi hari ini.',
-            'teknisi.required'               => 'Nama teknisi wajib diisi.',
-            'teknisi.max'                    => 'Nama teknisi maksimal 45 karakter.',
             'rincian_pengerjaan.required'    => 'Rincian tindakan / sparepart wajib diisi.',
             'rincian_pengerjaan.max'         => 'Rincian maksimal 2000 karakter.',
             'biaya_jasa.required'            => 'Biaya jasa wajib diisi.',

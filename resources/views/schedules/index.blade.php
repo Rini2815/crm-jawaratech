@@ -127,6 +127,17 @@
                 <option value="Mesin Cuci">Mesin Cuci (1 Tahun)</option>
             </select>
 
+            <!-- Filter Periode (berdasarkan tanggal jatuh tempo) -->
+            <select id="filterPeriode" class="form-select bg-white text-dark" style="flex: 1 1 200px; max-width: 300px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.875rem; height: 40px;">
+                <option value="">-- Semua Periode --</option>
+                <option value="terlewat">Terlewat</option>
+                <option value="hari_ini">Hari Ini</option>
+                <option value="minggu_ini">Minggu Ini</option>
+                <option value="bulan_ini">Bulan Ini</option>
+                <option value="bulan_depan">Bulan Depan</option>
+                <option value="tahun_ini">Tahun Ini</option>
+            </select>
+
             <!-- Tombol Filter -->
             <button type="button" id="btnFilter" class="btn text-white fw-bold d-flex align-items-center justify-content-center gap-2" style="background-color: #1e293b; border-radius: 6px; font-size: 0.875rem; height: 40px; min-width: 160px;">
                 <i class="fas fa-filter"></i> Filter
@@ -165,7 +176,7 @@
                                 default        => 'fa-soap',
                             };
                         @endphp
-                        <tr data-kategori="{{ $j->kelompok }}">
+                        <tr data-kategori="{{ $j->kelompok }}" data-jatuh-tempo="{{ $j->jatuh_tempo->toDateString() }}">
                             <td class="py-3 text-secondary text-center fw-bold">{{ $loop->iteration }}</td>
                             <td class="py-3 fw-bold text-dark">
                                 {{ $j->nama_pelanggan }}
@@ -264,27 +275,73 @@
     .alert-danger .alert-close { color: #991b1b; }
 </style>
 
-<!-- Filter Live Search + Filter Perangkat (Client-Side, tanpa jQuery) -->
+<!-- Filter Live Search + Filter Perangkat + Filter Periode (Client-Side, tanpa jQuery) -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var searchInput = document.getElementById('searchInput');
     var filterSelect = document.getElementById('filterPerangkat');
+    var filterPeriode = document.getElementById('filterPeriode');
     var btnFilter = document.getElementById('btnFilter');
     var rows = document.querySelectorAll('#reminderTableBody tr');
+
+    // Ubah objek Date menjadi teks "YYYY-MM-DD" (waktu lokal) agar mudah dibandingkan
+    function ymd(d) {
+        var bulan = ('0' + (d.getMonth() + 1)).slice(-2);
+        var hari  = ('0' + d.getDate()).slice(-2);
+        return d.getFullYear() + '-' + bulan + '-' + hari;
+    }
+
+    // Cek apakah tanggal jatuh tempo (teks YYYY-MM-DD) masuk periode yang dipilih
+    function cocokPeriode(tanggal, periode) {
+        if (periode === '') return true;
+        if (!tanggal) return false;
+
+        var sekarang = new Date();
+        var hariIni  = ymd(sekarang);
+
+        if (periode === 'terlewat')   return tanggal < hariIni;
+        if (periode === 'hari_ini')   return tanggal === hariIni;
+
+        if (periode === 'minggu_ini') {
+            // Minggu dihitung Senin - Minggu
+            var selisih = (sekarang.getDay() + 6) % 7; // Senin = 0
+            var awal  = new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate() - selisih);
+            var akhir = new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate() - selisih + 6);
+            return tanggal >= ymd(awal) && tanggal <= ymd(akhir);
+        }
+
+        if (periode === 'bulan_ini') {
+            return tanggal.substring(0, 7) === hariIni.substring(0, 7);
+        }
+
+        if (periode === 'bulan_depan') {
+            var depan = new Date(sekarang.getFullYear(), sekarang.getMonth() + 1, 1);
+            return tanggal.substring(0, 7) === ymd(depan).substring(0, 7);
+        }
+
+        if (periode === 'tahun_ini') {
+            return tanggal.substring(0, 4) === hariIni.substring(0, 4);
+        }
+
+        return true;
+    }
 
     function terapkanFilter() {
         var keyword = searchInput.value.toLowerCase();
         var kategori = filterSelect.value;
+        var periode = filterPeriode.value;
 
         rows.forEach(function (row) {
             var cocokTeks = row.textContent.toLowerCase().indexOf(keyword) > -1;
             var cocokKategori = kategori === '' || row.getAttribute('data-kategori') === kategori;
-            row.style.display = (cocokTeks && cocokKategori) ? '' : 'none';
+            var cocokWaktu = cocokPeriode(row.getAttribute('data-jatuh-tempo'), periode);
+            row.style.display = (cocokTeks && cocokKategori && cocokWaktu) ? '' : 'none';
         });
     }
 
     searchInput.addEventListener('keyup', terapkanFilter);
     filterSelect.addEventListener('change', terapkanFilter);
+    filterPeriode.addEventListener('change', terapkanFilter);
     btnFilter.addEventListener('click', terapkanFilter);
 
     // Notifikasi hilang otomatis setelah 4 detik

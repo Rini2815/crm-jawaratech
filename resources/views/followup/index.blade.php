@@ -221,8 +221,8 @@ body, html {
                     <tbody id="followupTableBody" style="font-weight: 500;">
                         @forelse($agenda as $f)
                         @php
-                            $badgeKat = $f->kategori === 'Happy Call' ? 'badge-kategori-happycall' : 'badge-kategori-rutin';
-                            $labelKat = $f->kategori === 'Happy Call' ? 'Happy Call (H+3)' : 'Pengingat Perawatan';
+                            $badgeKat = 'badge-kategori-happycall';
+                            $labelKat = 'Happy Call (H+3)';
                             $badgeStatus = [
                                 'Belum Dihubungi'    => 'badge-followup-pending',
                                 'Sudah Dihubungi'    => 'badge-followup-done',
@@ -271,7 +271,7 @@ body, html {
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">Belum ada agenda follow-up. Agenda Happy Call muncul otomatis setelah tiket di-closing, dan agenda pengingat muncul saat tombol Chat di halaman Pengingat Perawatan diklik.</td>
+                            <td colspan="7" class="text-center text-muted py-4">Belum ada agenda follow-up. Agenda Happy Call muncul otomatis setelah tiket di-closing.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -288,7 +288,7 @@ body, html {
     $nilaiStatus  = $pakaiOld ? old('status') : $f->status;
     $nilaiUlang   = $pakaiOld ? old('tanggal_jadwal_ulang') : optional($f->tanggal_jadwal_ulang)->format('Y-m-d');
     $nilaiCatatan = $pakaiOld ? old('catatan') : $f->catatan_hasil;
-    $labelKatModal = $f->kategori === 'Happy Call' ? 'Happy Call (H+3)' : 'Pengingat Perawatan';
+    $labelKatModal = 'Happy Call (H+3)';
 @endphp
 <div class="modal fade crm-wrapper" id="modalUpdateFollowup{{ $f->id_follow_up }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-custom-size modal-dialog-centered">

@@ -527,7 +527,7 @@ body, html {
                     <div class="mb-2">
                         <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Interval Perawatan (Bulan)</label>
                         <input type="number" name="interval_bulan" class="form-control py-2" value="6" min="1" max="60" required style="border-radius: 6px;">
-                        <small class="text-muted">Jarak antar jadwal perawatan rutin unit ini.</small>
+                        <small class="text-muted">Terisi otomatis sesuai jenis unit (AC 3, Dispenser/Water Heater 6, Mesin Cuci 12) dan masih bisa diubah.</small>
                     </div>
                 </div>
                 <div class="modal-footer px-4 py-3" style="border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
@@ -591,7 +591,7 @@ body, html {
                     <div class="mb-2">
                         <label class="text-dark" style="font-size: 0.875rem; font-weight: 600;">Interval Perawatan (Bulan)</label>
                         <input type="number" name="interval_bulan" class="form-control py-2" value="{{ $u->interval_bulan }}" min="1" max="60" required style="border-radius: 6px;">
-                        <small class="text-muted">Jarak antar jadwal perawatan rutin unit ini.</small>
+                        <small class="text-muted">Terisi otomatis sesuai jenis unit (AC 3, Dispenser/Water Heater 6, Mesin Cuci 12) dan masih bisa diubah.</small>
                     </div>
                 </div>
                 <div class="modal-footer px-4 py-3" style="border-top: 1px solid #e2e8f0; background-color: #f8fafc; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
@@ -841,5 +841,23 @@ $(document).ready(function(){
         mulai();
     }
 })();
+</script>
+
+<script>
+// Interval perawatan terisi otomatis saat jenis unit dipilih (masih bisa diubah manual sesudahnya).
+// AC = 3 bulan, Dispenser & Water Heater = 6 bulan, Mesin Cuci = 12 bulan (sesuai analisis kebutuhan).
+document.addEventListener('DOMContentLoaded', function () {
+    var intervalDefault = { 'AC': 3, 'Dispenser': 6, 'Water Heater': 6, 'Mesin Cuci': 12 };
+
+    document.querySelectorAll('select[name="jenis_unit"]').forEach(function (sel) {
+        sel.addEventListener('change', function () {
+            var form  = sel.closest('form');
+            var input = form ? form.querySelector('input[name="interval_bulan"]') : null;
+            if (input && intervalDefault[sel.value]) {
+                input.value = intervalDefault[sel.value];
+            }
+        });
+    });
+});
 </script>
 @endsection

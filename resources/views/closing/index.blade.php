@@ -79,6 +79,10 @@ body, html {
 .badge-dp    { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 .badge-belum { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
 
+/* Badge Masa Garansi */
+.badge-garansi       { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+.badge-tanpa-garansi { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
 .super-thick-table th,
 .super-thick-table td {
     border-width: 2px !important;
@@ -360,14 +364,15 @@ body, html {
                     <thead class="crm-table-header text-uppercase text-center fs-7">
                         <tr>
                             <th class="py-3 text-white text-center" style="width: 4%;">NO</th>
-                            <th class="py-3 text-white text-center" style="width: 14%;">NO INVOICE / TIKET</th>
-                            <th class="py-3 text-white text-center" style="width: 14%;">PELANGGAN</th>
-                            <th class="py-3 text-white text-center" style="width: 17%;">UNIT</th>
-                            <th class="py-3 text-white text-center" style="width: 10%;">TEKNISI</th>
-                            <th class="py-3 text-white text-center" style="width: 13%;">TOTAL BAYAR</th>
-                            <th class="py-3 text-white text-center" style="width: 12%;">PEMBAYARAN</th>
+                            <th class="py-3 text-white text-center" style="width: 12%;">NO INVOICE / TIKET</th>
+                            <th class="py-3 text-white text-center" style="width: 13%;">PELANGGAN</th>
+                            <th class="py-3 text-white text-center" style="width: 15%;">UNIT</th>
+                            <th class="py-3 text-white text-center" style="width: 9%;">TEKNISI</th>
+                            <th class="py-3 text-white text-center" style="width: 12%;">TOTAL BAYAR</th>
+                            <th class="py-3 text-white text-center" style="width: 11%;">PEMBAYARAN</th>
+                            <th class="py-3 text-white text-center" style="width: 10%; min-width: 105px;">GARANSI</th>
                             <th class="py-3 text-white text-center" style="width: 8%;">TGL CLOSING</th>
-                            <th class="py-3 text-white text-center" style="width: 12%; min-width: 130px;">AKSI</th>
+                            <th class="py-3 text-white text-center" style="width: 10%; min-width: 130px;">AKSI</th>
                         </tr>
                     </thead>
                     <tbody style="font-weight: 500;">
@@ -397,6 +402,16 @@ body, html {
                                 <span class="badge crm-badge {{ $kelasBayar }}">{{ $c->status_pembayaran }}</span>
                                 <div><small class="text-muted">{{ $c->metode_pembayaran ?? '-' }}</small></div>
                             </td>
+                            <td class="py-3 text-center">
+                                @if((int) $c->masa_garansi_hari > 0)
+                                    <span class="badge crm-badge badge-garansi">{{ $c->masa_garansi_hari }} Hari</span>
+                                    @if($c->garansi_berakhir)
+                                        <div><small class="text-muted">s.d. {{ \Carbon\Carbon::parse($c->garansi_berakhir)->format('d/m/Y') }}</small></div>
+                                    @endif
+                                @else
+                                    <span class="badge crm-badge badge-tanpa-garansi">Tanpa Garansi</span>
+                                @endif
+                            </td>
                             <td class="py-3 text-center text-secondary" style="font-size: 0.85rem;">{{ $c->tanggal_closing ? $c->tanggal_closing->format('d/m/Y') : '-' }}</td>
                             <td class="py-3 text-center">
                                 <div class="aksi-wrap">
@@ -413,7 +428,7 @@ body, html {
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" class="py-4 text-center text-muted">
+                            <td colspan="10" class="py-4 text-center text-muted">
                                 @if(request()->filled('search') || request()->filled('status_pembayaran') || request()->filled('periode'))
                                     Tidak ada data closing yang cocok dengan pencarian / filter.
                                 @else

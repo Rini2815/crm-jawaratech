@@ -16,6 +16,7 @@ class FollowUpController extends Controller
         $this->sinkronHappyCall();
 
         $agenda = FollowUp::with(['unit.konsumen', 'servis'])
+            ->where('kategori', 'Happy Call')
             ->orderByRaw("FIELD(status, 'Belum Dihubungi', 'Perlu Jadwal Ulang', 'Sudah Dihubungi')")
             ->orderBy('tanggal_jadwal')
             ->orderByDesc('id_follow_up')
@@ -28,22 +29,17 @@ class FollowUpController extends Controller
             $f->no_wa         = $konsumen->no_whatsapp ?? '';
             $f->label_unit    = $this->labelUnit($f->unit);
 
-            if ($f->kategori === 'Happy Call') {
-                $f->layanan = \Illuminate\Support\Str::limit($f->servis->catatan ?? $f->servis->keluhan ?? '-', 60);
+            // Layanan diambil dari keluhan/permintaan servis, bukan dari catatan
+            // yang berisi kelengkapan saat registrasi.
+            $f->layanan = \Illuminate\Support\Str::limit($f->servis->keluhan ?? $f->servis->catatan ?? '-', 60);
 
-                $tglServis = $f->servis
-                    ? Carbon::parse($f->servis->tanggal_closing ?? $f->servis->tanggal_masuk)->translatedFormat('j F Y')
-                    : null;
+            $tglServis = $f->servis
+                ? Carbon::parse($f->servis->tanggal_closing ?? $f->servis->tanggal_masuk)->translatedFormat('j F Y')
+                : null;
 
-                $f->draft_wa = "Halo Bapak/Ibu {$f->nama_konsumen}, kami dari Jawaratech ingin mengonfirmasi hasil servis {$f->label_unit} Anda"
-                    . ($tglServis ? " pada tanggal {$tglServis}" : '')
-                    . '. Apakah unit sudah berfungsi dengan baik dan tidak ada kendala? Terima kasih.';
-            } else {
-                $interval = (int) ($f->unit->interval_bulan ?? 0);
-                $f->layanan  = 'Perawatan berkala' . ($interval ? " (setiap {$interval} bulan)" : '');
-                $f->draft_wa = "Halo Bapak/Ibu {$f->nama_konsumen}, kami dari Jawaratech. {$f->label_unit} Anda sudah waktunya perawatan berkala. "
-                    . 'Apakah Bapak/Ibu berkenan kami jadwalkan servisnya? Terima kasih.';
-            }
+            $f->draft_wa = "Halo Bapak/Ibu {$f->nama_konsumen}, kami dari Jawaratech ingin mengonfirmasi hasil servis {$f->label_unit} Anda"
+                . ($tglServis ? " pada tanggal {$tglServis}" : '')
+                . '. Apakah unit sudah berfungsi dengan baik dan tidak ada kendala? Terima kasih.';
 
             $f->wa_nomor = FollowUp::nomorWa($f->no_wa);
             $f->wa_link  = FollowUp::linkWa($f->no_wa, $f->draft_wa);

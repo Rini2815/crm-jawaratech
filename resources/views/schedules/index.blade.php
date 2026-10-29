@@ -200,6 +200,8 @@
                                 <span class="d-block text-muted fw-normal mt-1" style="font-size: 0.7rem;">{{ $j->keterangan }}</span>
                                 @if($j->follow_status)
                                     <span class="badge bg-light text-dark border mt-1" style="font-size: 0.65rem;">{{ $j->follow_status }}</span>
+                                @elseif($j->status_label !== 'Mendatang')
+                                    <span class="badge bg-light text-dark border mt-1" style="font-size: 0.65rem;">Belum Dihubungi</span>
                                 @endif
                             </td>
                             <td class="py-3 text-center">

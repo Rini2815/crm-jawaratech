@@ -43,10 +43,6 @@
         .box strong { font-weight: 700; }
         .box .sub { color: #475569; }
 
-        /* Kelengkapan unit */
-        .centang { display: flex; flex-wrap: wrap; gap: 6px 24px; }
-        .centang span { white-space: nowrap; font-weight: 600; }
-
         /* Status */
         .status { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 800; letter-spacing: 0.4px; background: #e0f2fe; color: #0369a1; }
 
@@ -69,11 +65,6 @@
     </style>
 </head>
 <body>
-
-@php
-    $daftarKelengkapan = ['Unit Utama', 'Remote AC/TV', 'Kabel Power', 'Adaptor'];
-    $dibawa = array_filter(array_map('trim', explode(',', (string) $s->kelengkapan)));
-@endphp
 
 <div class="toolbar no-print">
     <a href="{{ route('registrasi-servis.index') }}" class="btn">&larr; Kembali ke Registrasi Servis</a>
@@ -132,18 +123,6 @@
         <div style="margin-bottom: 12px;">
             <div class="label">Keluhan Utama</div>
             <div class="box">{!! nl2br(e($s->keluhan)) !!}</div>
-        </div>
-
-        {{-- KELENGKAPAN UNIT --}}
-        <div style="margin-bottom: 12px;">
-            <div class="label">Kelengkapan Unit yang Diterima</div>
-            <div class="box">
-                <div class="centang">
-                    @foreach($daftarKelengkapan as $item)
-                        <span>{{ in_array($item, $dibawa, true) ? '☑' : '☐' }} {{ $item }}</span>
-                    @endforeach
-                </div>
-            </div>
         </div>
 
         {{-- TANDA TANGAN --}}

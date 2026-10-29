@@ -177,7 +177,7 @@
                     </div>
 
                     <!-- Section 2: Detail Kerusakan & Waktu Servis -->
-                    <div class="crm-section-title">Detail Kerusakan & Kelengkapan</div>
+                    <div class="crm-section-title">Detail Kerusakan</div>
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
                             <label for="tgl_masuk" class="crm-form-label">Tanggal Masuk <span class="text-danger">*</span></label>
@@ -190,28 +190,6 @@
                         <div class="col-md-12 mb-3">
                             <label for="keluhan" class="crm-form-label">Keluhan / Kendala Utama <span class="text-danger">*</span></label>
                             <textarea class="form-control crm-form-control" id="keluhan" name="keluhan" rows="2" maxlength="1000" placeholder="Catat keluhan perbaikan dari pelanggan..." required>{{ old('keluhan') }}</textarea>
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <label class="crm-form-label">Kelengkapan Diserahterimakan</label>
-                            @php $kelengkapanLama = old('kelengkapan', ['Unit Utama']); @endphp
-                            <div class="d-flex flex-wrap gap-3 p-3 bg-white border rounded">
-                                <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Unit Utama" id="chk_unit" {{ in_array('Unit Utama', $kelengkapanLama) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal text-dark" for="chk_unit">Unit Utama</label>
-                                </div>
-                                <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Remote AC/TV" id="chk_remote" {{ in_array('Remote AC/TV', $kelengkapanLama) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal text-dark" for="chk_remote">Remote AC/TV</label>
-                                </div>
-                                <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Kabel Power" id="chk_kabel" {{ in_array('Kabel Power', $kelengkapanLama) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal text-dark" for="chk_kabel">Kabel Power</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Adaptor" id="chk_adaptor" {{ in_array('Adaptor', $kelengkapanLama) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal text-dark" for="chk_adaptor">Adaptor</label>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -233,7 +211,6 @@
                             <label for="status" class="crm-form-label">Status Awal <span class="text-danger">*</span></label>
                             @php $statusLama = old('status', 'Sedang Dicek'); @endphp
                             <select class="form-control crm-form-control" id="status" name="status" data-cari="Cari status awal..." required>
-                                <option value="Menunggu Konfirmasi" {{ $statusLama == 'Menunggu Konfirmasi' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
                                 <option value="Sedang Dicek" {{ $statusLama == 'Sedang Dicek' ? 'selected' : '' }}>Sedang Dicek</option>
                                 <option value="Proses Servis" {{ $statusLama == 'Proses Servis' ? 'selected' : '' }}>Proses Servis</option>
                             </select>

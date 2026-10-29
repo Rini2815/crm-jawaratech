@@ -40,7 +40,7 @@
                     </div>
 
                     <!-- Section 2: Detail Kerusakan & Waktu Servis -->
-                    <div class="crm-section-title">Detail Kerusakan & Kelengkapan</div>
+                    <div class="crm-section-title">Detail Kerusakan</div>
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
                             <label for="edit_tgl_masuk_{{ $t->id_servis }}" class="crm-form-label">Tanggal Masuk <span class="text-danger">*</span></label>
@@ -53,28 +53,6 @@
                         <div class="col-md-12 mb-3">
                             <label for="edit_keluhan_{{ $t->id_servis }}" class="crm-form-label">Keluhan Utama <span class="text-danger">*</span></label>
                             <textarea class="form-control crm-form-control" id="edit_keluhan_{{ $t->id_servis }}" name="keluhan" rows="2" maxlength="1000" required>{{ $t->keluhan }}</textarea>
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <label class="crm-form-label">Kelengkapan Diserahterimakan</label>
-                            @php $dipilih = array_filter(array_map('trim', explode(',', (string) $t->kelengkapan))); @endphp
-                            <div class="d-flex flex-wrap gap-3 p-3 bg-white border rounded">
-                                <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Unit Utama" id="edit_chk_unit_{{ $t->id_servis }}" {{ in_array('Unit Utama', $dipilih) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal" for="edit_chk_unit_{{ $t->id_servis }}">Unit Utama</label>
-                                </div>
-                                <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Remote AC/TV" id="edit_chk_remote_{{ $t->id_servis }}" {{ in_array('Remote AC/TV', $dipilih) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal" for="edit_chk_remote_{{ $t->id_servis }}">Remote AC/TV</label>
-                                </div>
-                                <div class="form-check mr-3 me-3">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Kabel Power" id="edit_chk_kabel_{{ $t->id_servis }}" {{ in_array('Kabel Power', $dipilih) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal" for="edit_chk_kabel_{{ $t->id_servis }}">Kabel Power</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="kelengkapan[]" value="Adaptor" id="edit_chk_adaptor_{{ $t->id_servis }}" {{ in_array('Adaptor', $dipilih) ? 'checked' : '' }}>
-                                    <label class="form-check-label font-weight-normal" for="edit_chk_adaptor_{{ $t->id_servis }}">Adaptor</label>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -96,10 +74,9 @@
                         <div class="col-md-6 mb-3">
                             <label for="edit_status_{{ $t->id_servis }}" class="crm-form-label">Status Pengerjaan <span class="text-danger">*</span></label>
                             <select class="form-control crm-form-control" id="edit_status_{{ $t->id_servis }}" name="status" data-cari="Cari status pengerjaan..." required>
-                                <option value="Menunggu Konfirmasi" {{ $t->status == 'Menunggu Konfirmasi' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
                                 <option value="Sedang Dicek" {{ $t->status == 'Sedang Dicek' ? 'selected' : '' }}>Sedang Dicek</option>
                                 <option value="Proses Servis" {{ $t->status == 'Proses Servis' ? 'selected' : '' }}>Proses Servis</option>
-                                <option value="Selesai" {{ $t->status == 'Selesai' ? 'selected' : '' }}>Selesai (Siap Closing Servis)</option>
+                                <option value="Selesai" {{ $t->status == 'Selesai' ? 'selected' : '' }}>Selesai</option>
                             </select>
                         </div>
                     </div>

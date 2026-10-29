@@ -63,7 +63,6 @@ body, html {
     padding: 0.35em 0.65em;
     font-size: 0.75rem;
 }
-.badge-menunggu { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
 .badge-dicek { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 .badge-proses { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
 .badge-selesai { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
@@ -257,7 +256,7 @@ body, html {
         <div class="card-header bg-white border-bottom pt-4 px-4 pb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
                 <h5 class="m-0 text-dark fw-bold">Daftar Servis Berjalan (Active Tickets)</h5>
-                <small class="text-muted">Pantau status pengerjaan, teknisi bertugas, dan kelengkapan unit pelanggan</small>
+                <small class="text-muted">Pantau status pengerjaan, teknisi bertugas, dan unit pelanggan</small>
             </div>
             <button type="button" class="btn btn-primary px-3 py-2 fw-semibold rounded-pill shadow-sm text-sm" data-toggle="modal" data-target="#modalTambahRegistrasi">
                 <i class="fas fa-file-signature mr-1"></i> Tambah Registrasi Baru
@@ -290,7 +289,7 @@ body, html {
                 <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
                     <select name="status" class="form-control crm-form-control">
                         <option value="">-- Semua Status --</option>
-                        @foreach(['Menunggu Konfirmasi', 'Sedang Dicek', 'Proses Servis', 'Selesai'] as $st)
+                        @foreach(['Sedang Dicek', 'Proses Servis', 'Selesai'] as $st)
                             <option value="{{ $st }}" {{ request('status') === $st ? 'selected' : '' }}>{{ $st }}</option>
                         @endforeach
                     </select>
@@ -345,11 +344,7 @@ body, html {
                             <td class="py-3 text-secondary small">{{ \Illuminate\Support\Str::limit($t->keluhan, 80) }}</td>
                             <td class="py-3 text-center text-dark fw-bold">{{ $t->teknisi->nama_teknisi ?? '-' }}</td>
                             <td class="py-3 text-center">
-                                @if($t->status == 'Menunggu Konfirmasi')
-                                    <span class="badge crm-badge badge-menunggu">
-                                        <i class="fas fa-hourglass-half mr-1 me-1"></i> Menunggu Konfirmasi
-                                    </span>
-                                @elseif($t->status == 'Sedang Dicek')
+                                @if($t->status == 'Sedang Dicek')
                                     <span class="badge crm-badge badge-dicek">
                                         <i class="fas fa-search mr-1 me-1"></i> Sedang Dicek
                                     </span>

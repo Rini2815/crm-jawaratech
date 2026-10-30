@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     // --- Rute Notifikasi ---
     Route::get('/notifikasi', [ProfileController::class, 'notifications'])->name('notifications.index');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/dihubungi', [NotificationController::class, 'tandaiDihubungi'])->name('notifications.dihubungi'); // <-- BARU
 
     // =====================================================================
     // B. KHUSUS SUPERADMIN

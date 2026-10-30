@@ -108,7 +108,10 @@
                                 </span>
                             </td>
                             <td class="text-center pe-4">
-                                <a href="{{ $item->wa_link }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold">
+                                {{-- BARU: class btn-chat-notif + data-url untuk menandai "Sudah Dihubungi" --}}
+                                <a href="{{ $item->wa_link }}" target="_blank"
+                                   class="btn btn-sm btn-success rounded-pill px-3 fw-semibold btn-chat-notif"
+                                   data-url="{{ route('notifications.dihubungi', $item->id) }}">
                                     <i class="fab fa-whatsapp me-1"></i> Chat
                                 </a>
                             </td>
@@ -134,6 +137,20 @@ document.addEventListener('DOMContentLoaded', function () {
         baris.addEventListener('click', function (e) {
             if (e.target.closest('a, button')) return;
             window.location.href = baris.getAttribute('data-href');
+        });
+    });
+
+    // BARU: klik Chat -> tandai "Sudah Dihubungi", lalu muat ulang agar notifikasi berkurang
+    document.querySelectorAll('.btn-chat-notif').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            fetch(btn.dataset.url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                keepalive: true
+            }).then(function () { location.reload(); });
         });
     });
 });

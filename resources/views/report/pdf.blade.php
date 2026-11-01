@@ -2,129 +2,103 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Resmi Rekapitulasi Servis & Follow-up - Jawaratech</title>
+    <title>{{ $judulLaporan ?? 'Laporan Rekapitulasi Servis - Jawaratech' }}</title>
     <style>
-        /* Pengaturan umum halaman & cetak agar pas di kertas A4 */
         @page {
-            size: A4;
-            margin: 8mm 8mm 8mm 8mm;
+            margin: 6mm;
+            size: {{ request('kertas') === 'a3' ? 'A3' : 'A4' }} landscape;
         }
-        body { 
-            font-family: Arial, sans-serif; 
-            font-size: 10px; 
-            color: #000000; 
-            margin: 0; 
-            padding: 10px; 
-            background-color: #ffffff; 
+        * { box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            background: #fff;
             -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
-        
-        /* Kop Surat Resmi dengan Logo di Kiri */
-        .kop-surat { 
-            border-bottom: 3px double #000000; 
-            padding-bottom: 8px; 
-            margin-bottom: 10px; 
-            width: 100%; 
-        }
+
+        /* ===== Kop surat ===== */
+        .kop-surat { border-bottom: 3px double #000; padding-bottom: 6px; margin-bottom: 8px; width: 100%; }
         .kop-table { width: 100%; border-collapse: collapse; }
         .kop-table td { vertical-align: middle; border: none; }
-        .logo-col { width: 15%; text-align: left; }
-        .logo-col img { width: 65px; height: auto; }
-        .text-col { width: 85%; text-align: center; padding-right: 40px; }
-        .text-col h2 { margin: 0; color: #000000; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
-        .text-col h4 { margin: 2px 0; color: #000000; font-size: 10px; font-weight: bold; }
-        .text-col p { margin: 1px 0; color: #000000; font-size: 9px; }
+        .logo-col { width: 12%; text-align: left; }
+        .logo-col img { width: 62px; height: auto; }
+        .text-col { width: 88%; text-align: center; padding-right: 62px; }
+        .text-col h2 { margin: 0; font-size: 17px; text-transform: uppercase; letter-spacing: 2px; }
+        .text-col h4 { margin: 2px 0; font-size: 10px; }
+        .text-col p { margin: 1px 0; font-size: 9px; }
 
-        /* Deskripsi Perusahaan & Pengantar Laporan */
-        .company-desc { 
-            background: #ffffff; 
-            border: 1px solid #000000; 
-            border-left: 4px solid #000000; 
-            padding: 8px 10px; 
-            margin-bottom: 10px; 
-            font-size: 9.5px; 
-            line-height: 1.3; 
+        .company-desc {
+            border: 1px solid #000; border-left: 4px solid #000;
+            padding: 6px 10px; margin-bottom: 8px; font-size: 9px; line-height: 1.35;
         }
 
-        /* Judul Laporan */
-        .report-title { text-align: center; margin-bottom: 10px; }
-        .report-title h3 { 
-            margin: 0; 
-            color: #000000; 
-            text-transform: uppercase; 
-            font-size: 12px; 
-            border-bottom: 1px solid #000000; 
-            display: inline-block; 
-            padding-bottom: 2px; 
-            font-weight: bold; 
+        .report-title { text-align: center; margin-bottom: 4px; }
+        .report-title h3 {
+            margin: 0; text-transform: uppercase; font-size: 12px;
+            border-bottom: 1px solid #000; display: inline-block; padding-bottom: 2px;
         }
+        .periode { text-align: center; margin: 4px 0 8px 0; font-size: 9px; }
 
-        /* Identitas Klien / Konsumen */
-        .client-info { 
-            background: #ffffff; 
-            border: 1px solid #000000; 
-            padding: 8px 10px; 
-            border-radius: 4px; 
-            margin-bottom: 10px; 
-        }
+        .client-info { border: 1px solid #000; padding: 5px 8px; border-radius: 4px; margin-bottom: 8px; }
         .client-info table { width: 100%; border-collapse: collapse; }
-        .client-info td { padding: 3px 5px; vertical-align: top; font-size: 10px; border: none; color: #000000; }
-        .label { font-weight: bold; width: 105px; color: #000000; }
+        .client-info td { padding: 2px 5px; vertical-align: top; font-size: 9.5px; border: none; }
+        .client-info .label { font-weight: bold; width: 100px; }
 
-        /* Subtitle Tabel */
-        p.section-subtitle { margin: 12px 0 5px 0; font-weight: bold; font-size: 10px; color: #000000; }
+        p.section-subtitle { margin: 10px 0 4px 0; font-weight: bold; font-size: 10px; }
 
-        /* Tabel Data / Riwayat Servis */
-        table.data-table { width: 100%; border-collapse: collapse; margin-top: 2px; }
-        table.data-table th, table.data-table td { 
-            border: 1px solid #000000; 
-            padding: 6px; 
-            text-align: left; 
-            vertical-align: top; 
-            font-size: 9px; 
-            color: #000000; 
-            line-height: 1.4;
-        }
-        
-        /* Header Hitam Pekat */
-        table.data-table th { 
-            background-color: #000000 !important; 
-            color: #ffffff !important; 
-            -webkit-print-color-adjust: exact; 
-            text-transform: uppercase; 
-            font-size: 9px; 
-            text-align: center; 
-            font-weight: bold; 
+        /* ===== Tabel: 1 tabel utuh. Lebar kolom otomatis, isi boleh turun baris
+           sehingga font bisa besar dan seluruh kolom tetap muat di A4 landscape ===== */
+        table.data-table { width: 100%; border-collapse: collapse; table-layout: auto; }
+        table.data-table th, table.data-table td {
+            border: 1px solid #000;
+            padding: 5px 4px;
+            font-size: 9.5px;
+            font-weight: 600;
+            line-height: 1.25;
             vertical-align: middle;
-            padding: 7px 4px;
+            word-break: normal;
+            overflow-wrap: break-word;
         }
-        
+        table.data-table th {
+            background: #000 !important;
+            color: #fff !important;
+            text-transform: uppercase;
+            font-size: 8.5px;
+            text-align: center;
+            font-weight: bold;
+            padding: 7px 4px;
+            white-space: normal;
+        }
+        table.data-table thead { display: table-header-group; }
+        table.data-table tr { page-break-inside: avoid; }
+        table.data-table tbody tr:nth-child(even) td { background: #f2f2f2; }
+
         .text-center { text-align: center; }
-        .fw-bold { font-weight: bold; }
+        .text-right  { text-align: right; }
+        .fw-bold     { font-weight: bold; }
+        .nowrap      { white-space: nowrap; }
 
-        /* Styling Kotak Kecil / Badge */
-        .mini-box { width: 100%; border-collapse: collapse; margin-bottom: 3px; }
-        .mini-box td { border: 1px solid #b0c4de; padding: 3px 5px; font-size: 8.5px; background: #fdfdfd; }
-        .mini-box td.sub-label { width: 38%; font-weight: bold; color: #333; background: #f0f4f8; border-right: 1px solid #b0c4de; }
-        
-        /* Box Keluhan Khusus */
-        .keluhan-box { border: 1px solid #8b0000; margin-top: 4px; border-radius: 2px; overflow: hidden; }
-        .keluhan-header { background-color: #8b0000 !important; color: #ffffff; text-align: center; font-weight: bold; font-size: 8.5px; padding: 2px; -webkit-print-color-adjust: exact; text-transform: uppercase; }
-        .keluhan-content { padding: 4px; font-style: italic; font-size: 8.5px; background-color: #fffdfd; }
+        .badge {
+            display: inline-block; padding: 2px 5px; border-radius: 3px; font-weight: bold;
+            border: 1px solid #555; font-size: 8.5px; white-space: normal; text-align: center;
+        }
+        .badge-ok   { background: #d4edda !important; color: #155724; border-color: #8fc79f; }
+        .badge-no   { background: #e2e3e5 !important; color: #333;    border-color: #aaa; }
+        .badge-warn { background: #fff3cd !important; color: #856404; border-color: #e0c870; }
+        .badge-tgl  { background: #e5e5e5 !important; color: #000;    border-color: #000; }
 
-        /* Badge Status & Garansi */
-        .badge-status { background-color: #d4edda !important; color: #155724; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #c3e6cb; -webkit-print-color-adjust: exact; display: inline-block; }
-        .badge-garansi { background-color: #d4edda !important; color: #155724; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #c3e6cb; -webkit-print-color-adjust: exact; display: inline-block; }
-
-        /* Tanda Tangan */
-        .footer-sign { margin-top: 20px; width: 100%; page-break-inside: avoid; }
-        .footer-sign table { width: 100%; border: none; }
-        .footer-sign td { border: none; text-align: center; font-size: 10px; color: #000000; }
+        .footer-sign { margin-top: 15px; width: 100%; page-break-inside: avoid; }
+        .footer-sign table { width: 100%; border: none; border-collapse: collapse; }
+        .footer-sign td { border: none; text-align: center; font-size: 10px; }
     </style>
 </head>
 <body>
 
-    <!-- KOP SURAT DENGAN LOGO DI KIRI -->
+    <!-- KOP SURAT -->
     <div class="kop-surat">
         <table class="kop-table">
             <tr>
@@ -136,7 +110,7 @@
                     <h4>Penyedia Jasa Servis Elektronik</h4>
                     <p><strong>Dikelola oleh CV Jawara Tiga Pendiri</strong></p>
                     <p>
-                        <strong>Pusat Madiun/Caruban:</strong> Jl. Ontorejo, RT.3/RW.2, Wonoasri, Kab. Madiun | 
+                        <strong>Pusat Madiun/Caruban:</strong> Jl. Ontorejo, RT.3/RW.2, Wonoasri, Kab. Madiun |
                         <strong>Magetan:</strong> Dsn. Lemi, Ds. Jajar, Kartoharjo, Kab. Magetan
                     </p>
                     <p><strong>WhatsApp:</strong> +62 822-2808-4708 | <strong>Instagram/TikTok:</strong> @jawaratech</p>
@@ -145,17 +119,15 @@
         </table>
     </div>
 
-    <!-- DESKRIPSI PENGANTAR -->
     <div class="company-desc">
         <strong>Tentang Jawaratech:</strong> Jawaratech (CV Jawara Tiga Pendiri) adalah pusat layanan servis elektronik panggilan dan pemeliharaan perangkat rumah tangga terkemuka di wilayah Karesidenan Madiun. Laporan resmi ini merangkum rekam jejak riwayat servis, pemeliharaan berkala, serta status pengerjaan unit konsumen secara transparan dan akurat.
     </div>
 
-    <!-- Judul Dokumen -->
     <div class="report-title">
         <h3>{{ isset($konsumen) ? 'Laporan Riwayat Servis & Follow-up Konsumen' : 'Laporan Rekapitulasi Global Servis & Follow-up' }}</h3>
     </div>
+    <div class="periode"><strong>Periode Tanggal Registrasi:</strong> {{ $periode ?? '-' }}</div>
 
-    <!-- Identitas Konsumen -->
     @if(isset($konsumen))
     <div class="client-info">
         <table>
@@ -175,120 +147,71 @@
     </div>
     @endif
 
-    <!-- TABEL 1: RIWAYAT SERVIS UTAMA -->
-    <p class="section-subtitle">1. Rekam jejak transaksi, pengerjaan unit, keluhan & status layanan:</p>
+    <!-- ============================================================ -->
+    <!-- TABEL A : REGISTRASI SERVIS & PENGERJAAN                      -->
+    <!-- ============================================================ -->
+    @php
+        $jam = function ($v) {
+            if (empty($v)) return '';
+            $c = \Carbon\Carbon::parse($v);
+            return $c->format('H:i') === '00:00' ? '' : '<br><span style="font-weight:600;">' . $c->format('H:i') . ' WIB</span>';
+        };
+    @endphp
+    <p class="section-subtitle">A. Registrasi Servis & Pengerjaan Unit</p>
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 4%;">NO</th>
-                <th style="width: 22%;">TIKET & INVOICE</th>
-                <th style="width: 28%;">DETAIL UNIT & KELUHAN</th>
-                <th style="width: 23%;">TEKNISI, STATUS & BIAYA</th>
-                <th style="width: 23%;">GARANSI & NEXT SERVIS</th>
+                @unless(isset($konsumen))
+                <th>ID</th>
+                @endunless
+                <th>No</th>
+                <th>Tgl Registrasi</th>
+                @unless(isset($konsumen))
+                <th>Nama Konsumen</th>
+                @endunless
+                @unless(isset($konsumen))
+                <th>No. WhatsApp</th>
+                @endunless
+                <th>Alamat</th>
+                <th>No Tiket</th>
+                <th>Invoice</th>
+                <th>Unit</th>
+                <th>Merek</th>
+                <th>Model</th>
+                <th>Keluhan</th>
+                <th>Perkiraan Selesai</th>
+                <th>Status</th>
+                <th>Teknisi</th>
             </tr>
         </thead>
         <tbody>
             @forelse($riwayatServis as $index => $item)
             <tr>
-                <td class="text-center fw-bold" style="vertical-align: middle; font-size: 12px;">{{ $index + 1 }}</td>
-                
-                <!-- Kolom 1: Tiket & Invoice -->
-                <td>
-                    <table class="mini-box">
-                        <tr>
-                            <td class="sub-label">Tiket</td>
-                            <td><strong>{{ $item->no_tiket ?? '-' }}</strong></td>
-                        </tr>
-                        <tr>
-                            <td class="sub-label">Inv</td>
-                            <td>{{ $item->no_invoice ?? 'Belum Cetak' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="sub-label">Tgl Reg</td>
-                            <td>{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y') }}</td>
-                        </tr>
-                    </table>
-                    @if(!isset($konsumen) && !empty($item->nama))
-                        <div style="margin-top: 4px; padding-top: 3px; border-top: 1px dotted #000; font-size: 8.5px;">
-                            <span class="fw-bold">Klien:</span> {{ $item->nama }}<br>
-                            <span>WA: {{ $item->no_whatsapp ?? '-' }}</span>
-                        </div>
-                    @endif
-                </td>
-                
-                <!-- Kolom 2: Detail Unit & Keluhan -->
-                <td>
-                    <table class="mini-box">
-                        <tr>
-                            <td class="sub-label">Unit</td>
-                            <td><strong>{{ $item->jenis_unit ?? 'Unit' }}</strong> ({{ $item->merek ?? '-' }})</td>
-                        </tr>
-                        <tr>
-                            <td class="sub-label">Model</td>
-                            <td>{{ $item->tipe_model ?? '-' }}</td>
-                        </tr>
-                    </table>
-                    <div class="keluhan-box">
-                        <div class="keluhan-header">KELUHAN</div>
-                        <div class="keluhan-content">"{{ $item->keluhan ?? '-' }}"</div>
-                    </div>
-                </td>
-                
-                <!-- Kolom 3: Teknisi, Status & Biaya -->
-                <td>
-                    <table class="mini-box">
-                        <tr>
-                            <td class="sub-label">Status</td>
-                            <td><span class="badge-status">{{ $item->status ?? 'Proses' }}</span></td>
-                        </tr>
-                        <tr>
-                            <td class="sub-label">Teknisi</td>
-                            <td>{{ $item->nama_teknisi ?? ($item->id_teknisi ?? 'Belum Ditugaskan') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="sub-label">Biaya</td>
-                            <td>
-                                @php
-                                    $biaya = $item->biaya_jasa ?? ($item->total_biaya ?? 0);
-                                @endphp
-                                {{ $biaya > 0 ? 'Rp ' . number_format($biaya, 0, ',', '.') : '-' }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="sub-label">Metode</td>
-                            <td>{{ $item->metode_pembayaran ?? '-' }}</td>
-                        </tr>
-                    </table>
-                </td>
-                
-                <!-- Kolom 4: Garansi & Next Servis -->
-                <td>
-                    <table class="mini-box">
-                        <tr>
-                            <td class="sub-label">Garansi</td>
-                            <td>
-                                @php 
-                                    $isGaransi = str_contains(strtolower($item->status_garansi ?? ''), 'aktif'); 
-                                @endphp
-                                <span class="{{ $isGaransi ? 'badge-garansi' : '' }}">
-                                    {{ $isGaransi ? 'Valid' : 'Non-Garansi' }}
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="sub-label">Next Servis</td>
-                            <td>{{ !empty($item->tanggal_jatuh_tempo) ? \Carbon\Carbon::parse($item->tanggal_jatuh_tempo)->translatedFormat('d M Y') : 'Belum Dijadwalkan' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="sub-label">Follow-up</td>
-                            <td>{{ $item->status_follow_up ?? 'Belum Dihubungi' }}</td>
-                        </tr>
-                    </table>
-                </td>
+                @unless(isset($konsumen))
+                <td class="text-center fw-bold nowrap">#{{ $item->id_konsumen ?? '-' }}</td>
+                @endunless
+                <td class="text-center fw-bold nowrap">{{ $index + 1 }}</td>
+                <td class="text-center nowrap"><span class="badge badge-tgl nowrap">{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y') }}{!! $jam($item->created_at) !!}</span></td>
+                @unless(isset($konsumen))
+                <td class="fw-bold">{{ $item->nama ?? '-' }}</td>
+                @endunless
+                @unless(isset($konsumen))
+                <td class="nowrap">{{ $item->no_whatsapp ?? '-' }}</td>
+                @endunless
+                <td>{{ $item->alamat ?? '-' }}</td>
+                <td class="fw-bold nowrap">{{ $item->no_tiket ?? '-' }}</td>
+                <td class="nowrap">{{ $item->no_invoice ?? 'Belum Cetak' }}</td>
+                <td class="fw-bold">{{ $item->jenis_unit ?? '-' }}</td>
+                <td class="fw-bold">{{ $item->merek ?? '-' }}</td>
+                <td>{{ $item->tipe_model ?? '-' }}</td>
+                <td><em>{{ $item->keluhan ?? '-' }}</em></td>
+                <td class="text-center nowrap">{{ !empty($item->x_perkiraan) ? \Carbon\Carbon::parse($item->x_perkiraan)->translatedFormat('d M Y') : '-' }}</td>
+                <td class="text-center nowrap"><span class="badge badge-ok nowrap">{{ $item->status ?? 'Proses' }}</span></td>
+                <td>{{ $item->nama_teknisi ?? 'Belum Ditugaskan' }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="text-center" style="padding: 15px; color: #000000;">
+                <td colspan="{{ isset($konsumen) ? 12 : 15 }}" class="text-center" style="padding: 15px;">
                     Tidak ada riwayat servis tercatat pada periode pencarian ini.
                 </td>
             </tr>
@@ -296,66 +219,108 @@
         </tbody>
     </table>
 
-    <!-- TABEL 2: PENGINGAT PERAWATAN & FOLLOW-UP WHATSAPP -->
-    <p class="section-subtitle">2. Agenda Pengingat Perawatan Berkala & Follow-up WhatsApp Konsumen:</p>
+    <!-- ============================================================ -->
+    <!-- TABEL B : CLOSING, PEMBAYARAN, GARANSI & FOLLOW-UP             -->
+    <!-- ============================================================ -->
+    <p class="section-subtitle">B. Closing, Pembayaran, Garansi & Follow-up</p>
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 5%;">NO</th>
-                <th style="width: 25%;">KONSUMEN & WHATSAPP</th>
-                <th style="width: 30%;">UNIT & KETERANGAN</th>
-                <th style="width: 20%;">STATUS & JADWAL</th>
-                <th style="width: 20%;">CATATAN / HASIL</th>
+                @unless(isset($konsumen))
+                <th>ID</th>
+                @endunless
+                <th>No</th>
+                @unless(isset($konsumen))
+                <th>Nama Konsumen</th>
+                @endunless
+                <th>No Tiket</th>
+                <th>Tgl Closing</th>
+                <th>Biaya Jasa</th>
+                <th>Biaya Sparepart</th>
+                <th>Diskon</th>
+                <th>Total Bayar</th>
+                <th>Metode</th>
+                <th>Status Bayar</th>
+                <th>Garansi</th>
+                <th>Masa Garansi</th>
+                <th>Jadwal Next Service</th>
+                <th>Hasil Follow-up</th>
+                <th>Catatan Hasil</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($followUpList ?? [] as $idx => $fup)
+            @forelse($riwayatServis as $index => $item)
+            @php
+                $biaya       = (float) ($item->biaya_jasa ?? 0);
+                $sparepart   = (float) ($item->x_sparepart ?? 0);
+                $diskon      = (float) ($item->x_diskon ?? 0);
+                $totalBayar  = (float) ($item->x_total_bayar ?? 0);
+                $statusBayar = $item->x_status_bayar ?? null;
+                $isGaransi   = str_contains(strtolower($item->status_garansi ?? ''), 'aktif');
+                $hariGaransi = $item->x_garansi_hari !== null ? ((int) preg_replace('/\D/', '', (string) $item->x_garansi_hari)) : null;
+                $nextService = $item->tanggal_jadwal_fu ?? $item->tanggal_jatuh_tempo ?? null;
+                $fuStatus    = $item->status_follow_up ?? 'Belum Dihubungi';
+            @endphp
             <tr>
-                <td class="text-center fw-bold" style="vertical-align: middle;">{{ $idx + 1 }}</td>
-                <td>
-                    <strong>{{ $fup->nama ?? '-' }}</strong><br>
-                    <span style="font-size: 8.5px;">WA: {{ $fup->no_whatsapp ?? '-' }}</span>
+                @unless(isset($konsumen))
+                <td class="text-center fw-bold nowrap">#{{ $item->id_konsumen ?? '-' }}</td>
+                @endunless
+                <td class="text-center fw-bold nowrap">{{ $index + 1 }}</td>
+                @unless(isset($konsumen))
+                <td class="fw-bold">{{ $item->nama ?? '-' }}</td>
+                @endunless
+                <td class="fw-bold nowrap">{{ $item->no_tiket ?? '-' }}</td>
+                <td class="text-center nowrap">{{ !empty($item->x_tgl_closing) ? \Carbon\Carbon::parse($item->x_tgl_closing)->translatedFormat('d M Y') : '-' }}{!! $jam($item->x_tgl_closing) !!}</td>
+                <td class="text-right nowrap">{{ $biaya > 0 ? 'Rp ' . number_format($biaya, 0, ',', '.') : '-' }}</td>
+                <td class="text-right nowrap">{{ $sparepart > 0 ? 'Rp ' . number_format($sparepart, 0, ',', '.') : '-' }}</td>
+                <td class="text-right nowrap">{{ $diskon > 0 ? "-\u{00A0}Rp " . number_format($diskon, 0, ',', '.') : '-' }}</td>
+                <td class="text-right fw-bold nowrap">{{ $totalBayar > 0 ? 'Rp ' . number_format($totalBayar, 0, ',', '.') : '-' }}</td>
+                <td class="text-center nowrap">{{ $item->metode_pembayaran ?? '-' }}</td>
+                <td class="text-center nowrap">
+                    @if($statusBayar)
+                        <span class="badge nowrap {{ strtolower($statusBayar) === 'lunas' ? 'badge-ok' : 'badge-warn' }}">{{ $statusBayar }}</span>
+                    @else - @endif
                 </td>
-                <td>
-                    <strong>{{ $fup->jenis_unit ?? 'Perangkat' }}</strong> ({{ $fup->merek ?? '-' }})<br>
-                    <span style="font-size: 8px; color: #333;">Kategori: {{ $fup->kategori ?? 'Perawatan Berkala' }}</span>
+                <td class="text-center nowrap">
+                    <span class="badge nowrap {{ $isGaransi ? 'badge-ok' : 'badge-no' }}">{{ $isGaransi ? 'Valid' : 'Non-Garansi' }}</span>
                 </td>
-                <td>
-                    <span class="badge-status">{{ $fup->status ?? 'Belum Dihubungi' }}</span><br>
-                    <span style="font-size: 8px;">Jadwal: {{ !empty($fup->tanggal_jadwal) ? \Carbon\Carbon::parse($fup->tanggal_jadwal)->translatedFormat('d M Y') : '-' }}</span>
+                <td class="text-center nowrap">
+                    @if($hariGaransi)
+                        <strong>{{ $hariGaransi }} Hari</strong><br>
+                        s.d. {{ !empty($item->x_garansi_sampai) ? \Carbon\Carbon::parse($item->x_garansi_sampai)->format('d/m/Y') : '-' }}
+                    @else - @endif
                 </td>
-                <td>
-                    {{ $fup->catatan_hasil ?? '-' }}
+                <td class="text-center nowrap">{{ !empty($nextService) ? \Carbon\Carbon::parse($nextService)->translatedFormat('d M Y') : 'Belum Dijadwalkan' }}</td>
+                <td class="text-center">
+                    <span class="badge {{ $fuStatus === 'Belum Dihubungi' ? 'badge-warn' : 'badge-ok' }}">{{ $fuStatus }}</span>
                 </td>
+                <td>{{ $item->catatan_hasil ?? '-' }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="text-center" style="padding: 12px; color: #000000;">
-                    Tidak ada antrean pengingat perawatan atau follow-up saat ini.
+                <td colspan="{{ isset($konsumen) ? 14 : 16 }}" class="text-center" style="padding: 15px;">
+                    Tidak ada data closing pada periode pencarian ini.
                 </td>
             </tr>
             @endforelse
         </tbody>
     </table>
 
-    <!-- Tanda Tangan / Pengesahan -->
+    <!-- Tanda Tangan -->
     <div class="footer-sign">
         <table>
             <tr>
-                <td style="width: 65%;"></td>
-                <td style="width: 35%; text-align: center;">
-                    <p style="margin-bottom: 35px;">Madiun, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br><strong>Admin Jawaratech</strong></p>
-                    <p style="border-top: 1px solid #000000; display: inline-block; width: 140px; padding-top: 2px; font-weight: bold;">( .................................... )</p>
+                <td style="width: 70%;"></td>
+                <td style="width: 30%;">
+                    <p style="margin: 0 0 35px 0;">Madiun, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br><strong>Admin Jawaratech</strong></p>
+                    <p style="border-top: 1px solid #000; display: inline-block; width: 150px; padding-top: 2px; font-weight: bold; margin: 0;">( .................................... )</p>
                 </td>
             </tr>
         </table>
     </div>
 
-    <!-- Script Print Otomatis -->
     <script>
-        window.onload = function() {
-            window.print();
-        }
+        window.onload = function () { window.print(); }
     </script>
 </body>
 </html>

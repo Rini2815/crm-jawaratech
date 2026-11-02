@@ -422,8 +422,8 @@ body, html {
                                     </td>
                                 </tr>
 
-                                <!-- Include Modal Edit per User -->
-                                @include('user-management.edit')
+                                {{-- PERBAIKAN 1: @include('user-management.edit') DIHAPUS dari sini.
+                                     Form tidak boleh berada di dalam <tbody>, modal edit dipindah ke bawah (di luar tabel). --}}
 
                             @endforeach
                         </tbody>
@@ -598,6 +598,12 @@ body, html {
         </form>
     </div>
 </div>
+
+{{-- PERBAIKAN 2: Modal Edit semua pengguna dipasang di sini, di luar tabel,
+     supaya <form> dan select role terbaca normal oleh browser. --}}
+@foreach($users as $user)
+    @include('user-management.edit')
+@endforeach
 
 <!-- Include Modal Tambah Pengguna -->
 @include('user-management.create')

@@ -16,7 +16,7 @@
                     <i class="fas fa-file-pdf"></i> Cetak Laporan PDF (Global)
                 </a>
                 <a href="{{ route('report.excel', request()->all()) }}" class="btn btn-success px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
-                    <i class="fas fa-file-csv"></i> Rekap CSV (Excel)
+                    <i class="fas fa-file-excel"></i> Rekap Excel
                 </a>
             </div>
         </div>
@@ -163,7 +163,6 @@
                 <table class="table table-bordered table-striped table-hover align-middle mb-0 bg-white tabel-laporan">
                     <thead class="text-uppercase text-white text-center" style="background-color: #1e293b;">
                         <tr>
-                            <th>ID</th>
                             <th>No</th>
                             <th>Tgl Registrasi</th>
                             <th>Nama Konsumen</th>
@@ -215,7 +214,6 @@
                             $hariGaransi = $item->x_garansi_hari !== null ? ((int) preg_replace('/\D/', '', (string) $item->x_garansi_hari)) : null;
                         @endphp
                         <tr>
-                            <td class="text-center"><span class="badge bg-primary fs-7">#{{ $item->id_konsumen ?? '-' }}</span></td>
                             <td class="fw-bold text-center">{{ $riwayatServis->firstItem() + $index }}</td>
                             <td class="text-nowrap text-center"><span class="badge-tanggal">{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y') }}</span>{!! $jamWib($item->created_at) !!}</td>
                             <td class="fw-bold text-nowrap">{{ $item->nama ?? 'Tanpa Nama' }}</td>
@@ -270,7 +268,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="27"class="text-center py-4 text-muted">
+                            <td colspan="26"class="text-center py-4 text-muted">
                                 <i class="fas fa-folder-open fs-3 mb-2 opacity-50"></i><br>
                                 Tidak ada data riwayat servis yang ditemukan pada database atau filter tersebut.
                             </td>
@@ -310,7 +308,6 @@
                 $bersih = fn (array $rows) => array_values(array_filter($rows, fn ($r) => $r[1] !== null && $r[1] !== '' && $r[1] !== '-'));
 
                 $rowsKonsumen = $bersih([
-                    ['ID Konsumen', !empty($item->id_konsumen) ? '#' . e($item->id_konsumen) : null],
                     ['Nama', e($item->nama ?? '')],
                     ['WhatsApp', $waHtml],
                     ['Alamat', e($item->alamat ?? '')],

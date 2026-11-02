@@ -134,14 +134,12 @@
             <tr>
                 <td class="label">Nama Konsumen</td>
                 <td>: <strong>{{ $konsumen->nama }}</strong></td>
-                <td class="label">ID Konsumen</td>
-                <td>: #{{ $konsumen->id_konsumen }}</td>
-            </tr>
-            <tr>
                 <td class="label">No. WhatsApp</td>
                 <td>: {{ $konsumen->no_whatsapp ?? '-' }}</td>
+            </tr>
+            <tr>
                 <td class="label">Alamat Klien</td>
-                <td>: {{ $konsumen->alamat ?? '-' }}</td>
+                <td colspan="3">: {{ $konsumen->alamat ?? '-' }}</td>
             </tr>
         </table>
     </div>
@@ -161,9 +159,6 @@
     <table class="data-table">
         <thead>
             <tr>
-                @unless(isset($konsumen))
-                <th>ID</th>
-                @endunless
                 <th>No</th>
                 <th>Tgl Registrasi</th>
                 @unless(isset($konsumen))
@@ -187,9 +182,6 @@
         <tbody>
             @forelse($riwayatServis as $index => $item)
             <tr>
-                @unless(isset($konsumen))
-                <td class="text-center fw-bold nowrap">#{{ $item->id_konsumen ?? '-' }}</td>
-                @endunless
                 <td class="text-center fw-bold nowrap">{{ $index + 1 }}</td>
                 <td class="text-center nowrap"><span class="badge badge-tgl nowrap">{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y') }}{!! $jam($item->created_at) !!}</span></td>
                 @unless(isset($konsumen))
@@ -226,9 +218,6 @@
     <table class="data-table">
         <thead>
             <tr>
-                @unless(isset($konsumen))
-                <th>ID</th>
-                @endunless
                 <th>No</th>
                 @unless(isset($konsumen))
                 <th>Nama Konsumen</th>
@@ -262,9 +251,6 @@
                 $fuStatus    = $item->status_follow_up ?? 'Belum Dihubungi';
             @endphp
             <tr>
-                @unless(isset($konsumen))
-                <td class="text-center fw-bold nowrap">#{{ $item->id_konsumen ?? '-' }}</td>
-                @endunless
                 <td class="text-center fw-bold nowrap">{{ $index + 1 }}</td>
                 @unless(isset($konsumen))
                 <td class="fw-bold">{{ $item->nama ?? '-' }}</td>

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id"
       xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -23,8 +22,8 @@
                         <x:FrozenNoSplit/>
                         <x:SplitHorizontal>5</x:SplitHorizontal>
                         <x:TopRowBottomPane>5</x:TopRowBottomPane>
-                        <x:SplitVertical>6</x:SplitVertical>
-                        <x:LeftColumnRightPane>6</x:LeftColumnRightPane>
+                        <x:SplitVertical>5</x:SplitVertical>
+                        <x:LeftColumnRightPane>5</x:LeftColumnRightPane>
                         <x:ActivePane>0</x:ActivePane>
                         <x:Panes>
                             <x:Pane><x:Number>3</x:Number></x:Pane>
@@ -232,7 +231,7 @@
         $sumTotal += (float) ($r->x_total_bayar ?? 0);
     }
 
-    $kolom = 29;
+    $kolom = 28;
 
 @endphp
 
@@ -240,7 +239,6 @@
 
     <!-- LEBAR MASING-MASING KOLOM -->
     <colgroup>
-        <col width="65">
         <col width="55">
         <col width="110">
         <col width="110">
@@ -304,7 +302,6 @@
             @if(isset($konsumen))
                 &nbsp; | &nbsp;
                 Konsumen: {{ $konsumen->nama }}
-                (#{{ $konsumen->id_konsumen }})
 
                 &nbsp; | &nbsp;
                 WA: {{ $konsumen->no_whatsapp ?? '-' }}
@@ -318,7 +315,7 @@
 
     <!-- BARIS 4: RINGKASAN -->
     <tr>
-        <td colspan="4" class="ringkas">
+        <td colspan="3" class="ringkas">
             Jumlah Data Servis: {{ $jumlahData }}
         </td>
 
@@ -341,7 +338,6 @@
 
     <!-- BARIS 5: HEADER KOLOM -->
     <tr>
-        <th>ID</th>
         <th>NO</th>
         <th>TGL REGISTRASI</th>
         <th>JAM REGISTRASI</th>
@@ -415,10 +411,6 @@
 
         <tr class="{{ $kelasRow }}">
 
-            <td class="c b txt">
-                #{{ $item->id_konsumen ?? '-' }}
-            </td>
-
             <td class="c b">
                 {{ $index + 1 }}
             </td>
@@ -438,7 +430,7 @@
             <!-- WHATSAPP: DIPAKSA MENJADI TEKS -->
             <td class="wa">
     @if($nomorWA !== '')
-        {{ "'" . $nomorWA }}
+        {{ $nomorWA }}
     @else
         -
     @endif
@@ -559,7 +551,7 @@
 
         <tr class="total">
 
-            <td colspan="17" style="text-align:right;">
+            <td colspan="16" style="text-align:right;">
                 TOTAL ({{ $jumlahData }} servis)
             </td>
 

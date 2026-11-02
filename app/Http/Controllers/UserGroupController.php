@@ -10,54 +10,12 @@ use Illuminate\Support\Facades\DB;
 class UserGroupController extends Controller
 {
     /**
-     * Tampilan Utama User Group & Matriks Hak Akses
+     * Halaman Hak Akses sekarang menjadi tab di halaman Manajemen Pengguna.
+     * Link lama /user-group dialihkan supaya tidak error.
      */
     public function index(Request $request)
     {
-        // 1. Total User terdaftar
-        $totalUsers = User::count();
-
-        // 2. Jumlah user per role (dari ms_pengguna)
-        $jumlahPerRole = User::select('id_role', DB::raw('COUNT(*) as total'))
-            ->groupBy('id_role')
-            ->pluck('total', 'id_role');
-
-        // 3. Daftar role dari tabel ms_role
-        $rolesData = Role::orderBy('id_role')->get()->map(function ($role) use ($jumlahPerRole) {
-            return [
-                'id'          => $role->id_role,
-                'name'        => $role->nama_role,
-                'description' => $role->deskripsi,
-                'users'       => (int) ($jumlahPerRole[$role->id_role] ?? 0),
-                'status'      => 'Active',
-            ];
-        })->all();
-
-        // 4. Ringkasan statistik
-        $totalGroups  = count($rolesData);
-        $activeGroups = count(array_filter($rolesData, fn($item) => ($item['status'] ?? 'Active') === 'Active'));
-        $emptyGroups  = count(array_filter($rolesData, fn($item) => ($item['users'] ?? 0) === 0));
-
-        // 5. Hak akses menu dari ms_hak_akses (aksi 'lihat'), bentuk: [nama_role][menu] = 1
-        $permissions = [];
-        $hakAkses = DB::table('ms_hak_akses')
-            ->join('ms_role', 'ms_role.id_role', '=', 'ms_hak_akses.id_role')
-            ->where('ms_hak_akses.aksi', 'lihat')
-            ->select('ms_role.nama_role', 'ms_hak_akses.modul')
-            ->get();
-
-        foreach ($hakAkses as $row) {
-            $permissions[$row->nama_role][$row->modul] = 1;
-        }
-
-        return view('user-group.index', compact(
-            'rolesData',
-            'totalGroups',
-            'activeGroups',
-            'totalUsers',
-            'emptyGroups',
-            'permissions'
-        ));
+        return redirect()->route('hak-akses', ['tab' => 'hak-akses']);
     }
 
     /**
@@ -92,7 +50,9 @@ class UserGroupController extends Controller
             }
         });
 
-        return redirect()->back()->with('success', 'Hak akses modul dan menu berhasil diperbarui!');
+        return redirect()->route('hak-akses')
+            ->with('tab', 'hak-akses')
+            ->with('success', 'Hak akses modul dan menu berhasil diperbarui!');
     }
 
     /**
@@ -110,7 +70,9 @@ class UserGroupController extends Controller
             'deskripsi' => $request->description,
         ]);
 
-        return redirect()->back()->with('success', 'Role "' . $request->role_name . '" berhasil ditambahkan!');
+        return redirect()->route('hak-akses')
+            ->with('tab', 'hak-akses')
+            ->with('success', 'Role "' . $request->role_name . '" berhasil ditambahkan!');
     }
 
     /**
@@ -121,17 +83,23 @@ class UserGroupController extends Controller
         $role = Role::where('nama_role', $roleName)->first();
 
         if (!$role) {
-            return back()->with('error', 'Data role tidak ditemukan.');
+            return redirect()->route('hak-akses')
+                ->with('tab', 'hak-akses')
+                ->with('error', 'Data role tidak ditemukan.');
         }
 
         // Role Super Administrator tidak boleh dihapus
         if (str_contains(strtolower($role->nama_role), 'admin')) {
-            return back()->with('error', "Role '{$roleName}' tidak boleh dihapus.");
+            return redirect()->route('hak-akses')
+                ->with('tab', 'hak-akses')
+                ->with('error', "Role '{$roleName}' tidak boleh dihapus.");
         }
 
         // Role yang masih dipakai pengguna tidak boleh dihapus
         if (User::where('id_role', $role->id_role)->exists()) {
-            return back()->with('error', "Role '{$roleName}' masih dipakai oleh pengguna, pindahkan penggunanya dulu.");
+            return redirect()->route('hak-akses')
+                ->with('tab', 'hak-akses')
+                ->with('error', "Role '{$roleName}' masih dipakai oleh pengguna, pindahkan penggunanya dulu.");
         }
 
         DB::transaction(function () use ($role) {
@@ -139,6 +107,8 @@ class UserGroupController extends Controller
             $role->delete();
         });
 
-        return redirect()->back()->with('success', "Role '{$roleName}' berhasil dihapus secara permanen.");
+        return redirect()->route('hak-akses')
+            ->with('tab', 'hak-akses')
+            ->with('success', "Role '{$roleName}' berhasil dihapus secara permanen.");
     }
 }

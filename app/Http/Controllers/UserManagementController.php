@@ -28,8 +28,45 @@ class UserManagementController extends Controller
             ])
             ->all();
 
-        // 3. Kirim variabel customRoles bersama users ke view index
-        return view('user-management.index', compact('users', 'customRoles'));
+        // 3. Data untuk tab Hak Akses: jumlah user per role
+        $jumlahPerRole = User::select('id_role', DB::raw('COUNT(*) as total'))
+            ->groupBy('id_role')
+            ->pluck('total', 'id_role');
+
+        // 4. Data untuk tab Hak Akses: daftar seluruh role dari ms_role
+        $rolesData = Role::orderBy('id_role')->get()->map(function ($role) use ($jumlahPerRole) {
+            return [
+                'id'          => $role->id_role,
+                'name'        => $role->nama_role,
+                'description' => $role->deskripsi,
+                'users'       => (int) ($jumlahPerRole[$role->id_role] ?? 0),
+                'status'      => 'Active',
+            ];
+        })->all();
+
+        $totalGroups = count($rolesData);
+
+        // 5. Data untuk tab Hak Akses: matriks perizinan dari ms_hak_akses (aksi 'lihat'),
+        //    bentuk: [nama_role][menu] = 1
+        $permissions = [];
+        $hakAkses = DB::table('ms_hak_akses')
+            ->join('ms_role', 'ms_role.id_role', '=', 'ms_hak_akses.id_role')
+            ->where('ms_hak_akses.aksi', 'lihat')
+            ->select('ms_role.nama_role', 'ms_hak_akses.modul')
+            ->get();
+
+        foreach ($hakAkses as $row) {
+            $permissions[$row->nama_role][$row->modul] = 1;
+        }
+
+        // 6. Kirim semua variabel ke view gabungan
+        return view('user-management.index', compact(
+            'users',
+            'customRoles',
+            'rolesData',
+            'totalGroups',
+            'permissions'
+        ));
     }
 
     public function store(Request $request)

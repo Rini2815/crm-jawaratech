@@ -18,6 +18,9 @@
     $showUserMgmt      = $sbIsAdmin; // khusus Superadmin
     $showHeadingCrm    = $showDataMaster || $showLayananServis || $showUserMgmt;
 
+    // Halaman Manajemen Pengguna (gabungan Data Pengguna + Hak Akses)
+    $userMgmtAktif     = request()->routeIs('hak-akses*', 'user-group*', 'data-pengguna*');
+
     // Menu Pengaturan Akun aktif (termasuk Switch Profile yang kini ada di dalamnya)
     $pengaturanAktif   = request()->routeIs('profile.edit', 'password.edit', 'team.manage', 'users.profile-auth*');
 @endphp
@@ -94,27 +97,14 @@
             </div>
             @endif
 
-            <!-- 3. MANAJEMEN PENGGUNA (khusus Superadmin) -->
+            <!-- 3. MANAJEMEN PENGGUNA (khusus Superadmin) - SATU MENU, SATU HALAMAN (tab Data Pengguna + Hak Akses) -->
             @if($showUserMgmt)
-                <a class="nav-link {{ request()->routeIs('hak-akses*', 'user-group*', 'data-pengguna*') ? '' : 'collapsed' }} menu-box" 
-                   href="#" data-bs-toggle="collapse" data-bs-target="#collapseUserMgmt" 
-                   aria-expanded="{{ request()->routeIs('hak-akses*', 'user-group*', 'data-pengguna*') ? 'true' : 'false' }}" 
-                   style="border-color: {{ request()->routeIs('hak-akses*', 'user-group*', 'data-pengguna*') ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important;">
+                <a class="nav-link menu-box" 
+                   href="{{ route('data-pengguna.index') }}" 
+                   style="border-color: {{ $userMgmtAktif ? '#38bdf8' : 'rgba(216, 231, 238, 0.3)' }} !important; {{ $userMgmtAktif ? 'background: #3a6fae85 !important;' : '' }}">
                     <div class="sb-nav-link-icon text-white"><i class="fas fa-users-cog"></i></div>
                     <span class="nav-text text-white fw-normal">Manajemen Pengguna</span>
-                    <div class="sb-sidenav-collapse-arrow text-white-50"><i class="fas fa-angle-down"></i></div>
                 </a>
-
-                <div class="collapse {{ request()->routeIs('hak-akses*', 'user-group*', 'data-pengguna*') ? 'show' : '' }}" id="collapseUserMgmt" data-bs-parent="#sidenavAccordion">
-                    <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link sub-item-divider {{ request()->routeIs('data-pengguna*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('data-pengguna.index') }}">
-                            <i class="fas fa-user-friends me-2 text-white"></i> Data Pengguna
-                        </a>
-                        <a class="nav-link {{ request()->routeIs('user-group*') ? 'text-info fw-bold active-sub' : '' }}" href="{{ route('user-group.index') }}">
-                            <i class="fas fa-shield-alt me-2 text-white"></i> Hak Akses
-                        </a>
-                    </nav>
-                </div>
             @endif
 
             <!-- 4. LAYANAN SERVIS (Registrasi Servis, Closing Servis) -->

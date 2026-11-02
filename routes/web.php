@@ -168,7 +168,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/report/kronologis', [ReportController::class, 'kronologis'])->name('report.kronologis');
         
         // Rute Export PDF & Excel (CSV)
-        Route::get('/report/export-daily-pdf', [ReportController::class, 'exportDailyPdf'])->name('report.pdf');
-        Route::get('/report/export-excel', [ReportController::class, 'exportExcel'])->name('report.excel');
+        Route::get('/report/export-daily-pdf/{label?}', [ReportController::class, 'exportDailyPdf'])->name('report.pdf');
+        Route::get('/report/export-excel/{label?}', [ReportController::class, 'exportExcel'])->name('report.excel');
     });
 });

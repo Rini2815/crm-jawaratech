@@ -1,6 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    // Keterangan periode untuk alamat URL (hanya label, tidak mempengaruhi isi laporan)
+    $periodeUrl = request('tanggal')
+        ? \Carbon\Carbon::parse(request('tanggal'))->format('d-m-Y')
+        : (request('bulan') ? request('bulan') . '-' . request('tahun', date('Y')) : request('tahun', date('Y')));
+    $urlGlobal = array_merge(request()->all(), ['label' => 'semua-konsumen-' . $periodeUrl]);
+@endphp
 <!-- Wrapper Utama -->
 <div class="container-fluid px-4 pt-3 pb-4" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3); min-height: 100vh; color: #f8fafc;">
 
@@ -12,10 +19,10 @@
                 <p class="text-light opacity-75 small mb-0">Sistem Administrasi Layanan Servis, Registrasi, Closing, hingga Cetak Laporan PDF Riwayat Konsumen</p>
             </div>
             <div class="d-flex flex-wrap gap-2">
-                <a href="{{ route('report.pdf', request()->all()) }}" target="_blank" class="btn btn-danger px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
+                <a href="{{ route('report.pdf', $urlGlobal) }}" target="_blank" class="btn btn-danger px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
                     <i class="fas fa-file-pdf"></i> Cetak Laporan PDF (Global)
                 </a>
-                <a href="{{ route('report.excel', request()->all()) }}" class="btn btn-success px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
+                <a href="{{ route('report.excel', $urlGlobal) }}" class="btn btn-success px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
                     <i class="fas fa-file-excel"></i> Rekap Excel
                 </a>
             </div>
@@ -260,7 +267,7 @@
                                     <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 py-1 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#detailServis{{ $riwayatServis->firstItem() + $index }}" title="Lihat detail lengkap">
                                         <i class="fas fa-eye me-1"></i> Detail
                                     </button>
-                                    <a href="{{ route('report.pdf', ['id_konsumen' => $item->id_konsumen]) }}" target="_blank" class="btn btn-sm btn-danger rounded-pill px-3 py-1 shadow-sm text-white fw-bold" title="Cetak Riwayat PDF Klien Ini">
+                                    <a href="{{ route('report.pdf', ['id_konsumen' => $item->id_konsumen, 'label' => \Illuminate\Support\Str::slug($item->nama ?? 'konsumen') . '-' . \Carbon\Carbon::parse($item->created_at)->format('d-m-Y')]) }}" target="_blank" class="btn btn-sm btn-danger rounded-pill px-3 py-1 shadow-sm text-white fw-bold" title="Cetak Riwayat PDF Klien Ini">
                                         <i class="fas fa-print me-1"></i> PDF
                                     </a>
                                 </div>
@@ -462,7 +469,7 @@
                         <!-- Footer -->
                         <div class="modal-footer border-0 px-4 pb-4 pt-0">
                             <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
-                            <a href="{{ route('report.pdf', ['id_konsumen' => $item->id_konsumen]) }}" target="_blank" class="btn rounded-pill px-4 fw-bold text-white" style="background:#1e3a8a;">
+                            <a href="{{ route('report.pdf', ['id_konsumen' => $item->id_konsumen, 'label' => \Illuminate\Support\Str::slug($item->nama ?? 'konsumen') . '-' . \Carbon\Carbon::parse($item->created_at)->format('d-m-Y')]) }}" target="_blank" class="btn rounded-pill px-4 fw-bold text-white" style="background:#1e3a8a;">
                                 <i class="fas fa-print me-1"></i> Cetak PDF Konsumen Ini
                             </a>
                         </div>

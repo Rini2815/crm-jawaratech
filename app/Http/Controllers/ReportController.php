@@ -227,7 +227,7 @@ class ReportController extends Controller
         return view('report.kronologis');
     }
 
-    public function exportDailyPdf(Request $request)
+    public function exportDailyPdf(Request $request, $label = null)
     {
         $id_konsumen = $request->input('id_konsumen');
 
@@ -247,7 +247,7 @@ class ReportController extends Controller
         return view('report.pdf', compact('konsumen', 'riwayatServis', 'periode', 'judulLaporan'));
     }
 
-    public function exportExcel(Request $request)
+    public function exportExcel(Request $request, $label = null)
     {
         $id_konsumen = $request->input('id_konsumen');
 

@@ -160,6 +160,7 @@ Route::middleware('auth')->group(function () {
             return redirect()->route('followup.index');
         })->name('followup.create');
         Route::put('/layanan-servis/followup/{id}', [FollowUpController::class, 'update'])->name('followup.update');
+        Route::post('/layanan-servis/followup/{id}/tandai-dihubungi', [FollowUpController::class, 'tandaiDihubungi'])->name('followup.tandai'); // <-- BARU
     });
 
     // --- Laporan & Log Kronologis ---

@@ -89,6 +89,24 @@ class FollowUpController extends Controller
             ->with('success', 'Hasil follow-up berhasil disimpan.');
     }
 
+    /**
+     * Dipanggil saat tombol Chat / "Buka WhatsApp dengan Draft Ini" diklik.
+     * Hanya mengubah status jika masih "Belum Dihubungi"; status lain tidak ditimpa.
+     */
+    public function tandaiDihubungi($id)
+    {
+        $f = FollowUp::findOrFail($id);
+
+        if ($f->status === 'Belum Dihubungi') {
+            $f->status       = 'Sudah Dihubungi';
+            $f->waktu_kontak = now();
+            $f->id_pengguna  = auth()->id();
+            $f->save();
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
     // ---------------------------------------------------------------------
 
     /**

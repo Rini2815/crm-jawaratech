@@ -258,8 +258,8 @@ body, html {
                             </td>
                             <td class="py-3 text-center">
                                 <div class="d-flex justify-content-center gap-1">
-                                    <!-- Direct WhatsApp Link Button -->
-                                    <a href="{{ $f->wa_link }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-2 py-1 shadow-sm text-white" title="Kirim WA Langsung" style="font-weight: 600;">
+                                    <!-- Direct WhatsApp Link Button (klik = tandai Sudah Dihubungi) -->
+                                    <a href="{{ $f->wa_link }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-2 py-1 shadow-sm text-white btn-chat-wa" data-url="{{ route('followup.tandai', $f->id_follow_up) }}" title="Kirim WA Langsung" style="font-weight: 600;">
                                         <i class="fab fa-whatsapp me-1"></i> Chat
                                     </a>
                                     <!-- Modal Trigger Edit Status / Catat Response -->
@@ -342,7 +342,7 @@ body, html {
                     <div class="mb-3">
                         <label class="form-label text-dark small fw-bold">Draft Pesan WhatsApp</label>
                         <textarea id="draft{{ $f->id_follow_up }}" class="form-control rounded-4 bg-white border-secondary" rows="3" style="font-size: 0.875rem;">{{ $f->draft_wa }}</textarea>
-                        <button type="button" class="btn btn-sm btn-success rounded-pill px-3 mt-2 fw-semibold btn-wa-draft" data-draft="draft{{ $f->id_follow_up }}" data-nomor="{{ $f->wa_nomor }}">
+                        <button type="button" class="btn btn-sm btn-success rounded-pill px-3 mt-2 fw-semibold btn-wa-draft" data-draft="draft{{ $f->id_follow_up }}" data-nomor="{{ $f->wa_nomor }}" data-url="{{ route('followup.tandai', $f->id_follow_up) }}">
                             <i class="fab fa-whatsapp me-1"></i> Buka WhatsApp dengan Draft Ini
                         </button>
                     </div>
@@ -379,6 +379,12 @@ $(document).ready(function(){
     setTimeout(function() {
         $(".alert-success").fadeOut(500, function() { $(this).remove(); });
     }, 4000);
+
+    // Klik tombol Chat -> tandai "Sudah Dihubungi", lalu muat ulang halaman setelah WhatsApp terbuka
+    $(document).on('click', '.btn-chat-wa', function () {
+        $.post($(this).data('url'), { _token: '{{ csrf_token() }}' })
+            .always(function () { setTimeout(function () { location.reload(); }, 800); });
+    });
 });
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -392,11 +398,17 @@ document.addEventListener('DOMContentLoaded', function () {
         atur();
     });
 
-    // Tombol buka WhatsApp memakai isi draft yang sedang tampil di modal
+    // Tombol buka WhatsApp memakai isi draft yang sedang tampil di modal,
+    // sekaligus menandai status "Sudah Dihubungi"
     document.querySelectorAll('.btn-wa-draft').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var teks = document.getElementById(btn.dataset.draft).value;
             window.open('https://wa.me/' + btn.dataset.nomor + '?text=' + encodeURIComponent(teks), '_blank');
+
+            if (btn.dataset.url && window.jQuery) {
+                jQuery.post(btn.dataset.url, { _token: '{{ csrf_token() }}' })
+                    .always(function () { setTimeout(function () { location.reload(); }, 800); });
+            }
         });
     });
 

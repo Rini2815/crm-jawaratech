@@ -19,10 +19,10 @@
                 <p class="text-light opacity-75 small mb-0">Sistem Administrasi Layanan Servis, Registrasi, Closing, hingga Cetak Laporan PDF Riwayat Konsumen</p>
             </div>
             <div class="d-flex flex-wrap gap-2">
-                <a href="{{ route('report.pdf', $urlGlobal) }}" target="_blank" class="btn btn-danger px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
+                <a id="btnPdfGlobal" href="{{ route('report.pdf', $urlGlobal) }}" target="_blank" class="btn btn-danger px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
                     <i class="fas fa-file-pdf"></i> Cetak Laporan PDF (Global)
                 </a>
-                <a href="{{ route('report.excel', $urlGlobal) }}" class="btn btn-success px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
+                <a id="btnExcelGlobal" href="{{ route('report.excel', $urlGlobal) }}" class="btn btn-success px-3 py-2 rounded-pill shadow-sm fw-bold d-flex align-items-center gap-2" style="font-size: 0.875rem;">
                     <i class="fas fa-file-excel"></i> Rekap Excel
                 </a>
             </div>
@@ -121,6 +121,9 @@
         <div class="card-body p-4">
             <h5 class="fw-bold text-dark mb-3"><i class="fas fa-filter text-primary me-2"></i> Filter Periode, Unit & Kategori Laporan</h5>
             <form action="" method="GET">
+                {{-- pertahankan urutan saat filter periode diterapkan --}}
+                <input type="hidden" name="urut" value="{{ request('urut') }}">
+
                 <div class="row g-3">
                     <div class="col-md-3">
                         <label class="form-label small fw-bold text-secondary">Pilih Tanggal (Harian)</label>
@@ -158,14 +161,45 @@
         </div>
     </div>
 
-    <!-- 3. TABEL DATAR: 1 DATA = 1 KOLOM (urutan sama dengan PDF & CSV) -->
-    <div class="card rounded-4 mb-4 text-dark shadow-sm overflow-hidden" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important;">
-        <div class="card-header text-white border-0 pt-3 px-4 pb-3 d-flex justify-content-between align-items-center" style="background-color: #1e293b;">
+    <!-- 3. TABEL DATAR: 1 DATA = 1 KOLOM (urutan sama dengan PDF & Excel) -->
+    <div class="card rounded-4 mb-4 text-dark shadow-sm" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important;">
+
+        <!-- HEADER TABEL + URUTKAN + PENCARIAN -->
+        <div class="card-header text-white border-0 pt-3 px-4 pb-3 d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3" style="background-color: #1e293b; border-radius: 0.95rem 0.95rem 0 0;">
             <h5 class="fw-bold m-0"><i class="fas fa-history text-info me-2"></i> Log Komprehensif: Registrasi, Unit, Tiket, Teknisi & Closing</h5>
-            <span class="badge bg-primary rounded-pill px-3 py-2 text-white border border-info">Menampilkan Data Riwayat Konsumen</span>
+
+            <form id="formUrutCari" action="{{ request()->url() }}" method="GET" class="d-flex flex-wrap align-items-center gap-2 m-0">
+                {{-- pertahankan filter periode yang sedang aktif --}}
+                @foreach(['tanggal', 'bulan', 'tahun'] as $f)
+                    @if(request($f))
+                        <input type="hidden" name="{{ $f }}" value="{{ request($f) }}">
+                    @endif
+                @endforeach
+
+                <select name="urut" class="form-select form-select-sm rounded-pill shadow-sm fw-semibold"
+                        style="width: 200px;" onchange="this.form.submit()">
+                    <option value="terbaru" {{ request('urut', 'terbaru') === 'terbaru' ? 'selected' : '' }}>Urutkan: Terbaru</option>
+                    <option value="terlama" {{ request('urut') === 'terlama' ? 'selected' : '' }}>Urutkan: Terlama</option>
+                    <option value="az"      {{ request('urut') === 'az' ? 'selected' : '' }}>Urutkan: Abjad A-Z</option>
+                    <option value="za"      {{ request('urut') === 'za' ? 'selected' : '' }}>Urutkan: Abjad Z-A</option>
+                </select>
+
+                <!-- Search Bar Real-time (Frontend JS) -->
+                <div class="position-relative" style="min-width: 280px;">
+                    <input type="text" id="searchInput" class="form-control form-control-sm ps-5 pe-3 py-2 bg-white text-dark" placeholder="Cari nama konsumen, jenis unit..." style="border-radius: 20px; border: 1px solid #cbd5e1; font-size: 0.875rem;" autocomplete="off">
+                    <i class="fas fa-search position-absolute text-secondary" style="left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
+                </div>
+
+                @if(request('urut'))
+                    <a href="{{ request()->url() }}?{{ http_build_query(request()->only(['tanggal', 'bulan', 'tahun'])) }}"
+                       class="btn btn-sm btn-outline-light rounded-pill" title="Reset urutan">
+                        <i class="fas fa-times"></i>
+                    </a>
+                @endif
+            </form>
         </div>
 
-        <div class="card-body px-3 pb-4">
+        <div class="card-body px-3 pb-4" id="areaTabel">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover align-middle mb-0 bg-white tabel-laporan">
                     <thead class="text-uppercase text-white text-center" style="background-color: #1e293b;">
@@ -215,12 +249,12 @@
                             $fuStatus = $item->status_follow_up ?? 'Belum Dihubungi';
                             $perkiraan = $item->x_perkiraan ?? null;
                             $totalBayar = $item->x_total_bayar ?? 0;
-                                $sparepart = (float) ($item->x_sparepart ?? 0);
-                                $diskon = (float) ($item->x_diskon ?? 0);
+                            $sparepart = (float) ($item->x_sparepart ?? 0);
+                            $diskon = (float) ($item->x_diskon ?? 0);
                             $statusBayar = $item->x_status_bayar ?? null;
                             $hariGaransi = $item->x_garansi_hari !== null ? ((int) preg_replace('/\D/', '', (string) $item->x_garansi_hari)) : null;
                         @endphp
-                        <tr>
+                        <tr class="baris-data">
                             <td class="fw-bold text-center">{{ $riwayatServis->firstItem() + $index }}</td>
                             <td class="text-nowrap text-center"><span class="badge-tanggal">{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y') }}</span>{!! $jamWib($item->created_at) !!}</td>
                             <td class="fw-bold text-nowrap">{{ $item->nama ?? 'Tanpa Nama' }}</td>
@@ -275,12 +309,18 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="26"class="text-center py-4 text-muted">
+                            <td colspan="27" class="text-center py-4 text-muted">
                                 <i class="fas fa-folder-open fs-3 mb-2 opacity-50"></i><br>
                                 Tidak ada data riwayat servis yang ditemukan pada database atau filter tersebut.
                             </td>
                         </tr>
                         @endforelse
+                        <tr id="barisKosongCari" style="display:none;">
+                            <td colspan="27" class="text-center py-4 text-muted">
+                                <i class="fas fa-search fs-3 mb-2 opacity-50"></i><br>
+                                Tidak ada data yang cocok dengan pencarian "<strong id="kataCari"></strong>".
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -480,7 +520,7 @@
 
             <!-- Pagination -->
             <div class="mt-3">
-                {{ $riwayatServis->links() }}
+                {{ $riwayatServis->withQueryString()->links() }}
             </div>
         </div>
     </div>
@@ -581,4 +621,37 @@
     .kv b .badge:not(.text-dark) { color: #ffffff !important; }
     .kv b .badge.text-dark { color: #111827 !important; }
 </style>
+
+<script>
+(function () {
+    var input = document.getElementById('searchInput');
+    if (!input) return;
+
+    var kosong = document.getElementById('barisKosongCari');
+    var kata   = document.getElementById('kataCari');
+
+    function saring() {
+        var q = input.value.toLowerCase().trim();
+        var rows = document.querySelectorAll('.tabel-laporan tbody tr.baris-data');
+        var tampil = 0;
+
+        rows.forEach(function (tr) {
+            var cocok = q === '' || tr.textContent.toLowerCase().indexOf(q) !== -1;
+            tr.style.display = cocok ? '' : 'none';
+            if (cocok) tampil++;
+        });
+
+        if (kosong) {
+            kosong.style.display = (rows.length && q !== '' && tampil === 0) ? '' : 'none';
+            if (kata) kata.textContent = input.value.trim();
+        }
+    }
+
+    input.addEventListener('input', saring);
+    // Enter tidak mengirim form / memuat ulang halaman
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') e.preventDefault();
+    });
+})();
+</script>
 @endsection

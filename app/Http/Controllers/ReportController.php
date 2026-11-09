@@ -4,14 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
 class ReportController extends Controller
 {
     /**
-     * Query dasar yang dipakai bersama oleh tampilan web, PDF, dan CSV.
+     * Query dasar yang dipakai bersama oleh tampilan web, PDF, dan Excel.
      * Satu baris = satu servis, lengkap dengan konsumen, unit, teknisi,
      * dan follow-up terakhir untuk unit tersebut (tanpa membuat baris dobel).
+     *
+     * Mendukung:
+     *  - filter periode : tanggal, bulan, tahun
+     *  - filter konsumen: id_konsumen
+     *  - pencarian      : cari
+     *  - pengurutan     : urut = terbaru | terlama | az | za
      */
     private function buildQuery(Request $request, bool $defaultTahun = false)
     {
@@ -19,22 +26,52 @@ class ReportController extends Controller
         $filterBulan   = $request->input('bulan');
         $filterTahun   = $defaultTahun ? $request->input('tahun', date('Y')) : $request->input('tahun');
         $idKonsumen    = $request->input('id_konsumen');
+        $cari          = trim((string) $request->input('cari'));
+        $urut          = $request->input('urut', 'terbaru');
 
-        // Follow-up terbaru per unit (1 baris per unit supaya data servis tidak dobel)
-        $followUp = DB::table('tr_follow_up')
-            ->select(
-                'id_unit',
-                DB::raw('MAX(tanggal_jadwal) as tanggal_jadwal_fu'),
-                DB::raw('MAX(status) as status_follow_up'),
-                DB::raw('MAX(catatan_hasil) as catatan_hasil')
-            )
-            ->groupBy('id_unit');
+        // Follow-up: ambil SATU record utuh (bukan MAX per kolom), supaya jadwal, status
+        // dan catatan berasal dari record yang sama dengan halaman Follow-up.
+        // - Kalau tr_follow_up punya id_servis (dan tr_servis juga), dicocokkan per servis.
+        // - Kalau tidak, dipakai follow-up paling baru milik unit tersebut.
+        $pkFu = null;
+        foreach (['id_follow_up', 'id_followup', 'id_fu', 'id'] as $c) {
+            if (Schema::hasColumn('tr_follow_up', $c)) { $pkFu = $c; break; }
+        }
+        $perServis = Schema::hasColumn('tr_follow_up', 'id_servis')
+            && Schema::hasColumn('tr_servis', 'id_servis');
+        $kunciFu = $perServis ? 'id_servis' : 'id_unit';
+
+        if ($pkFu) {
+            $terbaru = DB::table('tr_follow_up')
+                ->select(DB::raw("MAX({$pkFu}) as id_terbaru"))
+                ->groupBy($kunciFu);
+
+            $followUp = DB::table('tr_follow_up')
+                ->whereIn($pkFu, $terbaru)
+                ->select(
+                    $kunciFu,
+                    'tanggal_jadwal as tanggal_jadwal_fu',
+                    'status as status_follow_up',
+                    'catatan_hasil'
+                );
+        } else {
+            // Tidak ketemu kolom ID: cara lama sebagai cadangan
+            $perServis = false;
+            $followUp = DB::table('tr_follow_up')
+                ->select(
+                    'id_unit',
+                    DB::raw('MAX(tanggal_jadwal) as tanggal_jadwal_fu'),
+                    DB::raw('MAX(status) as status_follow_up'),
+                    DB::raw('MAX(catatan_hasil) as catatan_hasil')
+                )
+                ->groupBy('id_unit');
+        }
 
         $query = DB::table('tr_servis')
             ->join('ms_unit', 'tr_servis.id_unit', '=', 'ms_unit.id_unit')
             ->join('ms_konsumen', 'ms_unit.id_konsumen', '=', 'ms_konsumen.id_konsumen')
             ->leftJoin('ms_teknisi', 'tr_servis.id_teknisi', '=', 'ms_teknisi.id_teknisi')
-            ->leftJoinSub($followUp, 'fu', 'fu.id_unit', '=', 'tr_servis.id_unit')
+            ->leftJoinSub($followUp, 'fu', $perServis ? 'fu.id_servis' : 'fu.id_unit', '=', $perServis ? 'tr_servis.id_servis' : 'tr_servis.id_unit')
             ->select(
                 'tr_servis.*',
                 'ms_unit.jenis_unit',
@@ -50,10 +87,9 @@ class ReportController extends Controller
                 'fu.tanggal_jadwal_fu',
                 'fu.status_follow_up',
                 'fu.catatan_hasil'
-            )
-            ->orderBy('ms_konsumen.id_konsumen', 'asc')
-            ->orderBy('tr_servis.created_at', 'desc');
+            );
 
+        // ===== Filter =====
         if (!empty($idKonsumen)) {
             $query->where('ms_konsumen.id_konsumen', $idKonsumen);
         }
@@ -65,6 +101,43 @@ class ReportController extends Controller
         }
         if (!empty($filterTahun)) {
             $query->whereYear('tr_servis.created_at', $filterTahun);
+        }
+
+        // ===== Pencarian =====
+        if ($cari !== '') {
+            $query->where(function ($q) use ($cari) {
+                $q->where('ms_konsumen.nama', 'like', "%{$cari}%")
+                  ->orWhere('ms_konsumen.no_whatsapp', 'like', "%{$cari}%")
+                  ->orWhere('ms_konsumen.alamat', 'like', "%{$cari}%")
+                  ->orWhere('ms_unit.jenis_unit', 'like', "%{$cari}%")
+                  ->orWhere('ms_unit.merek', 'like', "%{$cari}%")
+                  ->orWhere('ms_unit.tipe_model', 'like', "%{$cari}%")
+                  ->orWhere('ms_teknisi.nama_teknisi', 'like', "%{$cari}%");
+
+                // Kolom tr_servis dicek dulu supaya tidak error kalau namanya berbeda
+                foreach (['no_tiket', 'no_invoice', 'keluhan'] as $kolom) {
+                    if (Schema::hasColumn('tr_servis', $kolom)) {
+                        $q->orWhere("tr_servis.$kolom", 'like', "%{$cari}%");
+                    }
+                }
+            });
+        }
+
+        // ===== Pengurutan =====
+        switch ($urut) {
+            case 'terlama':
+                $query->orderBy('tr_servis.created_at', 'asc');
+                break;
+            case 'az':
+                $query->orderBy('ms_konsumen.nama', 'asc')
+                      ->orderBy('tr_servis.created_at', 'desc');
+                break;
+            case 'za':
+                $query->orderBy('ms_konsumen.nama', 'desc')
+                      ->orderBy('tr_servis.created_at', 'desc');
+                break;
+            default: // terbaru
+                $query->orderBy('tr_servis.created_at', 'desc');
         }
 
         return $query;
@@ -88,7 +161,7 @@ class ReportController extends Controller
     /**
      * Ambil data closing/pembayaran (total bayar, status bayar, masa garansi, tgl closing)
      * dari kolom tr_servis. Beberapa kemungkinan nama kolom dicoba berurutan.
-     * Hasilnya disimpan di properti x_* supaya dipakai sama di web, PDF, dan CSV.
+     * Hasilnya disimpan di properti x_* supaya dipakai sama di web, PDF, dan Excel.
      */
     private function tambahDataClosing($item)
     {
@@ -238,7 +311,7 @@ class ReportController extends Controller
 
         $riwayatServis = $this->prosesRows($this->buildQuery($request)->get());
 
-        $periode =$this->periodeLaporan($riwayatServis);
+        $periode = $this->periodeLaporan($riwayatServis);
         // Judul = nama file saat disimpan sebagai PDF (tanpa no tiket)
         $judulLaporan = $konsumen
             ? 'Laporan Servis ' . $konsumen->nama . ' - Registrasi ' . $periode

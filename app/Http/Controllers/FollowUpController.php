@@ -10,17 +10,28 @@ use Illuminate\Support\Facades\DB;
 
 class FollowUpController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Pastikan setiap tiket yang sudah closing punya agenda Happy Call (H+3)
         $this->sinkronHappyCall();
 
-        $agenda = FollowUp::with(['unit.konsumen', 'servis'])
-            ->where('kategori', 'Happy Call')
-            ->orderByRaw("FIELD(status, 'Belum Dihubungi', 'Perlu Jadwal Ulang', 'Sudah Dihubungi')")
-            ->orderBy('tanggal_jadwal')
-            ->orderByDesc('id_follow_up')
-            ->get();
+        // Pilihan urutan: terbaru (default), terlama, abjad (A-Z), abjad_desc (Z-A)
+        $urut = $request->query('urut', 'terbaru');
+        if (!in_array($urut, ['terbaru', 'terlama', 'abjad', 'abjad_desc'], true)) {
+            $urut = 'terbaru';
+        }
+
+        $query = FollowUp::with(['unit.konsumen', 'servis'])
+            ->where('kategori', 'Happy Call');
+
+        if ($urut === 'terlama') {
+            $query->orderBy('tanggal_jadwal')->orderBy('id_follow_up');
+        } else {
+            // terbaru (juga dipakai sebagai urutan dasar untuk pilihan abjad)
+            $query->orderByDesc('tanggal_jadwal')->orderByDesc('id_follow_up');
+        }
+
+        $agenda = $query->get();
 
         $agenda->each(function ($f) {
             $konsumen = $f->unit->konsumen ?? null;
@@ -45,13 +56,20 @@ class FollowUpController extends Controller
             $f->wa_link  = FollowUp::linkWa($f->no_wa, $f->draft_wa);
         });
 
+        // Urut abjad berdasarkan nama konsumen (nama berasal dari relasi, jadi diurutkan di sini)
+        if ($urut === 'abjad') {
+            $agenda = $agenda->sortBy(fn ($f) => mb_strtolower($f->nama_konsumen))->values();
+        } elseif ($urut === 'abjad_desc') {
+            $agenda = $agenda->sortByDesc(fn ($f) => mb_strtolower($f->nama_konsumen))->values();
+        }
+
         $totalAgenda     = $agenda->count();
         $belumDihubungi  = $agenda->where('status', 'Belum Dihubungi')->count();
         $sudahDihubungi  = $agenda->where('status', 'Sudah Dihubungi')->count();
         $jadwalUlang     = $agenda->where('status', 'Perlu Jadwal Ulang')->count();
 
         return view('followup.index', compact(
-            'agenda', 'totalAgenda', 'belumDihubungi', 'sudahDihubungi', 'jadwalUlang'
+            'agenda', 'totalAgenda', 'belumDihubungi', 'sudahDihubungi', 'jadwalUlang', 'urut'
         ));
     }
 

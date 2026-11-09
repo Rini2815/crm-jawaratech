@@ -196,10 +196,22 @@ body, html {
                 <small class="text-muted">Kelola komunikasi dan pemantauan kepuasan pelanggan secara berkala</small>
             </div>
 
-            <!-- Search Bar Real-time (Frontend JS) -->
-            <div class="position-relative" style="min-width: 280px;">
-                <input type="text" id="searchInput" class="form-control form-control-sm ps-5 pe-3 py-2 bg-white text-dark" placeholder="Cari nama konsumen, jenis unit..." style="border-radius: 20px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
-                <i class="fas fa-search position-absolute text-secondary" style="left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <!-- Pilihan Urutan -->
+                <form action="{{ route('followup.index') }}" method="GET" class="m-0">
+                    <select name="urut" class="form-select form-select-sm bg-white text-dark" onchange="this.form.submit()" style="border-radius: 20px; border: 1px solid #cbd5e1; font-size: 0.875rem; min-width: 170px;">
+                        <option value="terbaru" {{ $urut === 'terbaru' ? 'selected' : '' }}>Urutkan: Terbaru</option>
+                        <option value="terlama" {{ $urut === 'terlama' ? 'selected' : '' }}>Urutkan: Terlama</option>
+                        <option value="abjad" {{ $urut === 'abjad' ? 'selected' : '' }}>Urutkan: Abjad A-Z</option>
+                        <option value="abjad_desc" {{ $urut === 'abjad_desc' ? 'selected' : '' }}>Urutkan: Abjad Z-A</option>
+                    </select>
+                </form>
+
+                <!-- Search Bar Real-time (Frontend JS) -->
+                <div class="position-relative" style="min-width: 280px;">
+                    <input type="text" id="searchInput" class="form-control form-control-sm ps-5 pe-3 py-2 bg-white text-dark" placeholder="Cari nama konsumen, jenis unit..." style="border-radius: 20px; border: 1px solid #cbd5e1; font-size: 0.875rem;">
+                    <i class="fas fa-search position-absolute text-secondary" style="left: 15px; top: 50%; transform: translateY(-50%); font-size: 0.85rem;"></i>
+                </div>
             </div>
         </div>
 

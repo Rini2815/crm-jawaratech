@@ -10,24 +10,73 @@ use Carbon\Carbon;
 class ReportController extends Controller
 {
     /**
+     * Tentukan periode efektif laporan.
+     * - Tidak ada parameter filter sama sekali -> default HARI INI
+     * - Ada dari/sampai (interval)             -> pakai interval, bulan & tahun diabaikan
+     * - Selain itu                             -> pakai bulan/tahun seperti sebelumnya
+     *
+     * Catatan: parameter lama "tanggal" tetap dikenali (dianggap dari = sampai = tanggal itu),
+     * jadi link lama tidak rusak.
+     */
+    private function periodeFilter(Request $request, bool $defaultTahun = false): array
+    {
+        // "Ada filter" hanya kalau ada yang benar-benar terisi. Parameter kosong
+        // (misal ?dari=&sampai=&bulan=&tahun=) tetap jatuh ke default HARI INI.
+        // Untuk menampilkan semua data, dipakai flag ?semua=1 (tombol "Semua Data").
+        $adaFilter = $request->filled('tanggal') || $request->filled('dari') || $request->filled('sampai')
+            || $request->filled('bulan') || $request->filled('tahun');
+        $semua = $request->boolean('semua');
+
+        $dari   = $request->input('dari')   ?: $request->input('tanggal');
+        $sampai = $request->input('sampai') ?: $request->input('tanggal');
+        $bulan  = $request->input('bulan');
+        $tahun  = $request->input('tahun');
+
+        // Pertama kali dibuka tanpa filter -> hari ini
+        if (!$adaFilter && !$semua) {
+            $dari = $sampai = Carbon::today()->toDateString();
+        }
+
+        // Kalau interval dipakai, bulan/tahun dikosongkan supaya tidak bentrok
+        if ($dari || $sampai) {
+            $bulan = $tahun = null;
+        } elseif ($defaultTahun && !$tahun && !$bulan && !$adaFilter && !$semua) {
+            $tahun = date('Y');
+        }
+
+        // Kalau kebalik (dari > sampai), tukar
+        if ($dari && $sampai && $dari > $sampai) {
+            [$dari, $sampai] = [$sampai, $dari];
+        }
+
+        return [
+            'dari'   => $dari ?: null,
+            'sampai' => $sampai ?: null,
+            'bulan'  => $bulan ?: null,
+            'tahun'  => $tahun ?: null,
+        ];
+    }
+
+    /**
      * Query dasar yang dipakai bersama oleh tampilan web, PDF, dan Excel.
      * Satu baris = satu servis, lengkap dengan konsumen, unit, teknisi,
      * dan follow-up terakhir untuk unit tersebut (tanpa membuat baris dobel).
      *
      * Mendukung:
-     *  - filter periode : tanggal, bulan, tahun
+     *  - filter periode : dari & sampai (interval), bulan, tahun
+     *    (tanpa filter apa pun = hari ini)
      *  - filter konsumen: id_konsumen
      *  - pencarian      : cari
      *  - pengurutan     : urut = terbaru | terlama | az | za
      */
     private function buildQuery(Request $request, bool $defaultTahun = false)
     {
-        $filterTanggal = $request->input('tanggal');
-        $filterBulan   = $request->input('bulan');
-        $filterTahun   = $defaultTahun ? $request->input('tahun', date('Y')) : $request->input('tahun');
-        $idKonsumen    = $request->input('id_konsumen');
-        $cari          = trim((string) $request->input('cari'));
-        $urut          = $request->input('urut', 'terbaru');
+        ['dari' => $dari, 'sampai' => $sampai, 'bulan' => $filterBulan, 'tahun' => $filterTahun]
+            = $this->periodeFilter($request, $defaultTahun);
+
+        $idKonsumen = $request->input('id_konsumen');
+        $cari       = trim((string) $request->input('cari'));
+        $urut       = $request->input('urut', 'terbaru');
 
         // Follow-up: ambil SATU record utuh (bukan MAX per kolom), supaya jadwal, status
         // dan catatan berasal dari record yang sama dengan halaman Follow-up.
@@ -93,8 +142,11 @@ class ReportController extends Controller
         if (!empty($idKonsumen)) {
             $query->where('ms_konsumen.id_konsumen', $idKonsumen);
         }
-        if (!empty($filterTanggal)) {
-            $query->whereDate('tr_servis.created_at', $filterTanggal);
+        if (!empty($dari)) {
+            $query->whereDate('tr_servis.created_at', '>=', $dari);
+        }
+        if (!empty($sampai)) {
+            $query->whereDate('tr_servis.created_at', '<=', $sampai);
         }
         if (!empty($filterBulan)) {
             $query->whereMonth('tr_servis.created_at', $filterBulan);
@@ -255,9 +307,9 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        $filterTanggal = $request->input('tanggal');
-        $filterBulan   = $request->input('bulan');
-        $filterTahun   = $request->input('tahun', date('Y'));
+        // Periode efektif (default = hari ini kalau belum ada filter)
+        ['dari' => $filterDari, 'sampai' => $filterSampai, 'bulan' => $filterBulan, 'tahun' => $filterTahun]
+            = $this->periodeFilter($request, true);
 
         // Statistik
         $totalKonsumen   = DB::table('ms_konsumen')->count();
@@ -291,7 +343,7 @@ class ReportController extends Controller
         return view('report.index', compact(
             'totalKonsumen', 'closingBulanIni', 'garansiAktif',
             'antreanPerawatan', 'followUpTerkirim', 'totalUnitTahunIni',
-            'riwayatServis', 'filterTanggal', 'filterBulan', 'filterTahun'
+            'riwayatServis', 'filterDari', 'filterSampai', 'filterBulan', 'filterTahun'
         ));
     }
 

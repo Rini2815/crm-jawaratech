@@ -3,10 +3,35 @@
 @section('content')
 @php
     // Keterangan periode untuk alamat URL (hanya label, tidak mempengaruhi isi laporan)
-    $periodeUrl = request('tanggal')
-        ? \Carbon\Carbon::parse(request('tanggal'))->format('d-m-Y')
-        : (request('bulan') ? request('bulan') . '-' . request('tahun', date('Y')) : request('tahun', date('Y')));
-    $urlGlobal = array_merge(request()->all(), ['label' => 'semua-konsumen-' . $periodeUrl]);
+    $periodeUrl = ($filterDari && $filterSampai)
+        ? ($filterDari === $filterSampai
+            ? \Carbon\Carbon::parse($filterDari)->format('d-m-Y')
+            : \Carbon\Carbon::parse($filterDari)->format('d-m-Y') . '-sd-' . \Carbon\Carbon::parse($filterSampai)->format('d-m-Y'))
+        : ($filterBulan ? $filterBulan . '-' . ($filterTahun ?: date('Y')) : ($filterTahun ?: 'semua'));
+
+    // Nilai yang DITAMPILKAN di dropdown Bulan & Tahun (bukan yang dikirim ke query):
+    // - mode interval/hari ini  -> ikut bulan & tahun dari tanggal "Dari" (default = bulan & tahun sekarang)
+    // - mode "Semua Data"       -> kosong (Semua Bulan / Semua Tahun)
+    // - mode bulan/tahun        -> sesuai pilihan
+    if ($filterDari) {
+        $tampilBulan = \Carbon\Carbon::parse($filterDari)->format('m');
+        $tampilTahun = \Carbon\Carbon::parse($filterDari)->format('Y');
+    } elseif (request()->boolean('semua')) {
+        $tampilBulan = '';
+        $tampilTahun = '';
+    } else {
+        $tampilBulan = $filterBulan ?: '';
+        $tampilTahun = $filterTahun ?: '';
+    }
+
+    // Link PDF/Excel global membawa filter yang sedang aktif (termasuk default hari ini)
+    $urlGlobal = array_merge(request()->all(), [
+        'dari'   => $filterDari,
+        'sampai' => $filterSampai,
+        'bulan'  => $filterBulan,
+        'tahun'  => $filterTahun,
+        'label'  => 'semua-konsumen-' . $periodeUrl,
+    ]);
 @endphp
 <!-- Wrapper Utama -->
 <div class="container-fluid px-4 pt-3 pb-4" style="background: linear-gradient(135deg, #eef1f3 0%, #eef1f3); min-height: 100vh; color: #f8fafc;">
@@ -120,42 +145,72 @@
     <div class="card rounded-4 mb-4 text-dark shadow-sm" style="background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%); border: 1px solid rgba(36, 59, 85, 0.35) !important;">
         <div class="card-body p-4">
             <h5 class="fw-bold text-dark mb-3"><i class="fas fa-filter text-primary me-2"></i> Filter Periode, Unit & Kategori Laporan</h5>
-            <form action="" method="GET">
+            <form id="formFilterPeriode" action="{{ request()->url() }}" method="GET">
                 {{-- pertahankan urutan saat filter periode diterapkan --}}
                 <input type="hidden" name="urut" value="{{ request('urut') }}">
 
                 <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold text-secondary">Pilih Tanggal (Harian)</label>
-                        <input type="date" name="tanggal" class="form-control rounded-pill border-secondary shadow-sm text-dark" value="{{ request('tanggal') }}" style="background-color: #ffffff;">
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-secondary">Dari Tanggal</label>
+                        <input type="date" name="dari" id="inpDari" class="form-control rounded-pill border-secondary shadow-sm text-dark" value="{{ $filterDari }}" style="background-color: #ffffff;">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-secondary">Sampai Tanggal</label>
+                        <input type="date" name="sampai" id="inpSampai" class="form-control rounded-pill border-secondary shadow-sm text-dark" value="{{ $filterSampai }}" style="background-color: #ffffff;">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label small fw-bold text-secondary">Pilih Bulan (Bulanan)</label>
-                        <select name="bulan" class="form-select rounded-pill border-secondary shadow-sm text-dark" style="background-color: #ffffff;">
+                        <label class="form-label small fw-bold text-secondary">Atau Pilih Bulan (Bulanan)</label>
+                        <select name="bulan" id="selBulan" class="form-select rounded-pill border-secondary shadow-sm text-dark" style="background-color: #ffffff;">
                             <option value="">Semua Bulan</option>
                             @foreach(['01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Mei','06'=>'Juni','07'=>'Juli','08'=>'Agustus','09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'] as $val => $nama)
-                                <option value="{{ $val }}" {{ request('bulan') == $val ? 'selected' : '' }}>{{ $nama }}</option>
+                                <option value="{{ $val }}" {{ (string) $tampilBulan !== '' && (int) $tampilBulan === (int) $val ? 'selected' : '' }}>{{ $nama }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label small fw-bold text-secondary">Pilih Tahun (Tahunan)</label>
-                        <select name="tahun" class="form-select rounded-pill border-secondary shadow-sm text-dark" style="background-color: #ffffff;">
-                            <option value="2026" {{ request('tahun', date('Y')) == '2026' ? 'selected' : '' }}>2026</option>
-                            <option value="2025" {{ request('tahun') == '2025' ? 'selected' : '' }}>2025</option>
-                            <option value="2024" {{ request('tahun') == '2024' ? 'selected' : '' }}>2024</option>
+                        <select name="tahun" id="selTahun" class="form-select rounded-pill border-secondary shadow-sm text-dark" style="background-color: #ffffff;">
+                            <option value="">Semua Tahun</option>
+                            <option value="2026" {{ (string) $tampilTahun === '2026' ? 'selected' : '' }}>2026</option>
+                            <option value="2025" {{ (string) $tampilTahun === '2025' ? 'selected' : '' }}>2025</option>
+                            <option value="2024" {{ (string) $tampilTahun === '2024' ? 'selected' : '' }}>2024</option>
                         </select>
                     </div>
                     <div class="col-md-3 d-flex align-items-end gap-2">
                         <button type="submit" class="btn btn-primary w-100 rounded-pill fw-semibold shadow-sm py-2" style="background-color: #2563eb; border-color: #2563eb;">
                             <i class="fas fa-search me-1"></i> Terapkan Filter
                         </button>
-                        @if(request('tanggal') || request('bulan'))
-                            <a href="{{ request()->url() }}" class="btn btn-outline-danger rounded-pill py-2" title="Reset Filter">
+                        @if(request()->hasAny(['tanggal', 'dari', 'sampai', 'bulan', 'tahun']))
+                            <a href="{{ request()->url() }}" class="btn btn-outline-danger rounded-pill py-2" title="Reset ke Hari Ini">
                                 <i class="fas fa-times"></i>
                             </a>
                         @endif
                     </div>
+                </div>
+
+                {{-- Tombol cepat --}}
+                @php
+                    $hariIni = now()->toDateString();
+                    $quick = [
+                        'Hari Ini'   => ['dari' => $hariIni, 'sampai' => $hariIni, 'bulan' => '', 'tahun' => ''],
+                        '7 Hari'     => ['dari' => now()->subDays(6)->toDateString(), 'sampai' => $hariIni, 'bulan' => '', 'tahun' => ''],
+                        'Bulan Ini'  => ['dari' => now()->startOfMonth()->toDateString(), 'sampai' => now()->endOfMonth()->toDateString(), 'bulan' => '', 'tahun' => ''],
+                        'Semua Data' => ['dari' => '', 'sampai' => '', 'bulan' => '', 'tahun' => '', 'semua' => 1],
+                    ];
+                @endphp
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                    <span class="small fw-bold text-secondary me-1">Pintasan:</span>
+                    @foreach($quick as $label => $p)
+                        @php
+                            // Tombol pintasan yang sesuai dengan periode aktif otomatis jadi hitam
+                            $aktif = $label === 'Semua Data'
+                                ? (request()->boolean('semua') && empty($filterDari))
+                                : ($filterDari === $p['dari'] && $filterSampai === $p['sampai']);
+                        @endphp
+                        <a href="{{ request()->url() }}?{{ http_build_query(array_merge(['urut' => request('urut')], $p)) }}"
+                           class="btn btn-sm {{ $aktif ? 'btn-dark fw-bold shadow-sm' : 'btn-outline-dark' }} rounded-pill px-3"
+                           @if($aktif) aria-current="true" @endif>{{ $label }}</a>
+                    @endforeach
                 </div>
             </form>
         </div>
@@ -169,12 +224,13 @@
             <h5 class="fw-bold m-0"><i class="fas fa-history text-info me-2"></i> Log Komprehensif: Registrasi, Unit, Tiket, Teknisi & Closing</h5>
 
             <form id="formUrutCari" action="{{ request()->url() }}" method="GET" class="d-flex flex-wrap align-items-center gap-2 m-0">
-                {{-- pertahankan filter periode yang sedang aktif --}}
-                @foreach(['tanggal', 'bulan', 'tahun'] as $f)
-                    @if(request($f))
-                        <input type="hidden" name="{{ $f }}" value="{{ request($f) }}">
-                    @endif
-                @endforeach
+                {{-- pertahankan filter periode yang sedang aktif (kosong pun dikirim,
+                     supaya "Semua Data" tidak kembali ke default hari ini) --}}
+                <input type="hidden" name="dari"   value="{{ $filterDari }}">
+                <input type="hidden" name="sampai" value="{{ $filterSampai }}">
+                <input type="hidden" name="bulan"  value="{{ $filterBulan }}">
+                <input type="hidden" name="tahun"  value="{{ $filterTahun }}">
+                <input type="hidden" name="semua"  value="{{ request()->boolean('semua') ? 1 : '' }}">
 
                 <select name="urut" class="form-select form-select-sm rounded-pill shadow-sm fw-semibold"
                         style="width: 200px;" onchange="this.form.submit()">
@@ -191,7 +247,7 @@
                 </div>
 
                 @if(request('urut'))
-                    <a href="{{ request()->url() }}?{{ http_build_query(request()->only(['tanggal', 'bulan', 'tahun'])) }}"
+                    <a href="{{ request()->url() }}?{{ http_build_query(['dari' => $filterDari, 'sampai' => $filterSampai, 'bulan' => $filterBulan, 'tahun' => $filterTahun, 'semua' => request()->boolean('semua') ? 1 : '']) }}"
                        class="btn btn-sm btn-outline-light rounded-pill" title="Reset urutan">
                         <i class="fas fa-times"></i>
                     </a>
@@ -624,6 +680,37 @@
 
 <script>
 (function () {
+    // ===== Filter periode: interval tanggal & bulan/tahun tidak boleh dipakai bersamaan =====
+    var dari   = document.getElementById('inpDari');
+    var sampai = document.getElementById('inpSampai');
+    var bulan  = document.getElementById('selBulan');
+    var tahun  = document.getElementById('selTahun');
+
+    if (dari && sampai && bulan && tahun) {
+        // Pilih bulan/tahun  -> kosongkan interval tanggal
+        [bulan, tahun].forEach(function (el) {
+            el.addEventListener('change', function () {
+                dari.value = '';
+                sampai.value = '';
+            });
+        });
+        // Isi tanggal -> kosongkan bulan/tahun
+        [dari, sampai].forEach(function (el) {
+            el.addEventListener('change', function () {
+                bulan.value = '';
+                tahun.value = '';
+                // kalau baru isi salah satu, samakan yang lain (1 hari) supaya praktis
+                if (dari.value && !sampai.value) sampai.value = dari.value;
+                if (sampai.value && !dari.value) dari.value = sampai.value;
+                // jaga agar Dari tidak lebih besar dari Sampai
+                if (dari.value && sampai.value && dari.value > sampai.value) {
+                    var t = dari.value; dari.value = sampai.value; sampai.value = t;
+                }
+            });
+        });
+    }
+
+    // ===== Pencarian real-time =====
     var input = document.getElementById('searchInput');
     if (!input) return;
 

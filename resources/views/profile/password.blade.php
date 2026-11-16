@@ -18,7 +18,7 @@
     </div>
 
     @if (session('success'))
-        <div class="alert alert-success rounded-4 shadow-sm">
+        <div class="alert alert-success rounded-4 shadow-sm" id="alertSukses" style="transition: opacity 0.5s ease;">
             <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
         </div>
     @endif
@@ -149,6 +149,17 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+    // Notifikasi sukses hilang otomatis setelah 4 detik
+    const alertSukses = document.getElementById('alertSukses');
+    if (alertSukses) {
+        setTimeout(function () {
+            alertSukses.style.opacity = '0';
+            setTimeout(function () {
+                alertSukses.remove();
+            }, 500);
+        }, 4000);
+    }
 
     // Toggle show/hide password
     document.querySelectorAll('.toggle-password').forEach(function (btn) {

@@ -106,6 +106,15 @@
             </ul>
         </li>
 
+        <!-- PENANDA MODE IMPERSONATE (hanya muncul saat Superadmin sedang masuk sebagai akun lain) -->
+        @if(session('admin_asli'))
+            <li class="nav-item me-3">
+                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                    <i class="fas fa-user-secret me-1"></i> Mode Impersonate
+                </span>
+            </li>
+        @endif
+
         <!-- 2. DROPDOWN USER (badge role) -->
         @php
             $nbRoleRaw = (string) (auth()->user()->role ?? '');
@@ -117,8 +126,24 @@
                 <i class="fas {{ $nbIsAdmin ? 'fa-user-shield' : 'fa-bullhorn' }} me-1"></i> {{ $nbRoleLabel }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="navbarDropdown" style="background: #0d1b2a; border-radius: 8px;">
+                <!-- Menu 1: Profil Saya -->
                 <li><a class="dropdown-item text-white py-2" href="{{ route('profile.edit') ?? '#' }}" style="transition: 0.2s;"><i class="fas fa-user me-2 text-info"></i> Profil Saya</a></li>
+
+                <!-- Menu 2: Kembali ke Administrator (hanya saat mode impersonate) -->
+                @if(session('admin_asli'))
+                    <li>
+                        <form method="POST" action="{{ route('users.leave-impersonate') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item text-white py-2" style="transition: 0.2s;">
+                                <i class="fas fa-user-shield me-2 text-warning"></i> Kembali ke Administrator
+                            </button>
+                        </form>
+                    </li>
+                @endif
+
                 <li><hr class="dropdown-divider my-1" style="border-color: rgba(255, 255, 255, 0.15);" /></li>
+
+                <!-- Menu 3: Keluar (logout total, selalu tampil) -->
                 <li>
                     <a class="dropdown-item text-white py-2" href="#" style="transition: 0.2s;" data-bs-toggle="modal" data-bs-target="#modalLogoutConfirm">
                         <i class="fas fa-sign-out-alt me-2 text-danger"></i> Keluar
@@ -129,26 +154,43 @@
     </ul>
 </nav>
 
+<!-- Form Logout (dipakai tombol "Ya, Keluar" di modal) -->
+<form id="nbLogoutForm" method="POST" action="{{ route('logout') }}" class="d-none">
+    @csrf
+</form>
+
 <!-- Modal Konfirmasi Logout -->
 <div class="modal fade" id="modalLogoutConfirm" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden" style="background-color: #0f172a; color: #fff;">
-            <div class="modal-body text-center p-4">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content nb-logout-modal rounded-4 border-0 shadow-lg overflow-hidden">
+            <div class="nb-logout-bar"></div>
+            <div class="modal-body text-center p-4 pt-4">
                 <div class="mb-3">
-                    <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center"
-                         style="width: 60px; height: 60px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35);">
+                    <div class="nb-logout-icon mx-auto rounded-circle d-flex align-items-center justify-content-center">
                         <i class="fas fa-sign-out-alt fa-lg text-danger"></i>
                     </div>
                 </div>
                 <h5 class="fw-bold mb-2">Yakin ingin keluar?</h5>
-                <p class="text-light opacity-75 small mb-4">
-                    Anda akan keluar dari sesi CRM Jawaratech dan diarahkan kembali ke halaman login.
-                </p>
+
+                @if(session('admin_asli'))
+                    <p class="text-light opacity-75 small mb-2">
+                        Anda sedang masuk sebagai <strong class="text-white">{{ $nbRoleLabel }}</strong> (Mode Impersonate).
+                    </p>
+                    <p class="text-light opacity-75 small mb-4">
+                        Keluar akan mengakhiri sesi sepenuhnya. Untuk masuk lagi, Anda harus login dengan <strong class="text-white">email &amp; password</strong>.
+                        Ingin kembali ke Administrator tanpa password? Pilih <strong class="text-warning">Kembali ke Administrator</strong> di menu profil.
+                    </p>
+                @else
+                    <p class="text-light opacity-75 small mb-4">
+                        Anda akan keluar dari sesi CRM Jawaratech dan diarahkan kembali ke halaman login.
+                    </p>
+                @endif
+
                 <div class="d-flex justify-content-center gap-2">
                     <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">
-                        Batal
+                        <i class="fas fa-times me-1"></i> Batal
                     </button>
-                    <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" onclick="document.getElementById('logout-form').submit();">
+                    <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" onclick="document.getElementById('nbLogoutForm').submit();">
                         <i class="fas fa-sign-out-alt me-1"></i> Ya, Keluar
                     </button>
                 </div>
@@ -198,5 +240,40 @@
         color: #ffffff !important;
         background: rgba(56, 189, 248, 0.35);
         box-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+    }
+
+    /* Modal logout */
+    .nb-logout-modal {
+        background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+        color: #fff;
+        border: 1px solid rgba(239, 68, 68, 0.25) !important;
+    }
+
+    .nb-logout-bar {
+        height: 5px;
+        background: linear-gradient(90deg, #ef4444, #f97316, #ef4444);
+    }
+
+    .nb-logout-icon {
+        width: 64px;
+        height: 64px;
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        animation: nbPulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes nbPulse {
+        0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
+        70%  { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    #modalLogoutConfirm.fade .modal-dialog {
+        transform: scale(0.85) translateY(20px);
+        transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+    }
+
+    #modalLogoutConfirm.show .modal-dialog {
+        transform: scale(1) translateY(0);
     }
 </style>

@@ -48,6 +48,9 @@ Route::middleware('auth')->group(function () {
     // Fitur Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    // Kembali ke Superadmin setelah impersonate (tanpa password)
+    Route::post('/users/leave-impersonate', [ProfileAuthController::class, 'leaveImpersonate'])->name('users.leave-impersonate');
+
     // --- Rute Dashboard ---
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

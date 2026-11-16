@@ -93,4 +93,38 @@ class ProfileAuthController extends Controller
         // 3. Arahkan ke Dashboard
         return redirect()->route('dashboard')->with('success', 'Berhasil beralih akun!');
     }
+
+    /**
+     * Kembali ke akun Superadmin asli setelah impersonate (tanpa password)
+     */
+    public function leaveImpersonate(Request $request)
+    {
+        $adminId = session('admin_asli');
+
+        // Tidak sedang impersonate -> abaikan
+        if (!$adminId) {
+            return redirect()->route('dashboard');
+        }
+
+        $admin = DB::table('ms_pengguna')->where('id_pengguna', $adminId)->first();
+
+        // Pastikan akun asli masih ada, masih Superadmin, dan masih Aktif
+        if (!$admin || (int) $admin->id_role !== 1 || $admin->status !== 'Aktif') {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect('/login')->withErrors([
+                'email' => 'Akun administrator asli tidak valid. Silakan login ulang.',
+            ]);
+        }
+
+        Log::info('Impersonate selesai: pengguna #' . Auth::id() . ' kembali ke Administrator #' . $admin->id_pengguna);
+
+        session()->forget('admin_asli');
+        Auth::loginUsingId($admin->id_pengguna);
+        $request->session()->regenerate();
+
+        return redirect()->route('users.profile-auth')->with('success', 'Kembali ke akun Administrator.');
+    }
 }

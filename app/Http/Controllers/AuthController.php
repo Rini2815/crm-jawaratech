@@ -78,12 +78,13 @@ class AuthController extends Controller
     }
 
     /**
-     * Memproses logout user
+     * Memproses logout user (logout total, termasuk saat mode impersonate)
      */
     public function logout(Request $request)
     {
         Auth::logout();
 
+        // invalidate() menghapus seluruh session, termasuk 'admin_asli'
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
